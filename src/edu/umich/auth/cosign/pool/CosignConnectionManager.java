@@ -64,8 +64,11 @@ public class CosignConnectionManager
     return ccs.getConnection();
   }
   
-  public void returnConnection( String cookie, CosignConnection cc) {
+  public void returnConnection( CosignConnection cc ) {
   	cc.returnToPool();
+  }
+  
+  public void cleanUpStrategy( String cookie ) {
   	strategyMap.remove( cookie );
   }
 

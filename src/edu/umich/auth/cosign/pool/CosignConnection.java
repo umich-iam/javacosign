@@ -13,7 +13,7 @@ import java.io.*;
 
 public class CosignConnection {
 
-	private static final boolean DEBUG2OUT = false;
+	private static final boolean DEBUG2OUT = true;
 	private static final boolean DEBUG_DETAIL = DEBUG2OUT && false;
 	private static Map countMap = new HashMap();
 	private static final Random rnd = new Random();

@@ -23,9 +23,7 @@ import edu.umich.auth.cosign.CosignServer;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class CosignConnectionPoolManager implements Runnable {
-	
-
-	private static final long SLEEP_TIME = 100; 
+	 
 	private TreeMap poolMap = new TreeMap();
 	private boolean poolMapLock = false;
 
@@ -51,7 +49,7 @@ public class CosignConnectionPoolManager implements Runnable {
 		while (isPoolMapLocked()) {
 			try {
 				System.out.println("In getConnectionPool(): poolMap is updating!  Sleep for a while! thread = " + Thread.currentThread());
-				Thread.sleep(SLEEP_TIME);
+				Thread.sleep(CosignConfig.INSTANCE.getLongProperty(CosignConfig.COSIGN_POOL_LOCKED_SLEEP_TIME));
 			}
 			catch (InterruptedException ie) {
 				ie.printStackTrace();
@@ -65,7 +63,7 @@ public class CosignConnectionPoolManager implements Runnable {
 		while (isPoolMapLocked()) {
 			try {
 				System.out.println("In getPoolKeySet(): poolMap is updating!  Sleep for a while! thread = " + Thread.currentThread());
-				Thread.sleep(SLEEP_TIME);
+				Thread.sleep(CosignConfig.INSTANCE.getLongProperty(CosignConfig.COSIGN_POOL_LOCKED_SLEEP_TIME));
 			}
 			catch (InterruptedException ie) {
 				ie.printStackTrace();
@@ -86,14 +84,14 @@ public class CosignConnectionPoolManager implements Runnable {
 		Iterator itOld = oldKeys.iterator();
 		Set newKeys = newPoolMap.keySet();
 		lockPoolMap();
-		System.out.println("Updating poolMap!!!");
-		System.out.println("oldKeys = " + oldKeys);
-		System.out.println("newKeys = " + newKeys);
+		System.out.println("Old pools = " + oldKeys);
+		System.out.println("New pools = " + newKeys);
 		boolean changed = false;
 		while (itOld.hasNext()) {
 			Object oldKey = itOld.next();
 			if (!newPoolMap.containsKey(oldKey)) {
 				itOld.remove();
+				changed = true;
 			}
 		}
 		newKeys.removeAll(oldKeys);		
@@ -101,6 +99,13 @@ public class CosignConnectionPoolManager implements Runnable {
 		while (itNew.hasNext()) {
 			Object newKey = itNew.next();
 			poolMap.put(newKey, newPoolMap.get(newKey));
+			changed = true;
+		}
+		if (changed) {
+			System.out.println("poolMap updated!");
+		}
+		else {
+			System.out.println("No update on poolMap!");
 		}
 		releasePoolMap();
 	}
