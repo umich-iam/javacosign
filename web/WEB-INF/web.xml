@@ -8,6 +8,11 @@
     <filter-class>edu.umich.auth.AuthenticationFilter</filter-class>
 
     <init-param>
+      <param-name>Auth.LoginConfiguration</param-name>
+      <param-value>CosignAuthentication</param-value>
+    </init-param>
+
+    <init-param>
       <param-name>Auth.LoginModule</param-name>
       <param-value>edu.umich.auth.cosign.CosignLoginModule</param-value>
     </init-param>
@@ -31,6 +36,11 @@
   <filter>
     <filter-name>Krb5 Authentication Filter</filter-name>
     <filter-class>edu.umich.auth.AuthenticationFilter</filter-class>
+
+    <init-param>
+      <param-name>Auth.LoginConfiguration</param-name>
+      <param-value>Krb5Authentication</param-value>
+    </init-param>
 
     <init-param>
       <param-name>Auth.LoginModule</param-name>

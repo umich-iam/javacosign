@@ -8,5 +8,10 @@
   </head>
 
   <body bgcolor="#FFFFFF">
+    <form action="../krb5-secure" method="post">
+      <input type="text" name="j_username"><br>
+      <input type="password" name="j_password"><br>
+      <input type="submit">
+    </form>
   </body>
 </html>
