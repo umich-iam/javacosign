@@ -36,6 +36,24 @@
       <param-name>Auth.Cosign.LoginServer</param-name>
       <param-value>https://cosign-test.www.umich.edu</param-value>
     </init-param>
+
+	<!--
+	  OPTIONAL: Sets whether or not login should fail if the client's IP address changes.
+				The default is 'true'.
+	-->
+    <init-param>
+      <param-name>Auth.Cosign.CheckClientIP</param-name>
+      <param-value>false</param-value>
+    </init-param>
+
+	<!--
+	  OPTIONAL: Sets how many seconds between checks to the Cosign server.
+				The default is 60 seconds.
+	-->
+    <init-param>
+      <param-name>Auth.Cosign.ServerCheckDelay</param-name>
+      <param-value>30</param-value>
+    </init-param>
   </filter>
 
   <filter>
