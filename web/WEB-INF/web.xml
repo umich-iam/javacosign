@@ -1,0 +1,35 @@
+<!DOCTYPE web-app
+          PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+          "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  <filter>
+    <filter-name>Authentication Filter</filter-name>
+    <filter-class>edu.umich.auth.AuthenticationFilter</filter-class>
+
+    <init-param>
+      <param-name>Auth.LoginModule</param-name>
+      <param-value>edu.umich.auth.cosign.CosignLoginModule</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>Auth.CallbackHandler</param-name>
+      <param-value>edu.umich.auth.CosignAuthFilterCallbackHandler</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>Auth.Cosign.ServiceName</param-name>
+      <param-value>Cosign-Test</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>Auth.Cosign.LoginServer</param-name>
+      <param-value>https://weblogin.umich.edu</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+      <filter-name>Authentication Filter</filter-name>
+      <url-pattern>/secure/*</url-pattern>
+  </filter-mapping>
+</web-app>
