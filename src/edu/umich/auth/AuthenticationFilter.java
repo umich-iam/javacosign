@@ -23,8 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * @see javax.servet.Filter
  * @author $Author$
- * @version $Version$ ($Name$)
+ * @version $Name$ $Revision$ $Date$
  */
 public class AuthenticationFilter implements Filter
 {
@@ -37,25 +38,8 @@ public class AuthenticationFilter implements Filter
 
   private static final String JAAS_CONFIG_PROPERTY = "java.security.auth.login.config";
 
-  /**
-   * 
-   * @uml.property name="callbackHandlerClass"
-   * @uml.associationEnd multiplicity="(0 -1)" elementType="edu.umich.auth.ServletCallbackHandler"
-   */
   private Class callbackHandlerClass;
-
-  /**
-   * 
-   * @uml.property name="filterConfig"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   private FilterConfig filterConfig;
-
-  /**
-   * 
-   * @uml.property name="parameters"
-   * @uml.associationEnd multiplicity="(0 1)" qualifier="obj:java.lang.Object getInitParameter:java.lang.String"
-   */
   private Map parameters = new HashMap();
 
   private File jaasFile;
