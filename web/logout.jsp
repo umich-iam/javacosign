@@ -7,5 +7,5 @@
    cookie.setPath( "/" );
 
    response.addCookie( cookie );
-   response.sendRedirect( "https://cosign-test.www.umich.edu/cgi-bin/logout?http://www.umich.edu" );
+   response.sendRedirect( "https://weblogin.umich.edu/cgi-bin/logout?http://www.umich.edu" );
 %>
