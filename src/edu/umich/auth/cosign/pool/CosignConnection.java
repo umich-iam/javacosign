@@ -61,7 +61,7 @@ public class CosignConnection {
 	private String hostname;
 	
 	/**
-	 * The port number of the cosign server, default to 663
+	 * The port number of the cosign server, default to 6663
 	 */
 	private int port;
 	
