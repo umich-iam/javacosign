@@ -6,5 +6,5 @@
     <redirectLogger>false</redirectLogger>
     <updateXml>true</updateXml>
     <warLocation></warLocation>
-    <webPath>/JavaCosign</webPath>
+    <webPath>/cosign</webPath>
 </tomcatProjectProperties>

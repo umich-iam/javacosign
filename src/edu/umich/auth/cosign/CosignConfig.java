@@ -15,9 +15,9 @@ import java.util.Arrays;
  */
 public class CosignConfig
 {
-  private static final String COSIGN_SERVER = "COSIGN_SERVER_";
-  private static final String COSIGN_PORT = "COSIGN_PORT_";
-  private static final String COSIGN_POOL_CONFIG = "COSIGN_POOL_CONFIG_";
+  private static final String COSIGN_SERVER = "COSIGN_SERVER";
+  private static final String COSIGN_PORT = "COSIGN_PORT";
+  private static final String COSIGN_POOL_CONFIG = "COSIGN_POOL_CONFIG";
 
   public static final CosignConfig INSTANCE = new CosignConfig();
 
@@ -32,12 +32,12 @@ public class CosignConfig
     super();
     try
     {
-      System.out.println( "Reading cosignConfig.properties!" );
+      System.out.println( "Reading cosignConfig.properties!" );//TODO
       props.load( CosignConfig.class.getResourceAsStream( "cosignConfig.properties" ) );
     }
     catch ( IOException ioe )
     {
-      System.out.println( "Fail to load cosignConfig.properties!" );
+      System.out.println( "Fail to load cosignConfig.properties!" );//TODO
       ioe.printStackTrace();
     }
   }
@@ -79,7 +79,11 @@ public class CosignConfig
       addresses = InetAddress.getAllByName(domainName);
       servers = new CosignServer[ addresses.length ];
       
-      for (int i = 0; i < addresses.length; i++) {
+      System.out.println( domainName );//TODO
+      
+      for (int i = 0; i < addresses.length; i++)
+      {
+        System.out.println( addresses[ i ] );//TODO
         servers[ i ] = new CosignServer( addresses[i].getHostAddress(), port, config );
       }
     }

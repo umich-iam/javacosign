@@ -10,15 +10,15 @@ import org.apache.commons.pool.PoolableObjectFactory;
 
 public class CosignConnectionFactory implements PoolableObjectFactory {
 
-	private String hostname;
+	private String address;
 	private int port;
 
 	/**
 	 * Constructor for CosignConnectionFactory.
 	 */
-	public CosignConnectionFactory(String hostname, int port) {
+	public CosignConnectionFactory(String address, int port) {
 		super();
-		this.hostname = hostname;
+		this.address = address;
 		this.port = port;
 	}
 
@@ -26,15 +26,15 @@ public class CosignConnectionFactory implements PoolableObjectFactory {
 	 * @see org.apache.commons.pool.PoolableObjectFactory#makeObject()
 	 */
 	public Object makeObject() throws Exception {
-		System.out.println("Making new cosign connection!");
-		return new CosignConnection(hostname, port);
+		System.out.println("Making new cosign connection!");//TODO
+		return new CosignConnection(address, port);
 	}
 
 	/**
 	 * @see org.apache.commons.pool.PoolableObjectFactory#destroyObject(Object)
 	 */
 	public void destroyObject(Object con) throws Exception {
-		System.out.println("Destroying cosign connection!");
+		System.out.println("Destroying cosign connection!");//TODO
 		((CosignConnection) con).close();
 		con = null;
 	}

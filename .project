@@ -19,5 +19,6 @@
 	<natures>
 		<nature>com.omondo.uml.enterprise.Nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>com.sysdeo.eclipse.tomcat.tomcatnature</nature>
 	</natures>
 </projectDescription>

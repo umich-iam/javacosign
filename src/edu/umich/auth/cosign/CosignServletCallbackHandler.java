@@ -151,6 +151,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
   public void handleFailedLogin( Exception ex )
     throws ServletException
   {
+    System.out.println( "failure" );//TODO
     if ( ex instanceof FailedLoginException )
     {
       /*
@@ -199,7 +200,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
         requestURL.append( ':' );
         requestURL.append( request.getServerPort() );
       }
-        
+      
       requestURL.append( request.getRequestURI() );
 
       /*
@@ -221,6 +222,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
 
   public void handleSuccessfulLogin() throws ServletException
   {
+    System.out.println( "success" ); //TODO
     // Check if a principal already exists.
     Iterator iterator = subject.getPrincipals().iterator();
     Object object;

@@ -19,8 +19,6 @@ import org.apache.commons.pool.impl.*;
 
 public class ConnectionManager
 {
-  private static final boolean DEBUG2OUT = true;
-
   public static final ConnectionManager INSTANCE = new ConnectionManager();
 
   /**
@@ -44,14 +42,18 @@ public class ConnectionManager
   {
     super();
     CosignServer[] cosignServers = CosignConfig.INSTANCE.getCosignServers();
+    
     for ( int i = 0; i < cosignServers.length; i++ )
     {
-      addCosignConnectionPool( cosignServers[i] );
+      System.out.println( cosignServers[ i ] );//TODO
+      addCosignConnectionPool( cosignServers[ i ] );
     }
   }
 
   public CosignConnection getConnection( String cookie )
   {
+    System.out.println( "getting connection" );//TODO
+    
     CosignConnectionStrategy ccs;
 
     if ( strategyMap.containsKey( cookie ) )
@@ -93,25 +95,23 @@ public class ConnectionManager
     String address = cosignServer.getAddress();
     int port = cosignServer.getPort();
     GenericObjectPool.Config config = cosignServer.getConfig();
+
+    String poolId = address + ":" + port;
     
     CosignConnectionFactory ccf = new CosignConnectionFactory( address, port );
-    GenericObjectPoolFactory gopf;
-    if ( null != config )
-    {
-      if ( DEBUG2OUT )
-        System.out.println( "Using custom config for " + cosignServer + " ..." );
-      gopf = new GenericObjectPoolFactory( ccf, config );
-    }
-    else
-    {
-      if ( DEBUG2OUT )
-        System.out.println( "Using default config for " + cosignServer + " ..." );
-
-      gopf = new GenericObjectPoolFactory( ccf );
-    }
-    String poolId = address + ":" + port;
-    poolMap.put( poolId, new CosignConnectionPool( (GenericObjectPool) gopf.createPool(), cosignServer ) );
+    GenericObjectPoolFactory gopf = new GenericObjectPoolFactory( ccf );
     
+    System.out.println( "Creating generic pool " + poolId );//TODO
+    
+    GenericObjectPool gop = (GenericObjectPool)gopf.createPool();
+    
+    System.out.println( "Creating cosign pool " + poolId );//TODO
+    
+    CosignConnectionPool pool = new CosignConnectionPool( gop, cosignServer );
+    
+    poolMap.put( poolId, pool );
+    
+    System.out.println( "Added pool " + poolId );//TODO
   }
 
   public void removeConnectionPool( String poolId )

@@ -154,9 +154,9 @@ public class AuthenticationFilter implements Filter
     {
       throw new ServletException( ex );
     }
-
+    
     callbackHandler.handleSuccessfulLogin();
-
+    
     // User authenticated; continue request processing.
     filterChain.doFilter( callbackHandler.getRequest(), callbackHandler.getResponse() );
   }

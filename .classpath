@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
-    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
-    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
-    <classpathentry kind="lib" path="web/WEB-INF/lib/commons-pool.jar"/>
-    <classpathentry kind="lib" path="web/WEB-INF/lib/jcert.jar"/>
-    <classpathentry kind="lib" path="web/WEB-INF/lib/jnet.jar"/>
-    <classpathentry kind="lib" path="web/WEB-INF/lib/jsse.jar"/>
-    <classpathentry kind="lib" path="web/WEB-INF/lib/jaas.jar"/>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="output" path="web/WEB-INF/classes"/>
+	<classpathentry sourcepath="JRE_SRC" kind="var" path="JRE_LIB"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
+	<classpathentry sourcepath="C:/Program Files/Apache Group/Tomcat 4.1/src/commons-pool-1.1" kind="lib" path="web/WEB-INF/lib/commons-pool-1.1.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jcert.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jnet.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jsse.jar"/>
+	<classpathentry kind="lib" path="web/WEB-INF/lib/jaas.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="work"/>
+	<classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
