@@ -3,12 +3,10 @@ package edu.umich.auth.cosign.util;
 import java.io.ByteArrayOutputStream;
 
 /**
+ * This class creates a string in Base64 format.  It is used
+ * for the Cosign service cookie.
+ * 
  * @author htchan
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 public class Base64 {
 	
