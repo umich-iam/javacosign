@@ -24,20 +24,21 @@ import edu.umich.auth.cosign.pool.CosignConnection;
  */
 public class CosignLoginModule implements LoginModule
 {
-  private static final int COSIGN_CODE_DEFAULT           = -1;
-  private static final int COSIGN_USER_AUTHENTICATED     = 2;
+
+  private static final int COSIGN_CODE_DEFAULT = -1;
+  private static final int COSIGN_USER_AUTHENTICATED = 2;
   private static final int COSIGN_USER_NOT_AUTHENTICATED = 4;
-  private static final int COSIGN_SERVER_NOT_READY       = 5;
+  private static final int COSIGN_SERVER_NOT_READY = 5;
 
   public static final long SERVER_CHECK_DELAY = 60000;
 
-  public static final String REMOTE_COOKIE_CODE  = "1";
-  public static final String REMOTE_IP_CODE      = "2";
-  public static final String USER_IP_CODE        = "3";
-  public static final String USER_NAME_CODE      = "4";
-  public static final String USER_REALM_CODE     = "5";
+  public static final String REMOTE_COOKIE_CODE = "1";
+  public static final String REMOTE_IP_CODE = "2";
+  public static final String USER_IP_CODE = "3";
+  public static final String USER_NAME_CODE = "4";
+  public static final String USER_REALM_CODE = "5";
   public static final String USER_TIMESTAMP_CODE = "6";
-  public static final String SERVICE_NAME_CODE   = "7";
+  public static final String SERVICE_NAME_CODE = "7";
 
   /**
    * 
@@ -69,8 +70,8 @@ public class CosignLoginModule implements LoginModule
    */
   private CosignPrincipal principal = null;
 
-
   private int cosignCode = COSIGN_CODE_DEFAULT;
+
   private String cosignResponse;
 
   /**
@@ -78,31 +79,26 @@ public class CosignLoginModule implements LoginModule
    * @uml.property name="remoteCookieIn"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private TextInputCallback remoteCookieIn = new TextInputCallback(
-    REMOTE_COOKIE_CODE);
+  private TextInputCallback remoteCookieIn = new TextInputCallback( REMOTE_COOKIE_CODE );
 
   /**
    * 
    * @uml.property name="remoteIPIn"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private TextInputCallback remoteIPIn = new TextInputCallback(REMOTE_IP_CODE);
+  private TextInputCallback remoteIPIn = new TextInputCallback( REMOTE_IP_CODE );
 
   /**
    * 
    * @uml.property name="serviceNameIn"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private TextInputCallback serviceNameIn = new TextInputCallback(
-    SERVICE_NAME_CODE);
+  private TextInputCallback serviceNameIn = new TextInputCallback( SERVICE_NAME_CODE );
 
   /**
    * @see javax.security.auth.spi.LoginModule#initialize(Subject, CallbackHandler, Map, Map)
    */
-  public void initialize( Subject subject,
-                          CallbackHandler callbackHandler,
-                          Map arg2,
-                          Map arg3 )
+  public void initialize( Subject subject, CallbackHandler callbackHandler, Map arg2, Map arg3 )
   {
     // Insure that we have a CallbackHandler.
     if ( callbackHandler != null )
@@ -159,7 +155,7 @@ public class CosignLoginModule implements LoginModule
 
       if ( object instanceof CosignPrincipal )
       {
-        principal = (CosignPrincipal)object;
+        principal = (CosignPrincipal) object;
         break;
       }
     }
@@ -183,8 +179,7 @@ public class CosignLoginModule implements LoginModule
           cosignCode = Integer.parseInt( cosignResponse.substring( 0, 1 ) );
 
           // Stop checking servers if valid code returned.
-          if ( cosignCode == COSIGN_USER_AUTHENTICATED ||
-               cosignCode == COSIGN_USER_NOT_AUTHENTICATED )
+          if ( cosignCode == COSIGN_USER_AUTHENTICATED || cosignCode == COSIGN_USER_NOT_AUTHENTICATED )
           {
             break;
           }
@@ -227,7 +222,7 @@ public class CosignLoginModule implements LoginModule
       if ( principal == null )
       {
         principal = new CosignPrincipal();
-		subject.getPrincipals().add( principal );
+        subject.getPrincipals().add( principal );
       }
 
       // Parse the cosign response string.
@@ -237,9 +232,8 @@ public class CosignLoginModule implements LoginModule
       principal.setAddress( tokenizer.nextToken() );
       principal.setName( tokenizer.nextToken() );
       principal.setRealm( tokenizer.nextToken() );
-      
+
       principal.setTimestamp( System.currentTimeMillis() );
-	  
     }
     else
       throw new IllegalStateException();
