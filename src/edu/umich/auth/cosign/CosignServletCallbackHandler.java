@@ -42,6 +42,8 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
   private Subject subject;
 
   private boolean checkClientIP = true;
+  
+  // Default serverCheckDelay, could override
   private long serverCheckDelay = 15000;
 
   /**
