@@ -33,8 +33,7 @@ public class CosignServer {
 		this.address = address;
 		this.port = Integer.parseInt(port);
 		this.config = parseConfigString(configString);
-		System.out.println("Registering cosign server = "
-			+ address + ":" + port + ":" + configString);
+		//System.out.println("Constructing cosign server = " + address + ":" + port + ":" + config);
 	}
 
 	private GenericObjectPool.Config parseConfigString(String configString) {
