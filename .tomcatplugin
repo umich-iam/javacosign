@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tomcatProjectProperties>
-    <rootDir></rootDir>
+    <rootDir>/web</rootDir>
     <exportSource>false</exportSource>
-    <updateXml>false</updateXml>
+    <updateXml>true</updateXml>
     <warLocation></warLocation>
-    <webPath></webPath>
+    <webPath>/JavaCosign</webPath>
 </tomcatProjectProperties>
