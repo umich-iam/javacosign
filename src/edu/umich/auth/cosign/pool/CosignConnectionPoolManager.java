@@ -26,7 +26,7 @@ public class CosignConnectionPoolManager implements Runnable {
 	
 
 	private static final long SLEEP_TIME = 100; 
-	private static TreeMap poolMap = new TreeMap();
+	private TreeMap poolMap = new TreeMap();
 	private boolean poolMapLock = false;
 
 	public static final CosignConnectionPoolManager INSTANCE = new CosignConnectionPoolManager();
@@ -82,20 +82,31 @@ public class CosignConnectionPoolManager implements Runnable {
 			addCosignConnectionPool(newPoolMap, servers[i]);
 		}
 
-		Set newkeys = newPoolMap.keySet();
-		Iterator itNew = newkeys.iterator();
 		Set oldKeys = poolMap.keySet();
 		Iterator itOld = oldKeys.iterator();
+		Set newKeys = newPoolMap.keySet();
 		lockPoolMap();
 		System.out.println("Updating poolMap!!!");
+		System.out.println("oldKeys = " + oldKeys);
+		System.out.println("newKeys = " + newKeys);
+		boolean changed = false;
 		while (itOld.hasNext()) {
 			Object oldKey = itOld.next();
 			if (!newPoolMap.containsKey(oldKey)) {
+				System.out.println("Shit i am here!");
 				//poolMap.remove(oldKey);
 				itOld.remove();
+				changed = true;
 			}
 		}
-		poolMap.putAll(newPoolMap);
+		newKeys.removeAll(oldKeys);		
+		Iterator itNew = newKeys.iterator();
+		while (itNew.hasNext()) {
+			changed = true;
+			Object newKey = itNew.next();
+			poolMap.put(newKey, newPoolMap.get(newKey));
+		}
+		System.out.println("Pool changed? " + changed);
 		releasePoolMap();
 	}
 	
@@ -104,22 +115,10 @@ public class CosignConnectionPoolManager implements Runnable {
 		int port = cosignServer.getPort();
 		GenericObjectPool.Config config = cosignServer.getConfig();
 		CosignConnectionFactory ccf = new CosignConnectionFactory(address, port);
-		GenericObjectPoolFactory gopf;
-		if (null != config) {
-			System.out.println("Using custom config for " + cosignServer + " ...");
-			gopf = new GenericObjectPoolFactory(ccf, config);
-		} else {
-			System.out.println("Using default config for " + cosignServer + " ...");
-			gopf = new GenericObjectPoolFactory(ccf);
-		}
+		GenericObjectPoolFactory gopf = gopf = new GenericObjectPoolFactory(ccf, config);
 		String poolId = address + ":" + port;
 		newPoolMap.put(poolId, new CosignConnectionPool((GenericObjectPool) gopf.createPool(), cosignServer));
 	}
-
-	  public void removeConnectionPool( String poolId )
-	  {
-	    //(GenericObjectPool) poolMap.get(poolId);
-	  }
 	
 	private void lockPoolMap() {
 		poolMapLock = true;
