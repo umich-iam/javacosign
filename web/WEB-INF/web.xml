@@ -13,6 +13,11 @@
     </init-param>
 
     <init-param>
+      <param-name>Auth.JAASConfigurationFile</param-name>
+      <param-value>C:\Program Files\eclipse-2.1.1\workspace\JavaCosign\etc\jaas.conf</param-value>
+    </init-param>
+
+    <init-param>
       <param-name>Auth.LoginModule</param-name>
       <param-value>edu.umich.auth.cosign.CosignLoginModule</param-value>
     </init-param>
@@ -41,7 +46,12 @@
       <param-name>Auth.LoginConfiguration</param-name>
       <param-value>Krb5Authentication</param-value>
     </init-param>
-
+    
+    <init-param>
+      <param-name>Auth.JAASConfigurationFile</param-name>
+      <param-value>C:\Program Files\eclipse-2.1.1\workspace\JavaCosign\etc\jaas.conf</param-value>
+    </init-param>
+    
     <init-param>
       <param-name>Auth.LoginModule</param-name>
       <param-value>com.sun.security.auth.module.Krb5LoginModule</param-value>
