@@ -16,43 +16,68 @@ public class CosignPrincipal implements Principal, Serializable
   private String realm;
   private long timestamp;
 
-  public void setName( String name )
-  {
-  	this.name = name;
+  /**
+   * 
+   * @uml.property name="name"
+   */
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public String getName()
-  {
-  	return name;
+  /**
+   * 
+   * @uml.property name="name"
+   */
+  public String getName() {
+    return name;
   }
 
-  public String getAddress()
-  {
+  /**
+   * 
+   * @uml.property name="address"
+   */
+  public String getAddress() {
     return address;
   }
 
-  public void setAddress(String address)
-  {
+  /**
+   * 
+   * @uml.property name="address"
+   */
+  public void setAddress(String address) {
     this.address = address;
   }
 
-  public String getRealm()
-  {
+  /**
+   * 
+   * @uml.property name="realm"
+   */
+  public String getRealm() {
     return realm;
   }
 
-  public void setRealm(String realm)
-  {
+  /**
+   * 
+   * @uml.property name="realm"
+   */
+  public void setRealm(String realm) {
     this.realm = realm;
   }
 
-  public long getTimestamp()
-  {
-  	return timestamp;
+  /**
+   * 
+   * @uml.property name="timestamp"
+   */
+  public long getTimestamp() {
+    return timestamp;
   }
 
-  public void setTimestamp( long timestamp )
-  {
-  	this.timestamp = timestamp;
+  /**
+   * 
+   * @uml.property name="timestamp"
+   */
+  public void setTimestamp(long timestamp) {
+    this.timestamp = timestamp;
   }
+
 }

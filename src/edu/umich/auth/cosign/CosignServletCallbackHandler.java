@@ -36,12 +36,36 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
   public static final String COSIGN_SERVER_CHECK_DELAY_INIT_PARAM = "Auth.Cosign.ServerCheckDelay";
   public static final String COSIGN_DEFAULT_SERVER_PROTOCOL       = "Auth.Cosign.DefaultServerProtocol";
   public static final String COSIGN_DEFAULT_INDEX_PAGE            = "Auth.Cosign.DefaultIndexPage";
-  
+
+  /**
+   * 
+   * @uml.property name="parameters"
+   * @uml.associationEnd multiplicity="(0 0)"
+   */
   //private CosignPrincipal user;
   private Map parameters;
+
+  /**
+   * 
+   * @uml.property name="request"
+   * @uml.associationEnd multiplicity="(0 1)"
+   */
   private HttpServletRequest request;
+
+  /**
+   * 
+   * @uml.property name="response"
+   * @uml.associationEnd multiplicity="(0 1)"
+   */
   private HttpServletResponse response;
+
+  /**
+   * 
+   * @uml.property name="subject"
+   * @uml.associationEnd multiplicity="(0 -1)" elementType="edu.umich.auth.cosign.CosignPrincipal"
+   */
   private Subject subject;
+
 
   private boolean checkClientIP = true;
   private long serverCheckDelay = 15000;
@@ -219,13 +243,19 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
     request = new AuthFilterRequestWrapper( request, principal );
   }
 
-  public HttpServletResponse getResponse()
-  {
+  /**
+   * 
+   * @uml.property name="response"
+   */
+  public HttpServletResponse getResponse() {
     return response;
   }
 
-  public HttpServletRequest getRequest()
-  {
+  /**
+   * 
+   * @uml.property name="request"
+   */
+  public HttpServletRequest getRequest() {
     return request;
   }
 

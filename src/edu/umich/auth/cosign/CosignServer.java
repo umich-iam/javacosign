@@ -14,7 +14,14 @@ public class CosignServer {
 
 	private String hostname;
 	private int port;
-	private GenericObjectPool.Config config = new GenericObjectPool.Config();
+
+  /**
+   * 
+   * @uml.property name="config"
+   * @uml.associationEnd multiplicity="(1 1)"
+   */
+  private GenericObjectPool.Config config = new GenericObjectPool.Config();
+
 
 	/**
 	 * Constructor for CosignServer.
@@ -48,53 +55,66 @@ public class CosignServer {
 		return this.config;
 	}
 
-	/**
-	 * Returns the config.
-	 * @return CosignConnectionPool.Config
-	 */
-	public GenericObjectPool.Config getConfig() {
-		return config;
-	}
+  /**
+   * Returns the config.
+   * @return CosignConnectionPool.Config
+   * 
+   * @uml.property name="config"
+   */
+  public GenericObjectPool.Config getConfig() {
+    return config;
+  }
 
-	/**
-	 * Returns the hostname.
-	 * @return String
-	 */
-	public String getHostname() {
-		return hostname;
-	}
+  /**
+   * Returns the hostname.
+   * @return String
+   * 
+   * @uml.property name="hostname"
+   */
+  public String getHostname() {
+    return hostname;
+  }
 
-	/**
-	 * Returns the port.
-	 * @return int
-	 */
-	public int getPort() {
-		return port;
-	}
+  /**
+   * Returns the port.
+   * @return int
+   * 
+   * @uml.property name="port"
+   */
+  public int getPort() {
+    return port;
+  }
 
-	/**
-	 * Sets the config.
-	 * @param config The config to set
-	 */
-	public void setConfig(GenericObjectPool.Config config) {
-		this.config = config;
-	}
+  /**
+   * Sets the config.
+   * @param config The config to set
+   * 
+   * @uml.property name="config"
+   */
+  public void setConfig(GenericObjectPool.Config config) {
+    this.config = config;
+  }
 
-	/**
-	 * Sets the hostname.
-	 * @param hostname The hostname to set
-	 */
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
+  /**
+   * Sets the hostname.
+   * @param hostname The hostname to set
+   * 
+   * @uml.property name="hostname"
+   */
+  public void setHostname(String hostname) {
+    this.hostname = hostname;
+  }
 
-	/**
-	 * Sets the port.
-	 * @param port The port to set
-	 */
-	public void setPort(int port) {
-		this.port = port;
-	}
+  /**
+   * Sets the port.
+   * @param port The port to set
+   * 
+   * @uml.property name="port"
+   */
+  public void setPort(int port) {
+    this.port = port;
+  }
+
 	
 	public String toString() {
 		return hostname + ":" + port;

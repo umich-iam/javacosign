@@ -8,20 +8,28 @@ import edu.umich.auth.cosign.CosignServer;
 import org.apache.commons.pool.impl.*;
 
 /**
- * @author htchan
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * @author htchan *  * To change this generated comment edit the template variable "typecomment": * Window>Preferences>Java>Templates. * To enable and disable the creation of type comments go to * Window>Preferences>Java>Code Generation.
+ * 
+ * @uml.stereotype name="tagged" isDefined="true" 
  */
+
 public class ConnectionManager {
 	
 	private static final boolean DEBUG2OUT = true;
 	public static final ConnectionManager INSTANCE = new ConnectionManager();
-	
-	TreeMap strategyMap = new TreeMap();
-	TreeMap poolMap = new TreeMap();
+
+  /**
+   * 
+   * @uml.property name="strategyMap"
+   * @uml.associationEnd multiplicity="(0 1)" qualifier="cookie:java.lang.String ccs:edu.umich.auth.cosign.pool.CosignConnectionStrategy"
+   */
+  TreeMap strategyMap = new TreeMap();
+
+  /**
+   * 
+   * @uml.property name="poolMap" 
+   */
+  TreeMap poolMap = new TreeMap();
 
 	/**
 	 * Constructor for ConnectionManager.

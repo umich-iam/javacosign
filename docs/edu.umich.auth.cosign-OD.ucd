@@ -1,11 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" size="1183,535" id="rockwellsaxmanCosignAuthFilter154" metadata="nsuml-1.4" initialized="true" showWireOptions="1">
-  <children xsi:type="editmodel:ClassEditModel" location="649,128" size="240,229" targetConnections="//@children.1/@sourceConnections.2" id="rockwellsaxmanCosignAuthFilter2032" runTimeClassModel="rockwellsaxmanCosignAuthFilter2328;rockwellsaxmanCosignAuthFilter2035;rockwellsaxmanCosignAuthFilter2048;rockwellsaxmanCosignAuthFilter2334;rockwellsaxmanCosignAuthFilter2046;rockwellsaxmanCosignAuthFilter2044;rockwellsaxmanCosignAuthFilter2057;rockwellsaxmanCosignAuthFilter2055;rockwellsaxmanCosignAuthFilter2336;rockwellsaxmanCosignAuthFilter2051">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name">
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.1/@sourceConnections.2" location="649,128" size="240,229" id="rockwellsaxmanCosignAuthFilter2032" runTimeClassModel="rockwellsaxmanCosignAuthFilter2328,rockwellsaxmanCosignAuthFilter2035,rockwellsaxmanCosignAuthFilter2048,rockwellsaxmanCosignAuthFilter2044,rockwellsaxmanCosignAuthFilter2046,rockwellsaxmanCosignAuthFilter2334,rockwellsaxmanCosignAuthFilter2057,rockwellsaxmanCosignAuthFilter2055,rockwellsaxmanCosignAuthFilter2336,rockwellsaxmanCosignAuthFilter2051">
+    <children xsi:type="editmodel:CompartmentEditModel">
       <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanCosignAuthFilter2044"/>
       <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanCosignAuthFilter2328"/>
       <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanCosignAuthFilter2051"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" size="88,126" viewSorter="Name">
+    <children xsi:type="editmodel:CompartmentEditModel" size="88,126">
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2035" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2046" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2334" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
@@ -14,135 +15,135 @@
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2336" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2057" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="rockwellsaxmanCosignAuthFilter2305" connectionRouterKind="Manhattan" source="//@children.0" target="//@children.2" targetEnd="//@children.0/@sourceConnections.0/@children.1" sourceEnd="//@children.0/@sourceConnections.0/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="240,52" id="rockwellsaxmanCosignAuthFilter2306" roleLabel="//@children.0/@sourceConnections.0/@children.0/@children.0">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="rockwellsaxmanCosignAuthFilter2305" source="//@children.0" target="//@children.2" targetEnd="//@children.0/@sourceConnections.0/@children.1" sourceEnd="//@children.0/@sourceConnections.0/@children.0" connectionRouterKind="Manhattan" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="240,52" id="rockwellsaxmanCosignAuthFilter2306" attachSource="true" roleLabel="//@children.0/@sourceConnections.0/@children.0/@children.0">
         <children xsi:type="editmodel:LabelEditModel" size="30,14" fontInfo="Arial-8-0"/>
       </children>
-      <children xsi:type="editmodel:AssociationEndEditModel" id="rockwellsaxmanCosignAuthFilter2307" navigable="true" flags="2" multiplicityLabel="//@children.0/@sourceConnections.0/@children.1/@children.1" roleLabel="//@children.0/@sourceConnections.0/@children.1/@children.0">
+      <children xsi:type="editmodel:AssociationEndEditModel" id="rockwellsaxmanCosignAuthFilter2307" multiplicityLabel="//@children.0/@sourceConnections.0/@children.1/@children.1" roleLabel="//@children.0/@sourceConnections.0/@children.1/@children.0" navigable="true" flags="2">
         <children xsi:type="editmodel:LabelEditModel" size="39,14" fontInfo="Arial-8-0"/>
         <children xsi:type="editmodel:LabelEditModel" size="19,14" fontInfo="Arial-8-0"/>
       </children>
     </sourceConnections>
-    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="rockwellsaxmanCosignAuthFilter2033" connectionRouterKind="Manual" source="//@children.0" target="//@children.7" targetEnd="//@children.0/@sourceConnections.1/@children.1" sourceEnd="//@children.0/@sourceConnections.1/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="119,0"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="rockwellsaxmanCosignAuthFilter2033" source="//@children.0" target="//@children.7" targetEnd="//@children.0/@sourceConnections.1/@children.1" sourceEnd="//@children.0/@sourceConnections.1/@children.0" connectionRouterKind="Manual" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="119,0" attachSource="true"/>
       <children xsi:type="editmodel:AssociationEndEditModel" location="122,43"/>
     </sourceConnections>
   </children>
-  <children xsi:type="editmodel:ClassEditModel" location="38,164" size="511,157" id="rockwellsaxmanCosignAuthFilter1302" runTimeClassModel="rockwellsaxmanCosignAuthFilter1316;rockwellsaxmanCosignAuthFilter1310;rockwellsaxmanCosignAuthFilter1851;rockwellsaxmanCosignAuthFilter1312;rockwellsaxmanCosignAuthFilter1304;rockwellsaxmanCosignAuthFilter1314;rockwellsaxmanCosignAuthFilter2724">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name">
+  <children xsi:type="editmodel:ClassEditModel" location="38,164" size="511,157" id="rockwellsaxmanCosignAuthFilter1302" runTimeClassModel="rockwellsaxmanCosignAuthFilter1310,rockwellsaxmanCosignAuthFilter1316,rockwellsaxmanCosignAuthFilter1851,rockwellsaxmanCosignAuthFilter1312,rockwellsaxmanCosignAuthFilter1304,rockwellsaxmanCosignAuthFilter1314,rockwellsaxmanCosignAuthFilter2724">
+    <children xsi:type="editmodel:CompartmentEditModel">
       <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanCosignAuthFilter1851"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" size="68,90" viewSorter="Name">
+    <children xsi:type="editmodel:CompartmentEditModel" size="68,90">
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter1314" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter1312" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter1304" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter1310" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter1316" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" connectionRouterKind="Manual" source="//@children.1" target="//@children.5" targetEnd="//@children.1/@sourceConnections.0/@children.1" sourceEnd="//@children.1/@sourceConnections.0/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="225,0"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" source="//@children.1" target="//@children.5" targetEnd="//@children.1/@sourceConnections.0/@children.1" sourceEnd="//@children.1/@sourceConnections.0/@children.0" connectionRouterKind="Manual" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="225,0" attachSource="true"/>
       <children xsi:type="editmodel:AssociationEndEditModel" location="145,43"/>
     </sourceConnections>
-    <sourceConnections xsi:type="editmodel:DependencyEditModel" connectionRouterKind="Manual" source="//@children.1" target="//@children.3" targetEnd="//@children.1/@sourceConnections.1/@children.1" sourceEnd="//@children.1/@sourceConnections.1/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="291,157"/>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" source="//@children.1" target="//@children.3" targetEnd="//@children.1/@sourceConnections.1/@children.1" sourceEnd="//@children.1/@sourceConnections.1/@children.0" connectionRouterKind="Manual" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="291,157" attachSource="true"/>
       <children xsi:type="editmodel:AssociationEndEditModel" location="115,0"/>
     </sourceConnections>
-    <sourceConnections xsi:type="editmodel:DependencyEditModel" connectionRouterKind="Manual" source="//@children.1" target="//@children.0" targetEnd="//@children.1/@sourceConnections.2/@children.1" sourceEnd="//@children.1/@sourceConnections.2/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="511,64"/>
+    <sourceConnections xsi:type="editmodel:DependencyEditModel" source="//@children.1" target="//@children.0" targetEnd="//@children.1/@sourceConnections.2/@children.1" sourceEnd="//@children.1/@sourceConnections.2/@children.0" connectionRouterKind="Manual" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="511,64" attachSource="true"/>
       <children xsi:type="editmodel:AssociationEndEditModel" location="0,115"/>
     </sourceConnections>
-    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="rockwellsaxmanCosignAuthFilter2711" connectionRouterKind="Manhattan" source="//@children.1" target="//@children.8" targetEnd="//@children.1/@sourceConnections.3/@children.1" sourceEnd="//@children.1/@sourceConnections.3/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="145,157" id="rockwellsaxmanCosignAuthFilter2712" roleLabel="//@children.1/@sourceConnections.3/@children.0/@children.0">
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="rockwellsaxmanCosignAuthFilter2711" source="//@children.1" target="//@children.8" targetEnd="//@children.1/@sourceConnections.3/@children.1" sourceEnd="//@children.1/@sourceConnections.3/@children.0" connectionRouterKind="Manhattan" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="145,157" id="rockwellsaxmanCosignAuthFilter2712" attachSource="true" roleLabel="//@children.1/@sourceConnections.3/@children.0/@children.0">
         <children xsi:type="editmodel:LabelEditModel" size="64,14" fontInfo="Arial-8-0"/>
       </children>
-      <children xsi:type="editmodel:AssociationEndEditModel" id="rockwellsaxmanCosignAuthFilter2713" navigable="true" flags="2" multiplicityLabel="//@children.1/@sourceConnections.3/@children.1/@children.1" roleLabel="//@children.1/@sourceConnections.3/@children.1/@children.0">
+      <children xsi:type="editmodel:AssociationEndEditModel" id="rockwellsaxmanCosignAuthFilter2713" multiplicityLabel="//@children.1/@sourceConnections.3/@children.1/@children.1" roleLabel="//@children.1/@sourceConnections.3/@children.1/@children.0" navigable="true" flags="2">
         <children xsi:type="editmodel:LabelEditModel" size="84,14" fontInfo="Arial-8-0"/>
         <children xsi:type="editmodel:LabelEditModel" size="7,14" fontInfo="Arial-8-0"/>
       </children>
     </sourceConnections>
   </children>
-  <children xsi:type="editmodel:ClassEditModel" location="1010,191" size="163,103" targetConnections="//@children.0/@sourceConnections.0" id="rockwellsaxmanCosignAuthFilter2060" runTimeClassModel="rockwellsaxmanCosignAuthFilter2362;rockwellsaxmanCosignAuthFilter2393;rockwellsaxmanCosignAuthFilter2363">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name">
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.0/@sourceConnections.0" location="1010,191" size="163,103" id="rockwellsaxmanCosignAuthFilter2060" runTimeClassModel="rockwellsaxmanCosignAuthFilter2362,rockwellsaxmanCosignAuthFilter2393,rockwellsaxmanCosignAuthFilter2363">
+    <children xsi:type="editmodel:CompartmentEditModel">
       <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanCosignAuthFilter2362"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name">
+    <children xsi:type="editmodel:CompartmentEditModel">
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2393"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2363" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
   </children>
-  <children xsi:type="editmodel:ClassEditModel" location="345,398" size="228,135" targetConnections="//@children.1/@sourceConnections.1" id="rockwellsaxmanCosignAuthFilter1325" runTimeClassModel="rockwellsaxmanCosignAuthFilter1327;rockwellsaxmanCosignAuthFilter1989;rockwellsaxmanCosignAuthFilter2245;rockwellsaxmanCosignAuthFilter1778">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name">
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.1/@sourceConnections.1" location="345,398" size="228,135" id="rockwellsaxmanCosignAuthFilter1325" runTimeClassModel="rockwellsaxmanCosignAuthFilter1327,rockwellsaxmanCosignAuthFilter1989,rockwellsaxmanCosignAuthFilter2245,rockwellsaxmanCosignAuthFilter1778">
+    <children xsi:type="editmodel:CompartmentEditModel">
       <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanCosignAuthFilter1989"/>
       <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanCosignAuthFilter2245"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name">
+    <children xsi:type="editmodel:CompartmentEditModel">
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter1327" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter1778" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="rockwellsaxmanCosignAuthFilter2217" connectionRouterKind="Manhattan" source="//@children.3" target="//@children.4" targetEnd="//@children.3/@sourceConnections.0/@children.1" sourceEnd="//@children.3/@sourceConnections.0/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="228,2" id="rockwellsaxmanCosignAuthFilter2218" roleLabel="//@children.3/@sourceConnections.0/@children.0/@children.0" orderingLabel="//@children.3/@sourceConnections.0/@children.0/@children.1">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="rockwellsaxmanCosignAuthFilter2217" source="//@children.3" target="//@children.4" targetEnd="//@children.3/@sourceConnections.0/@children.1" sourceEnd="//@children.3/@sourceConnections.0/@children.0" connectionRouterKind="Manhattan" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="228,2" id="rockwellsaxmanCosignAuthFilter2218" attachSource="true" roleLabel="//@children.3/@sourceConnections.0/@children.0/@children.0" orderingLabel="//@children.3/@sourceConnections.0/@children.0/@children.1">
         <children xsi:type="editmodel:LabelEditModel" size="28,14" fontInfo="Arial-8-0"/>
         <children xsi:type="editmodel:LabelEditModel" size="35,14" fontInfo="Arial-8-0"/>
       </children>
-      <children xsi:type="editmodel:AssociationEndEditModel" id="rockwellsaxmanCosignAuthFilter2219" navigable="true" orderingKind="1" flags="2" multiplicityLabel="//@children.3/@sourceConnections.0/@children.1/@children.1" roleLabel="//@children.3/@sourceConnections.0/@children.1/@children.0">
+      <children xsi:type="editmodel:AssociationEndEditModel" id="rockwellsaxmanCosignAuthFilter2219" multiplicityLabel="//@children.3/@sourceConnections.0/@children.1/@children.1" roleLabel="//@children.3/@sourceConnections.0/@children.1/@children.0" navigable="true" orderingKind="1" flags="2">
         <children xsi:type="editmodel:LabelEditModel" size="46,14" fontInfo="Arial-8-0"/>
         <children xsi:type="editmodel:LabelEditModel" size="5,14" fontInfo="Arial-8-0"/>
       </children>
     </sourceConnections>
   </children>
-  <children xsi:type="editmodel:ClassEditModel" location="721,414" size="291,103" targetConnections="//@children.3/@sourceConnections.0" id="rockwellsaxmanCosignAuthFilter1332" runTimeClassModel="rockwellsaxmanCosignAuthFilter2029;rockwellsaxmanCosignAuthFilter2026;rockwellsaxmanCosignAuthFilter2686;rockwellsaxmanCosignAuthFilter2278">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name">
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.3/@sourceConnections.0" location="721,414" size="291,103" id="rockwellsaxmanCosignAuthFilter1332" runTimeClassModel="rockwellsaxmanCosignAuthFilter2029,rockwellsaxmanCosignAuthFilter2026,rockwellsaxmanCosignAuthFilter2686,rockwellsaxmanCosignAuthFilter2278">
+    <children xsi:type="editmodel:CompartmentEditModel">
       <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanCosignAuthFilter2026"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" size="63,18" viewSorter="Name">
+    <children xsi:type="editmodel:CompartmentEditModel" size="63,18">
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2029" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2278" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="rockwellsaxmanCosignAuthFilter2677" connectionRouterKind="Manhattan" source="//@children.4" target="//@children.6" targetEnd="//@children.4/@sourceConnections.0/@children.1" sourceEnd="//@children.4/@sourceConnections.0/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="291,25" id="rockwellsaxmanCosignAuthFilter2678" navigable="true" multiplicityLabel="//@children.4/@sourceConnections.0/@children.0/@children.1" roleLabel="//@children.4/@sourceConnections.0/@children.0/@children.0">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:AssociationEditModel" id="rockwellsaxmanCosignAuthFilter2677" source="//@children.4" target="//@children.6" targetEnd="//@children.4/@sourceConnections.0/@children.1" sourceEnd="//@children.4/@sourceConnections.0/@children.0" connectionRouterKind="Manhattan" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="291,25" id="rockwellsaxmanCosignAuthFilter2678" attachSource="true" multiplicityLabel="//@children.4/@sourceConnections.0/@children.0/@children.1" roleLabel="//@children.4/@sourceConnections.0/@children.0/@children.0" navigable="true">
         <children xsi:type="editmodel:LabelEditModel" size="24,14" fontInfo="Arial-8-0"/>
         <children xsi:type="editmodel:LabelEditModel" size="19,14" fontInfo="Arial-8-0"/>
       </children>
-      <children xsi:type="editmodel:AssociationEndEditModel" id="rockwellsaxmanCosignAuthFilter2679" navigable="true" orderingKind="1" flags="2" multiplicityLabel="//@children.4/@sourceConnections.0/@children.1/@children.1" roleLabel="//@children.4/@sourceConnections.0/@children.1/@children.0">
+      <children xsi:type="editmodel:AssociationEndEditModel" id="rockwellsaxmanCosignAuthFilter2679" multiplicityLabel="//@children.4/@sourceConnections.0/@children.1/@children.1" roleLabel="//@children.4/@sourceConnections.0/@children.1/@children.0" navigable="true" orderingKind="1" flags="2">
         <children xsi:type="editmodel:LabelEditModel" size="46,14" fontInfo="Arial-8-0"/>
         <children xsi:type="editmodel:LabelEditModel" size="5,14" fontInfo="Arial-8-0"/>
       </children>
     </sourceConnections>
   </children>
-  <children xsi:type="editmodel:InterfaceEditModel" location="149,52" size="288,43" targetConnections="//@children.1/@sourceConnections.0" id="rockwellsaxmanCosignAuthFilter2154" runTimeClassModel="rockwellsaxmanCosignAuthFilter2158;rockwellsaxmanCosignAuthFilter2174;rockwellsaxmanCosignAuthFilter2178;rockwellsaxmanCosignAuthFilter2172;rockwellsaxmanCosignAuthFilter2176">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" size="68,90" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  <children xsi:type="editmodel:InterfaceEditModel" targetConnections="//@children.1/@sourceConnections.0" location="149,52" size="288,43" stereotype="interface" id="rockwellsaxmanCosignAuthFilter2154" runTimeClassModel="rockwellsaxmanCosignAuthFilter2158,rockwellsaxmanCosignAuthFilter2174,rockwellsaxmanCosignAuthFilter2178,rockwellsaxmanCosignAuthFilter2172,rockwellsaxmanCosignAuthFilter2176">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="68,90"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
   </children>
-  <children xsi:type="editmodel:ClassEditModel" location="1143,451" size="149,29" targetConnections="//@children.4/@sourceConnections.0" id="rockwellsaxmanCosignAuthFilter2397" runTimeClassModel="rockwellsaxmanCosignAuthFilter2566;rockwellsaxmanCosignAuthFilter2507;rockwellsaxmanCosignAuthFilter2518;rockwellsaxmanCosignAuthFilter2494;rockwellsaxmanCosignAuthFilter2451;rockwellsaxmanCosignAuthFilter2544;rockwellsaxmanCosignAuthFilter2574;rockwellsaxmanCosignAuthFilter2551;rockwellsaxmanCosignAuthFilter2546;rockwellsaxmanCosignAuthFilter2500;rockwellsaxmanCosignAuthFilter2560;rockwellsaxmanCosignAuthFilter2400;rockwellsaxmanCosignAuthFilter2409;rockwellsaxmanCosignAuthFilter2492;rockwellsaxmanCosignAuthFilter2482;rockwellsaxmanCosignAuthFilter2460;rockwellsaxmanCosignAuthFilter2490;rockwellsaxmanCosignAuthFilter2521;rockwellsaxmanCosignAuthFilter2510;rockwellsaxmanCosignAuthFilter2558;rockwellsaxmanCosignAuthFilter2488;rockwellsaxmanCosignAuthFilter2556;rockwellsaxmanCosignAuthFilter2570;rockwellsaxmanCosignAuthFilter2562;rockwellsaxmanCosignAuthFilter2486;rockwellsaxmanCosignAuthFilter2496;rockwellsaxmanCosignAuthFilter2564;rockwellsaxmanCosignAuthFilter2441;rockwellsaxmanCosignAuthFilter2457;rockwellsaxmanCosignAuthFilter2512;rockwellsaxmanCosignAuthFilter2531;rockwellsaxmanCosignAuthFilter2484;rockwellsaxmanCosignAuthFilter2549;rockwellsaxmanCosignAuthFilter2462;rockwellsaxmanCosignAuthFilter2504;rockwellsaxmanCosignAuthFilter2529;rockwellsaxmanCosignAuthFilter2402;rockwellsaxmanCosignAuthFilter2417;rockwellsaxmanCosignAuthFilter2580;rockwellsaxmanCosignAuthFilter2524;rockwellsaxmanCosignAuthFilter2406;rockwellsaxmanCosignAuthFilter2413;rockwellsaxmanCosignAuthFilter2469;rockwellsaxmanCosignAuthFilter2568;rockwellsaxmanCosignAuthFilter2539;rockwellsaxmanCosignAuthFilter2415;rockwellsaxmanCosignAuthFilter2478;rockwellsaxmanCosignAuthFilter2516;rockwellsaxmanCosignAuthFilter2424;rockwellsaxmanCosignAuthFilter2407;rockwellsaxmanCosignAuthFilter2536;rockwellsaxmanCosignAuthFilter2401;rockwellsaxmanCosignAuthFilter2554;rockwellsaxmanCosignAuthFilter2466;rockwellsaxmanCosignAuthFilter2446;rockwellsaxmanCosignAuthFilter2473;rockwellsaxmanCosignAuthFilter2476;rockwellsaxmanCosignAuthFilter2429;rockwellsaxmanCosignAuthFilter2480;rockwellsaxmanCosignAuthFilter2410;rockwellsaxmanCosignAuthFilter2464;rockwellsaxmanCosignAuthFilter2577;rockwellsaxmanCosignAuthFilter2405;rockwellsaxmanCosignAuthFilter2541;rockwellsaxmanCosignAuthFilter2404;rockwellsaxmanCosignAuthFilter2572;rockwellsaxmanCosignAuthFilter2534;rockwellsaxmanCosignAuthFilter2435;rockwellsaxmanCosignAuthFilter2526;rockwellsaxmanCosignAuthFilter2403;rockwellsaxmanCosignAuthFilter2420">
-    <children xsi:type="editmodel:CompartmentEditModel" size="95,18" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" size="157,972" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.4/@sourceConnections.0" location="1143,451" size="149,29" id="rockwellsaxmanCosignAuthFilter2397" runTimeClassModel="rockwellsaxmanCosignAuthFilter2566,rockwellsaxmanCosignAuthFilter2507,rockwellsaxmanCosignAuthFilter2518,rockwellsaxmanCosignAuthFilter2494,rockwellsaxmanCosignAuthFilter2451,rockwellsaxmanCosignAuthFilter2544,rockwellsaxmanCosignAuthFilter2574,rockwellsaxmanCosignAuthFilter2551,rockwellsaxmanCosignAuthFilter2546,rockwellsaxmanCosignAuthFilter2500,rockwellsaxmanCosignAuthFilter2560,rockwellsaxmanCosignAuthFilter2400,rockwellsaxmanCosignAuthFilter2409,rockwellsaxmanCosignAuthFilter2492,rockwellsaxmanCosignAuthFilter2482,rockwellsaxmanCosignAuthFilter2460,rockwellsaxmanCosignAuthFilter2490,rockwellsaxmanCosignAuthFilter2521,rockwellsaxmanCosignAuthFilter2558,rockwellsaxmanCosignAuthFilter2510,rockwellsaxmanCosignAuthFilter2488,rockwellsaxmanCosignAuthFilter2556,rockwellsaxmanCosignAuthFilter2570,rockwellsaxmanCosignAuthFilter2562,rockwellsaxmanCosignAuthFilter2486,rockwellsaxmanCosignAuthFilter2496,rockwellsaxmanCosignAuthFilter2564,rockwellsaxmanCosignAuthFilter2441,rockwellsaxmanCosignAuthFilter2457,rockwellsaxmanCosignAuthFilter2512,rockwellsaxmanCosignAuthFilter2531,rockwellsaxmanCosignAuthFilter2484,rockwellsaxmanCosignAuthFilter2549,rockwellsaxmanCosignAuthFilter2462,rockwellsaxmanCosignAuthFilter2504,rockwellsaxmanCosignAuthFilter2529,rockwellsaxmanCosignAuthFilter2402,rockwellsaxmanCosignAuthFilter2417,rockwellsaxmanCosignAuthFilter2580,rockwellsaxmanCosignAuthFilter2524,rockwellsaxmanCosignAuthFilter2406,rockwellsaxmanCosignAuthFilter2413,rockwellsaxmanCosignAuthFilter2469,rockwellsaxmanCosignAuthFilter2568,rockwellsaxmanCosignAuthFilter2539,rockwellsaxmanCosignAuthFilter2415,rockwellsaxmanCosignAuthFilter2478,rockwellsaxmanCosignAuthFilter2516,rockwellsaxmanCosignAuthFilter2536,rockwellsaxmanCosignAuthFilter2407,rockwellsaxmanCosignAuthFilter2424,rockwellsaxmanCosignAuthFilter2401,rockwellsaxmanCosignAuthFilter2446,rockwellsaxmanCosignAuthFilter2466,rockwellsaxmanCosignAuthFilter2554,rockwellsaxmanCosignAuthFilter2473,rockwellsaxmanCosignAuthFilter2476,rockwellsaxmanCosignAuthFilter2429,rockwellsaxmanCosignAuthFilter2480,rockwellsaxmanCosignAuthFilter2410,rockwellsaxmanCosignAuthFilter2577,rockwellsaxmanCosignAuthFilter2464,rockwellsaxmanCosignAuthFilter2405,rockwellsaxmanCosignAuthFilter2541,rockwellsaxmanCosignAuthFilter2404,rockwellsaxmanCosignAuthFilter2572,rockwellsaxmanCosignAuthFilter2534,rockwellsaxmanCosignAuthFilter2435,rockwellsaxmanCosignAuthFilter2526,rockwellsaxmanCosignAuthFilter2403,rockwellsaxmanCosignAuthFilter2420">
+    <children xsi:type="editmodel:CompartmentEditModel" size="95,18"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="157,972"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
   </children>
-  <children xsi:type="editmodel:ClassEditModel" location="648,25" size="243,43" targetConnections="//@children.0/@sourceConnections.1" id="rockwellsaxmanCosignAuthFilter905" runTimeClassModel="rockwellsaxmanCosignAuthFilter1969;rockwellsaxmanCosignAuthFilter908;rockwellsaxmanCosignAuthFilter1972">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" size="94,36" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.0/@sourceConnections.1" location="648,25" size="243,43" id="rockwellsaxmanCosignAuthFilter905" runTimeClassModel="rockwellsaxmanCosignAuthFilter1969,rockwellsaxmanCosignAuthFilter1972,rockwellsaxmanCosignAuthFilter908">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="94,36"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
   </children>
-  <children xsi:type="editmodel:ClassEditModel" location="183,602" size="220,67" targetConnections="//@children.1/@sourceConnections.3" id="rockwellsaxmanCosignAuthFilter2702" runTimeClassModel="rockwellsaxmanCosignAuthFilter2704">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" size="63,18" viewSorter="Name">
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.1/@sourceConnections.3" location="183,602" size="220,67" id="rockwellsaxmanCosignAuthFilter2702" runTimeClassModel="rockwellsaxmanCosignAuthFilter2704">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="63,18">
       <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanCosignAuthFilter2704" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
     </children>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="rockwellsaxmanCosignAuthFilter2812" connectionRouterKind="Manual" source="//@children.8" target="//@children.9" targetEnd="//@children.8/@sourceConnections.0/@children.1" sourceEnd="//@children.8/@sourceConnections.0/@children.0">
-      <children xsi:type="editmodel:AssociationEndEditModel" location="220,32"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" id="rockwellsaxmanCosignAuthFilter2812" source="//@children.8" target="//@children.9" targetEnd="//@children.8/@sourceConnections.0/@children.1" sourceEnd="//@children.8/@sourceConnections.0/@children.0" connectionRouterKind="Manual" anchorType="ChopBox">
+      <children xsi:type="editmodel:AssociationEndEditModel" location="220,32" attachSource="true"/>
       <children xsi:type="editmodel:AssociationEndEditModel" location="0,15"/>
     </sourceConnections>
   </children>
-  <children xsi:type="editmodel:ClassEditModel" location="491,621" size="325,29" targetConnections="//@children.8/@sourceConnections.0" id="rockwellsaxmanCosignAuthFilter2769" runTimeClassModel="rockwellsaxmanCosignAuthFilter2771;rockwellsaxmanCosignAuthFilter2780;rockwellsaxmanCosignAuthFilter2805">
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" size="120,36" viewSorter="Name"/>
-    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  <children xsi:type="editmodel:ClassEditModel" targetConnections="//@children.8/@sourceConnections.0" location="491,621" size="325,29" id="rockwellsaxmanCosignAuthFilter2769" runTimeClassModel="rockwellsaxmanCosignAuthFilter2771,rockwellsaxmanCosignAuthFilter2780,rockwellsaxmanCosignAuthFilter2805">
+    <children xsi:type="editmodel:CompartmentEditModel"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="120,36"/>
+    <children xsi:type="editmodel:CompartmentEditModel"/>
   </children>
 </editmodel:ClassDiagramEditModel>

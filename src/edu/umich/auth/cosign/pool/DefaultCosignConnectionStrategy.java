@@ -5,13 +5,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author htchan
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * @author htchan *  * To change this generated comment edit the template variable "typecomment": * Window>Preferences>Java>Templates. * To enable and disable the creation of type comments go to * Window>Preferences>Java>Code Generation.
+ * 
+ * @uml.stereotype name="tagged" isDefined="true" 
  */
+
 public class DefaultCosignConnectionStrategy
 	implements CosignConnectionStrategy {
 

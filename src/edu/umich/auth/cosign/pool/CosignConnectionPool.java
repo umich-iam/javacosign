@@ -11,15 +11,26 @@ import org.apache.commons.pool.impl.*;
 import edu.umich.auth.cosign.CosignServer;
 
 /**
- * @author htchan
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * @author htchan *  * To change the template for this generated type comment go to * Window>Preferences>Java>Code Generation>Code and Comments
+ * 
+ * @uml.stereotype name="tagged" isDefined="true" 
  */
+
 public class CosignConnectionPool implements CosignConnectionPoolMBean {
 
-	private GenericObjectPool thePool;
-	private CosignServer cosignServer;
+  /**
+   * 
+   * @uml.property name="thePool"
+   * @uml.associationEnd multiplicity="(0 -1)" inverse="thePool:edu.umich.auth.cosign.pool.CosignConnection"
+   */
+  private GenericObjectPool thePool;
+
+  /**
+   * 
+   * @uml.property name="cosignServer"
+   * @uml.associationEnd multiplicity="(1 1)"
+   */
+  private CosignServer cosignServer;
 
 	/**
 	 * Constructor

@@ -20,8 +20,13 @@ public class CosignSSLSocketFactory {
 
 	public static final CosignSSLSocketFactory INSTANCE 
 		= new CosignSSLSocketFactory();
-		
-	private SSLSocketFactory sslSocketFactory;
+
+  /**
+   * 
+   * @uml.property name="sslSocketFactory"
+   * @uml.associationEnd multiplicity="(1 1)"
+   */
+  private SSLSocketFactory sslSocketFactory;
 
 	/**
 	 * Constructor for CosignSSLSocketFactory.

@@ -6,13 +6,11 @@ import java.util.*;
 import java.io.*;
 
 /**
- * @author htchan
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
+ * @author htchan *  * To change this generated comment edit the template variable "typecomment": * Window>Preferences>Java>Templates. * To enable and disable the creation of type comments go to * Window>Preferences>Java>Code Generation.
+ * 
+ * @uml.stereotype name="tagged" isDefined="true" 
  */
+
 public class CosignConnection {
 
 	private static final boolean DEBUG2OUT = false;
@@ -24,8 +22,13 @@ public class CosignConnection {
 	public static final int USER_LOGGED_OUT = 4;
 	public static final int SERVER_NOT_READY = 5;
 
+  /**
+   * 
+   * @uml.property name="thePool"
+   * @uml.associationEnd multiplicity="(0 1)" inverse="thePool:edu.umich.auth.cosign.pool.CosignConnectionPool"
+   */
+  private CosignConnectionPool thePool;
 
-	private CosignConnectionPool thePool;
 	private String cosignConId;
 	private String poolId;
 	private long usageCount = 0;
@@ -33,7 +36,14 @@ public class CosignConnection {
 	private int port;
 	private BufferedReader in;
 	private PrintWriter out;
-	private SSLSocket ss;
+
+  /**
+   * 
+   * @uml.property name="ss"
+   * @uml.associationEnd multiplicity="(0 1)"
+   */
+  private SSLSocket ss;
+
 	private BufferedReader sin;
 	private PrintWriter sout;
 
@@ -190,10 +200,15 @@ public class CosignConnection {
 			return false;
 		}
 	}
-		
-	public void setThePool(CosignConnectionPool thePool) {
-		this.thePool = thePool;
-	}
+
+  /**
+   * 
+   * @uml.property name="thePool"
+   */
+  public void setThePool(CosignConnectionPool thePool) {
+    this.thePool = thePool;
+  }
+
 	
 	public void returnToPool() {
 		try {

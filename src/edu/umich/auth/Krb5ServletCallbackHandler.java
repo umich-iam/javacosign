@@ -37,13 +37,44 @@ public class Krb5ServletCallbackHandler implements ServletCallbackHandler
   private static final String NAME_PARAMETER     = "j_username";
   private static final String PASSWORD_PARAMETER = "j_password";
 
+  /**
+   * 
+   * @uml.property name="parameters"
+   * @uml.associationEnd multiplicity="(0 0)"
+   */
   private Map parameters;
+
+  /**
+   * 
+   * @uml.property name="request"
+   * @uml.associationEnd multiplicity="(0 1)"
+   */
   private HttpServletRequest request;
+
+  /**
+   * 
+   * @uml.property name="response"
+   * @uml.associationEnd multiplicity="(0 1)"
+   */
   private HttpServletResponse response;
+
+  /**
+   * 
+   * @uml.property name="subject"
+   * @uml.associationEnd multiplicity="(0 -1)" inverse="this$0:edu.umich.auth.Krb5ServletCallbackHandler$DebugPrincipal"
+   */
   private Subject subject;
 
+
   private Class principal;
+
+  /**
+   * 
+   * @uml.property name="user"
+   * @uml.associationEnd multiplicity="(0 1)"
+   */
   private Principal user;
+
 
   public boolean init( Map parameters,
 											 HttpServletRequest request,
@@ -210,14 +241,20 @@ public class Krb5ServletCallbackHandler implements ServletCallbackHandler
       throw new IllegalStateException( "Kerberos principal does not exist in subject." );
   }
 
-  public HttpServletRequest getRequest()
-  {
-  	return request;
+  /**
+   * 
+   * @uml.property name="request"
+   */
+  public HttpServletRequest getRequest() {
+    return request;
   }
 
-  public HttpServletResponse getResponse()
-  {
-  	return response;
+  /**
+   * 
+   * @uml.property name="response"
+   */
+  public HttpServletResponse getResponse() {
+    return response;
   }
 
   /**
