@@ -93,7 +93,6 @@ public class CosignConnectionPoolManager implements Runnable {
 		while (itOld.hasNext()) {
 			Object oldKey = itOld.next();
 			if (!newPoolMap.containsKey(oldKey)) {
-				System.out.println("Shit i am here!");
 				//poolMap.remove(oldKey);
 				itOld.remove();
 				changed = true;
