@@ -86,39 +86,13 @@ public class CosignServer {
     return port;
   }
 
-  /**
-   * Sets the config.
-   * @param config The config to set
-   * 
-   * @uml.property name="config"
-   */
-  public void setConfig(GenericObjectPool.Config config) {
-    this.config = config;
-  }
-
-  /**
-   * Sets the hostname.
-   * @param hostname The hostname to set
-   * 
-   * @uml.property name="hostname"
-   */
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
-  /**
-   * Sets the port.
-   * @param port The port to set
-   * 
-   * @uml.property name="port"
-   */
-  public void setPort(int port) {
-    this.port = port;
+  public String getCosignServerId() {
+  	return address + ":" + port;
   }
 
 	
-	public String toString() {
-		return address + ":" + port;
-	}
+  public String toString() {
+	return getCosignServerId();
+  }
 
 }
