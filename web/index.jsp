@@ -4,10 +4,11 @@
 
 <html>
   <head>
-    <title>AuthenticationFilter/CosignLoginModule Test: Login</title>
+    <title>AuthenticationFilter Test: Login</title>
   </head>
 
   <body bgcolor="#FFFFFF">
-    <a href="secure">Log-in</a>
+    <a href="cosign-secure">Cosign Log-in</a><br>
+    <a href="krb5-secure">Kerberos 5 Log-in</a><br>
   </body>
 </html>

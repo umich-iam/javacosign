@@ -41,6 +41,26 @@
       <param-name>Auth.CallbackHandler</param-name>
       <param-value>edu.umich.auth.Krb5ServletCallbackHandler</param-value>
     </init-param>
+
+    <init-param>
+      <param-name>Auth.Krb5.LoginPage</param-name>
+      <param-value>krb5-login/login.jsp</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>Auth.Krb5.FailedLoginPage</param-name>
+      <param-value>krb5-login/relogin.jsp</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>Auth.Krb5.Realm</param-name>
+      <param-value>UMICH.EDU</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>Auth.Krb5.KDC</param-name>
+      <param-value>fear.ifs.umich.edu</param-value>
+    </init-param>
   </filter>
 
   <filter-mapping>
