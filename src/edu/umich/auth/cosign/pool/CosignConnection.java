@@ -18,10 +18,6 @@ public class CosignConnection {
 	private static Map countMap = new HashMap();
 	private static final Random rnd = new Random();
 
-	public static final int COOKIE_VALID = 2;	
-	public static final int USER_LOGGED_OUT = 4;
-	public static final int SERVER_NOT_READY = 5;
-
   /**
    * 
    * @uml.property name="thePool"
@@ -161,14 +157,6 @@ public class CosignConnection {
 			if (null == result) {
 				return false;
 			}
-//			try {
-//				long sleepTime = Math.round((rnd.nextFloat()*20));
-//				if (DEBUG2OUT) System.out.println("Sleep " + sleepTime + " ms!");
-//				Thread.sleep(sleepTime);
-//			}
-//			catch (InterruptedException ie) {
-//				ie.printStackTrace();
-//			}
 			return true;
 		}
 		catch (IOException ioe) {
@@ -186,14 +174,6 @@ public class CosignConnection {
 			if (null == result) {
 				return false;
 			}
-//			try {
-//				long sleepTime = Math.round((rnd.nextFloat()*20));
-//				if (DEBUG2OUT) System.out.println("Sleep " + sleepTime + " ms!");
-//				Thread.sleep(sleepTime);
-//			}
-//			catch (InterruptedException ie) {
-//				ie.printStackTrace();
-//			}
 			return true;
 		}
 		catch (IOException ioe) {
