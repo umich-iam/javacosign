@@ -24,7 +24,7 @@
 
     <init-param>
       <param-name>Auth.Cosign.LoginServer</param-name>
-      <param-value>https://weblogin.umich.edu</param-value>
+      <param-value>https://cosign-test.www.umich.edu</param-value>
     </init-param>
   </filter>
 
