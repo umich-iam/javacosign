@@ -96,11 +96,11 @@ public class AuthenticationFilter implements Filter
 
       // Repackage parameters for the callback handler.
       Object obj;
-      Enumeration enum = filterConfig.getInitParameterNames();
+      Enumeration eNum = filterConfig.getInitParameterNames();
 
-      while ( enum.hasMoreElements() )
+      while ( eNum.hasMoreElements() )
       {
-        obj = enum.nextElement();
+        obj = eNum.nextElement();
         parameters.put( obj, filterConfig.getInitParameter( obj.toString() ) );
       }
 
