@@ -14,7 +14,7 @@
 
     <init-param>
       <param-name>Auth.JAASConfigurationFile</param-name>
-      <param-value>C:\Program Files\eclipse-2.1.1\workspace\JavaCosign\etc\jaas.conf</param-value>
+      <param-value>C:\Program Files\eclipse\workspace\JavaCosign\etc\jaas.conf</param-value>
     </init-param>
 
     <init-param>
@@ -34,7 +34,7 @@
 
     <init-param>
       <param-name>Auth.Cosign.LoginServer</param-name>
-      <param-value>https://cosign-test.www.umich.edu</param-value>
+      <param-value>https://weblogin.umich.edu</param-value>
     </init-param>
 
 	<!--
@@ -67,7 +67,7 @@
     
     <init-param>
       <param-name>Auth.JAASConfigurationFile</param-name>
-      <param-value>C:\Program Files\eclipse-2.1.1\workspace\JavaCosign\etc\jaas.conf</param-value>
+      <param-value>C:\Program Files\eclipse\workspace\JavaCosign\etc\jaas.conf</param-value>
     </init-param>
     
     <init-param>
