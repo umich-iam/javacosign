@@ -19,7 +19,7 @@
 
     <init-param>
       <param-name>Auth.Cosign.ServiceName</param-name>
-      <param-value>Cosign-Test</param-value>
+      <param-value>cosign-java</param-value>
     </init-param>
 
     <init-param>
