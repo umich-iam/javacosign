@@ -19,19 +19,22 @@ import edu.umich.auth.cosign.pool.CosignConnectionManager;
 import edu.umich.auth.cosign.pool.CosignConnection;
 
 /**
+ * A JAAS <code>LoginModule</code> for Cosign authentication.
+ * 
  * @see javax.security.auth.spi.LoginModule
  * @author $Author$
  * @version $Name$ $Revision$ $Date$
  */
 public class CosignLoginModule implements LoginModule
 {
+  // Codes received from the Cosign server.
   private static final int COSIGN_CODE_DEFAULT           = -1;
   private static final int COSIGN_USER_AUTHENTICATED     = 2;
   private static final int COSIGN_USER_NOT_AUTHENTICATED = 4;
   private static final int COSIGN_SERVER_NOT_READY       = 5;
 
-  public static final long SERVER_CHECK_DELAY = 60000;
-
+  // Codes for the information sent to the callback handler
+  // via callback objects.
   public static final String REMOTE_COOKIE_CODE  = "1";
   public static final String REMOTE_IP_CODE      = "2";
   public static final String USER_IP_CODE        = "3";
@@ -48,12 +51,15 @@ public class CosignLoginModule implements LoginModule
   private int cosignCode = COSIGN_CODE_DEFAULT;
   private String cosignResponse;
 
+  // Callbacks sent to the callback handler.
   private TextInputCallback remoteCookieIn = new TextInputCallback( REMOTE_COOKIE_CODE );
   private TextInputCallback remoteIPIn = new TextInputCallback(REMOTE_IP_CODE);
   private TextInputCallback serviceNameIn = new TextInputCallback( SERVICE_NAME_CODE );
 
-  
   /**
+   * Initialize the module, ensuring that appropriate
+   * <code>CallbackHandler</code> is passed in.
+   * 
    * @see javax.security.auth.spi.LoginModule#initialize(Subject, CallbackHandler, Map, Map)
    */
   public void initialize( Subject subject,
@@ -74,6 +80,10 @@ public class CosignLoginModule implements LoginModule
   }
 
   /**
+   * The method used to log the user in.  Please refer to the
+   * <code>LoginModule</code> API specification for details concerning
+   * the return and exceptions.
+   * 
    * @see javax.security.auth.spi.LoginModule#login()
    */
   public boolean login() throws LoginException
