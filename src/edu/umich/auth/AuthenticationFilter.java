@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author saxman
- *
+ * @author $Author$
+ * @version $Version$ ($Name$)
  */
 public class AuthenticationFilter implements Filter
 {
