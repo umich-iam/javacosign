@@ -4,7 +4,7 @@
 
 <web-app>
   <filter>
-    <filter-name>Authentication Filter</filter-name>
+    <filter-name>Cosign Authentication Filter</filter-name>
     <filter-class>edu.umich.auth.AuthenticationFilter</filter-class>
 
     <init-param>
@@ -28,8 +28,28 @@
     </init-param>
   </filter>
 
+  <filter>
+    <filter-name>Krb5 Authentication Filter</filter-name>
+    <filter-class>edu.umich.auth.AuthenticationFilter</filter-class>
+
+    <init-param>
+      <param-name>Auth.LoginModule</param-name>
+      <param-value>com.sun.security.auth.module.Krb5LoginModule</param-value>
+    </init-param>
+
+    <init-param>
+      <param-name>Auth.CallbackHandler</param-name>
+      <param-value>edu.umich.auth.Krb5ServletCallbackHandler</param-value>
+    </init-param>
+  </filter>
+
   <filter-mapping>
-      <filter-name>Authentication Filter</filter-name>
-      <url-pattern>/secure/*</url-pattern>
+      <filter-name>Cosign Authentication Filter</filter-name>
+      <url-pattern>/cosign-secure/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+      <filter-name>Krb5 Authentication Filter</filter-name>
+      <url-pattern>/krb5-secure/*</url-pattern>
   </filter-mapping>
 </web-app>
