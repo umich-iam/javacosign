@@ -136,7 +136,8 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
     if ( principal != null )
     {
       if ( checkClientIP &&
-           !request.getRemoteAddr().equals( principal.getAddress() ) )
+           !request.getRemoteAddr().equals( principal.getAddress() ) &&
+           !request.getRemoteAddr().equals( "127.0.0.1" ) )
       {
         throw new FailedLoginException( "The client's IP address has changed." );
       }

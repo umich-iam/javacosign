@@ -77,8 +77,7 @@ public class CosignLoginModule implements LoginModule
    * @uml.property name="remoteCookieIn"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private TextInputCallback remoteCookieIn = new TextInputCallback(
-    REMOTE_COOKIE_CODE);
+  private TextInputCallback remoteCookieIn = new TextInputCallback( REMOTE_COOKIE_CODE );
 
   /**
    * 
@@ -92,8 +91,7 @@ public class CosignLoginModule implements LoginModule
    * @uml.property name="serviceNameIn"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private TextInputCallback serviceNameIn = new TextInputCallback(
-    SERVICE_NAME_CODE);
+  private TextInputCallback serviceNameIn = new TextInputCallback( SERVICE_NAME_CODE );
 
   /**
    * @see javax.security.auth.spi.LoginModule#initialize(Subject, CallbackHandler, Map, Map)
@@ -172,6 +170,7 @@ public class CosignLoginModule implements LoginModule
         }
       }
     }
+    
     CosignConnectionManager.INSTANCE.cleanUpStrategy( remoteCookie );
 
     // No servers to authenticate to.
@@ -233,7 +232,6 @@ public class CosignLoginModule implements LoginModule
       principal.setRealm( tokenizer.nextToken() );
       
       principal.setTimestamp( System.currentTimeMillis() );
-	  
     }
     else
       throw new IllegalStateException();
