@@ -15,9 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author saxman
+ * @see javax.security.auth.callback.CallbackHandler
+ * @author $Author$
+ * @version $Name$ $Revision$ $Date$
  */
-
 public interface ServletCallbackHandler extends CallbackHandler
 {
   boolean init( Map parameters,
@@ -29,22 +30,8 @@ public interface ServletCallbackHandler extends CallbackHandler
   void handleFailedLogin( Exception ex ) throws ServletException;
   void handleSuccessfulLogin() throws ServletException;
 
-  /**
-   * 
-   * @uml.property name="request"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   HttpServletRequest getRequest();
-
-  /**
-   * 
-   * @uml.property name="response"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   HttpServletResponse getResponse();
-
-  /**
-   * @see javax.security.auth.callback.CallbackHandler#handle(Callback[])
-   */
+  
   void handle( Callback[] callbacks ) throws IOException, UnsupportedCallbackException;
 }

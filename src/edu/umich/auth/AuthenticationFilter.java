@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @see javax.servet.Filter
+ * @see javax.servlet.Filter
  * @author $Author$
  * @version $Name$ $Revision$ $Date$
  */

@@ -23,10 +23,9 @@ import edu.umich.auth.AuthFilterRequestWrapper;
 import edu.umich.auth.ServletCallbackHandler;
 
 /**
- * @author saxman
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * @see edu.umich.auth.ServletCallbackHandler
+ * @author $Author$
+ * @version $Name$ $Revision$ $Date$
  */
 public class CosignServletCallbackHandler implements ServletCallbackHandler
 {
@@ -37,40 +36,16 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
   public static final String COSIGN_DEFAULT_SERVER_PROTOCOL       = "Auth.Cosign.DefaultServerProtocol";
   public static final String COSIGN_DEFAULT_INDEX_PAGE            = "Auth.Cosign.DefaultIndexPage";
 
-  /**
-   * 
-   * @uml.property name="parameters"
-   * @uml.associationEnd multiplicity="(0 0)"
-   */
-  //private CosignPrincipal user;
   private Map parameters;
-
-  /**
-   * 
-   * @uml.property name="request"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   private HttpServletRequest request;
-
-  /**
-   * 
-   * @uml.property name="response"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   private HttpServletResponse response;
-
-  /**
-   * 
-   * @uml.property name="subject"
-   * @uml.associationEnd multiplicity="(0 -1)" elementType="edu.umich.auth.cosign.CosignPrincipal"
-   */
   private Subject subject;
-
 
   private boolean checkClientIP = true;
   private long serverCheckDelay = 15000;
 
   /**
+   * @see edu.umich.auth.ServletCallbackHandler#init( Map, HttpServletRequest, HttpServletResponse, Subject )
    * @return true if the calling class should continue with authentication, false otherwise.
    * @throws IllegalArgumentException if an improper parameter is passed in.
    * @throws FailedLoginException if the client's IP address has changed and this check if turned on.
@@ -149,13 +124,15 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
     return true;
   }
 
+  /**
+   * @see edu.umich.auth.ServletCallbackHandler#handleFailedLogin( Exception )
+   */
   public void handleFailedLogin( Exception ex )
     throws ServletException
   {
     if ( ex instanceof FailedLoginException )
     {
-      /*
-       * The session is being invalidated here since, if someone logs out
+      /* The session is being invalidated here since, if someone logs out
        * of another Cosign service, and someone else uses their same browser
        * window, logs into Cosign, and then comes to an app. that's Cosign
        * protects, the previous user's session will still be active.
@@ -174,8 +151,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
 
       response.addCookie( cookie );
 
-      /* 
-       * Construct the query string to send to weblogin server.
+      /* Construct the query string to send to weblogin server.
        * 
        * This code was taken from javax.servlet.http.HttpUtils
        *   since it was deprecated in J2EE 1.3, yet we want to support J2EE 1.2;
@@ -220,6 +196,9 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
     }
   }
 
+  /**
+   * @see edu.umich.auth.ServletCallbackHandler#handleSuccessfulLogin()
+   */
   public void handleSuccessfulLogin() throws ServletException
   {
     // Check if a principal already exists.
@@ -241,28 +220,20 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
     if ( principal == null )
       throw new IllegalStateException( "CosignPrincipal does not exist." );
     
-    request = new AuthFilterRequestWrapper( request, principal );
+    request = new AuthFilterRequestWrapper( request, principal, "CoSign" );
   }
 
-  /**
-   * 
-   * @uml.property name="response"
-   */
   public HttpServletResponse getResponse()
   {
     return response;
   }
 
-  /**
-   * 
-   * @uml.property name="request"
-   */
   public HttpServletRequest getRequest() {
     return request;
   }
 
   /**
-   * @see javax.security.auth.callback.CallbackHandler#handle(Callback[])
+   * @see edu.umich.auth.ServletCallbackHandler#handle( Callback[] )
    */
   public void handle( Callback[] callbacks )
     throws IOException, UnsupportedCallbackException

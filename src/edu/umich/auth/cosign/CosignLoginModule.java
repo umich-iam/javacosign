@@ -19,8 +19,9 @@ import edu.umich.auth.cosign.pool.CosignConnectionManager;
 import edu.umich.auth.cosign.pool.CosignConnection;
 
 /**
- * @author saxman
- *
+ * @see javax.security.auth.spi.LoginModule
+ * @author $Author$
+ * @version $Name$ $Revision$ $Date$
  */
 public class CosignLoginModule implements LoginModule
 {
@@ -39,60 +40,19 @@ public class CosignLoginModule implements LoginModule
   public static final String USER_TIMESTAMP_CODE = "6";
   public static final String SERVICE_NAME_CODE   = "7";
 
-  /**
-   * 
-   * @uml.property name="cm"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
-
   private boolean initError = false;
-
-  /**
-   * 
-   * @uml.property name="callbackHandler"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   private CallbackHandler callbackHandler = null;
-
-  /**
-   * 
-   * @uml.property name="subject"
-   * @uml.associationEnd multiplicity="(0 -1)" elementType="edu.umich.auth.cosign.CosignPrincipal"
-   */
   private Subject subject;
-
-  /**
-   * 
-   * @uml.property name="principal"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   private CosignPrincipal principal = null;
-
 
   private int cosignCode = COSIGN_CODE_DEFAULT;
   private String cosignResponse;
 
-  /**
-   * 
-   * @uml.property name="remoteCookieIn"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   private TextInputCallback remoteCookieIn = new TextInputCallback( REMOTE_COOKIE_CODE );
-
-  /**
-   * 
-   * @uml.property name="remoteIPIn"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   private TextInputCallback remoteIPIn = new TextInputCallback(REMOTE_IP_CODE);
-
-  /**
-   * 
-   * @uml.property name="serviceNameIn"
-   * @uml.associationEnd multiplicity="(0 1)"
-   */
   private TextInputCallback serviceNameIn = new TextInputCallback( SERVICE_NAME_CODE );
 
+  
   /**
    * @see javax.security.auth.spi.LoginModule#initialize(Subject, CallbackHandler, Map, Map)
    */

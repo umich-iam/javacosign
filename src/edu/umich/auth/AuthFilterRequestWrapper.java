@@ -4,37 +4,44 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import java.security.Principal;
+
 /**
- * @author saxman
- *
+ * @see javax.servlet.http.HttpServletRequestWrapper
+ * @author $Author$
+ * @version $Name$ $Revision$ $Date$
  */
 public class AuthFilterRequestWrapper extends HttpServletRequestWrapper
 {
   private Principal user;
+  private String authType;
 
-  public AuthFilterRequestWrapper( HttpServletRequest request, Principal user )
+  public AuthFilterRequestWrapper( HttpServletRequest request, Principal user, String authType )
   {
     super( request );
+    
 	this.user = user;
+	this.authType = authType;
   }
 
+  /**
+   * @see javax.servlet.http.HttpServletRequest#getUserPrincipal()
+   */
   public Principal getUserPrincipal()
   {
     return user;
   }
 
+  /**
+   * @see javax.servlet.http.HttpServletRequest#getAuthType()
+   */
   public String getAuthType()
   {
-  	// XXX
-    return null;
+    return authType;
   }
 
-  public boolean isUserInRole( String role )
-  {
-  	// XXX
-    return false;
-  }
-
+  /**
+   * @see javax.servlet.http.HttpServletRequest#getRemoteUser()
+   */
   public String getRemoteUser()
   {
     return user.getName();
