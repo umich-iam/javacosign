@@ -57,12 +57,12 @@ public class AuthenticationFilter implements Filter
   	  jaasFile = new File( filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) );
 
       if ( !jaasFile.exists() )
-          throw new ServletException( "Cannot find JAAS configuration file " +
-              						  filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) + "." );
+        throw new ServletException( "Cannot find JAAS configuration file " +
+                                     filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) + "." );
 
       if ( !jaasFile.canRead() )
-          throw new ServletException( "Cannot read JAAS configuration file " +
-              						  jaasFile.getAbsolutePath() + "." );
+        throw new ServletException( "Cannot read JAAS configuration file " +
+                                    jaasFile.getAbsolutePath() + "." );
 
       // Point security system to the JAAS configuration file.
       // NOTE: Nothing is stopping this from being overwritten elsewhere.

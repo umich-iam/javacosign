@@ -160,7 +160,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
        */
       
       String queryString = request.getQueryString();
-      queryString = (null == queryString) ? "" : "?" + queryString;
+      queryString = ( null == queryString ) ? "" : "?" + queryString;
 
       StringBuffer requestURL = new StringBuffer();
       String scheme = request.getScheme();
