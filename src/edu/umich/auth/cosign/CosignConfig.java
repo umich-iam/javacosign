@@ -82,8 +82,6 @@ public class CosignConfig implements Runnable {
 			props.load(CosignConfig.class.getResourceAsStream(configFileName));
 			configFileMonitoringInterval = getLongProperty(CONFIG_FILE_MONITORING_INTERVAL);
 			configFile = new File(getProperty(CONFIG_FILE_PATH));
-			System.out.println(configFileMonitoringInterval);
-			System.out.println(configFile.exists());
 		} catch (IOException ioe) {
 			throw new RuntimeException("Fail to load " + configFileName + "!");
 		}
