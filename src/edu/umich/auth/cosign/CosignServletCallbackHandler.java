@@ -237,8 +237,8 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
       }
     }
 
-    if (principal == null)
-      throw new IllegalStateException("CosignPrincipal does not exist.");
+    if ( principal == null )
+      throw new IllegalStateException( "CosignPrincipal does not exist." );
     
     request = new AuthFilterRequestWrapper( request, principal );
   }
@@ -247,7 +247,8 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler
    * 
    * @uml.property name="response"
    */
-  public HttpServletResponse getResponse() {
+  public HttpServletResponse getResponse()
+  {
     return response;
   }
 

@@ -42,7 +42,7 @@ public class CosignConnectionPool implements CosignConnectionPoolMBean {
 	}
 	
 	public String getCosignConnectionPoolName() {
-		return cosignServer.getHostname() 
+		return cosignServer.getAddress() 
 			+ ":" + cosignServer.getPort()
 			+ " {==(pool)==}";
 	}

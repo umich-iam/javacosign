@@ -70,37 +70,39 @@ public class AuthenticationFilter implements Filter
 
   	try
     {
-			jaasFile = new File( filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) );
+  	  jaasFile = new File( filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) );
 
-	 		if ( !jaasFile.exists() )
-				throw new ServletException( "Cannot find JAAS configuration file " + filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) + "." );
+      if ( !jaasFile.exists() )
+          throw new ServletException( "Cannot find JAAS configuration file " +
+              						  filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) + "." );
 
-			if ( !jaasFile.canRead() )
-				throw new ServletException( "Cannot read JAAS configuration file " + jaasFile.getAbsolutePath() + "." );
+      if ( !jaasFile.canRead() )
+          throw new ServletException( "Cannot read JAAS configuration file " +
+              						  jaasFile.getAbsolutePath() + "." );
 
-			// Point security system to the JAAS configuration file.
-			// NOTE: Nothing is stopping this from being overwritten elsewhere.
-			//       It's being checked before we use the LoginContext, but still...
-			System.setProperty( JAAS_CONFIG_PROPERTY, jaasFile.getAbsolutePath() );
+      // Point security system to the JAAS configuration file.
+      // NOTE: Nothing is stopping this from being overwritten elsewhere.
+      //       It's being checked before we use the LoginContext, but still...
+      System.setProperty( JAAS_CONFIG_PROPERTY, jaasFile.getAbsolutePath() );
 
-			// Repackage parameters for the callback handler.
-			Object obj;
-			Enumeration enum = filterConfig.getInitParameterNames();
+      // Repackage parameters for the callback handler.
+      Object obj;
+      Enumeration enum = filterConfig.getInitParameterNames();
 
-			while ( enum.hasMoreElements() )
-			{
-				obj = enum.nextElement();
-				parameters.put( obj, filterConfig.getInitParameter( obj.toString() ) );
-			}
+      while ( enum.hasMoreElements() )
+      {
+        obj = enum.nextElement();
+        parameters.put( obj, filterConfig.getInitParameter( obj.toString() ) );
+      }
 
-			// Prepare the callback handler class for instantiation later.
-			callbackHandlerClass = Class.forName( filterConfig.getInitParameter( CALLBACK_HANDLER_INIT_PARAM ) );
-		}
-		catch ( Exception ex )
-		{
-			throw new ServletException( ex );
-		}
-	}
+      // Prepare the callback handler class for instantiation later.
+      callbackHandlerClass = Class.forName( filterConfig.getInitParameter( CALLBACK_HANDLER_INIT_PARAM ) );
+    }
+    catch ( Exception ex )
+    {
+      throw new ServletException( ex );
+    }
+  }
 
   /**
    * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
@@ -108,55 +110,55 @@ public class AuthenticationFilter implements Filter
   public void doFilter( ServletRequest request, ServletResponse response, FilterChain filterChain )
 		throws IOException, ServletException
   {
-		// Insure that the JAAS configuration property hasn't been overwritten.
-		// Synchronization may be worthwhile between here and the login call.
-		if ( !System.getProperty( JAAS_CONFIG_PROPERTY ).equals( jaasFile.getAbsolutePath() ) )
-			throw new ServletException( "JAAS configuration file system property has been overwritten.\n" +
-																	"NOTE: All Web applications configured to use JAAS must share the same JAAS configuration file." );
+    // Insure that the JAAS configuration property hasn't been overwritten.
+    // Synchronization may be worthwhile between here and the login call.
+    if ( !System.getProperty( JAAS_CONFIG_PROPERTY ).equals( jaasFile.getAbsolutePath() ) )
+      throw new ServletException( "JAAS configuration file system property has been overwritten.\n" +
+          						  "NOTE: All Web applications configured to use JAAS must share the same JAAS configuration file." );
 
-		HttpServletRequest httpRequest = (HttpServletRequest)request;
-		HttpServletResponse httpResponse = (HttpServletResponse)response;
+    HttpServletRequest httpRequest = (HttpServletRequest)request;
+    HttpServletResponse httpResponse = (HttpServletResponse)response;
 
-		// Get, or instantiate, the a Subject for user Principals and Credentials.
-		Subject subject;
-		Object object = httpRequest.getSession().getAttribute( USER_SUBJECT_ATTRIBUTE );
+    // Get, or instantiate, the a Subject for user Principals and Credentials.
+    Subject subject;
+    Object object = httpRequest.getSession().getAttribute( USER_SUBJECT_ATTRIBUTE );
 
-		if ( object == null )
-	  	httpRequest.getSession().setAttribute( USER_SUBJECT_ATTRIBUTE, subject = new Subject() );
-		else if ( object instanceof Subject )
-	  	subject = (Subject)object;
-		else
-	  	throw new ServletException( "Invalid authentication Subject in user's session." ); 
+    if ( object == null )
+      httpRequest.getSession().setAttribute( USER_SUBJECT_ATTRIBUTE, subject = new Subject() );
+    else if ( object instanceof Subject )
+      subject = (Subject) object;
+    else
+	  throw new ServletException( "Invalid authentication Subject in user's session." );
 
-		ServletCallbackHandler callbackHandler = null;
+    ServletCallbackHandler callbackHandler = null;
 
-		try
-		{
-	  	// Create a callback handler of the type specified in the filter configuration.	
-	  	callbackHandler = (ServletCallbackHandler)callbackHandlerClass.newInstance();
+    try
+    {
+      // Create a callback handler of the type specified in the filter configuration.
+      callbackHandler = (ServletCallbackHandler)callbackHandlerClass.newInstance();
 
- 	  	// Attempt to log the user in if the callback handler initializes.
+      // Attempt to log the user in if the callback handler initializes.
       if ( callbackHandler.init( parameters, httpRequest, httpResponse, subject ) )
       {
         LoginContext loginContext = new LoginContext( filterConfig.getInitParameter( LOGIN_CONFIG_INIT_PARAM ), subject, callbackHandler );
         loginContext.login();
       }
-		}
-		// Authentication failed.
-		catch ( LoginException ex )
-		{
-	  	callbackHandler.handleFailedLogin( ex );
-	  	return;
-		}
-		catch ( Exception ex )
-		{
-	  	throw new ServletException( ex );
-		}
+    }
+    // Authentication failed.
+    catch ( LoginException ex )
+    {
+      callbackHandler.handleFailedLogin( ex );
+      return;
+    }
+    catch ( Exception ex )
+    {
+      throw new ServletException( ex );
+    }
 
-		callbackHandler.handleSuccessfulLogin();
+    callbackHandler.handleSuccessfulLogin();
 
-		// User authenticated; continue request processing.
-		filterChain.doFilter( callbackHandler.getRequest(), callbackHandler.getResponse() );
+    // User authenticated; continue request processing.
+    filterChain.doFilter( callbackHandler.getRequest(), callbackHandler.getResponse() );
   }
 
   /**

@@ -1,6 +1,7 @@
 package edu.umich.auth.cosign;
 
-import org.apache.commons.pool.impl.*;;
+import org.apache.commons.pool.impl.*;
+;
 
 /**
  * @author htchan
@@ -12,7 +13,7 @@ import org.apache.commons.pool.impl.*;;
  */
 public class CosignServer {
 
-	private String hostname;
+	private String address;
 	private int port;
 
   /**
@@ -26,14 +27,14 @@ public class CosignServer {
 	/**
 	 * Constructor for CosignServer.
 	 */
-	public CosignServer(String hostname,
+	public CosignServer(String address,
 		String port, String configString) {
 		super();
-		this.hostname = hostname;
+		this.address = address;
 		this.port = Integer.parseInt(port);
 		this.config = parseConfigString(configString);
 		System.out.println("Registering cosign server = "
-			+ hostname + ":" + port + ":" + configString);
+			+ address + ":" + port + ":" + configString);
 	}
 
 	private GenericObjectPool.Config parseConfigString(String configString) {
@@ -71,8 +72,8 @@ public class CosignServer {
    * 
    * @uml.property name="hostname"
    */
-  public String getHostname() {
-    return hostname;
+  public String getAddress() {
+    return address;
   }
 
   /**
@@ -101,8 +102,8 @@ public class CosignServer {
    * 
    * @uml.property name="hostname"
    */
-  public void setHostname(String hostname) {
-    this.hostname = hostname;
+  public void setAddress(String address) {
+    this.address = address;
   }
 
   /**
@@ -117,7 +118,7 @@ public class CosignServer {
 
 	
 	public String toString() {
-		return hostname + ":" + port;
+		return address + ":" + port;
 	}
 
 }

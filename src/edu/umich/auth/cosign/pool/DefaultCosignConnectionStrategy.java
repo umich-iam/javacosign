@@ -30,7 +30,7 @@ public class DefaultCosignConnectionStrategy
 	/**
 	 * @see edu.umich.auth.cosign.pool.CosignConnectionStrategy#getBestConnection()
 	 */
-	public CosignConnection getConnection(TreeMap poolMap) {
+	public synchronized CosignConnection getConnection(TreeMap poolMap) {
 
 		CosignConnectionPool pool = getBestPool(poolMap);
 		CosignConnection cc = null;
