@@ -1,0 +1,81 @@
+<editmodel:ClassDiagramEditModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:editmodel="editmodel.xmi" size="837,483" id="rockwellsaxmanJavaCosign0" metadata="nsuml-1.4" initialized="true" showWireOptions="1">
+  <children xsi:type="editmodel:ClassEditModel" location="50,316" size="205,157" id="rockwellsaxmanJavaCosign1" runTimeClassModel="rockwellsaxmanJavaCosign11;rockwellsaxmanJavaCosign17;rockwellsaxmanJavaCosign2;rockwellsaxmanJavaCosign8;rockwellsaxmanJavaCosign4;rockwellsaxmanJavaCosign14">
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="155,108" viewSorter="Name">
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign2"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign14"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign8"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign4"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign17"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign11"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" location="640,50" size="187,193" id="rockwellsaxmanJavaCosign37" runTimeClassModel="rockwellsaxmanJavaCosign60;rockwellsaxmanJavaCosign90;rockwellsaxmanJavaCosign56;rockwellsaxmanJavaCosign74;rockwellsaxmanJavaCosign38;rockwellsaxmanJavaCosign66;rockwellsaxmanJavaCosign81;rockwellsaxmanJavaCosign44">
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="138,144" viewSorter="Name">
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign44"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign90"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign74"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign56"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign81"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign60"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign66"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign38"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" location="305,316" size="195,157" id="rockwellsaxmanJavaCosign108" runTimeClassModel="rockwellsaxmanJavaCosign124;rockwellsaxmanJavaCosign111;rockwellsaxmanJavaCosign117;rockwellsaxmanJavaCosign120;rockwellsaxmanJavaCosign115;rockwellsaxmanJavaCosign109;rockwellsaxmanJavaCosign127">
+    <children xsi:type="editmodel:CompartmentEditModel" size="172,36" viewSorter="Name">
+      <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanJavaCosign109"/>
+      <children xsi:type="editmodel:AttributeEditModel" id="rockwellsaxmanJavaCosign111"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" size="156,72" viewSorter="Name">
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign127"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign120"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign117"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign124"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" location="550,316" size="158,67" id="rockwellsaxmanJavaCosign24" runTimeClassModel="rockwellsaxmanJavaCosign142">
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="118,18" viewSorter="Name">
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign142"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" location="356,50" size="234,29" id="rockwellsaxmanJavaCosign145" shortShow="true" runTimeClassModel="rockwellsaxmanJavaCosign146;rockwellsaxmanJavaCosign157;rockwellsaxmanJavaCosign171;rockwellsaxmanJavaCosign163;rockwellsaxmanJavaCosign153;rockwellsaxmanJavaCosign178;rockwellsaxmanJavaCosign187;rockwellsaxmanJavaCosign149">
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="175,144" viewSorter="Name">
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign163" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign153" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign171" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign157" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign187" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign149" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign146" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign178" displayArgumentNames="true" displayArguments="true" displayReturnType="true"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  </children>
+  <children xsi:type="editmodel:ClassEditModel" location="50,181" size="256,85" id="rockwellsaxmanJavaCosign29" runTimeClassModel="rockwellsaxmanJavaCosign32;rockwellsaxmanJavaCosign30">
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="193,36" viewSorter="Name">
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign30"/>
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign32"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+    <sourceConnections xsi:type="editmodel:GeneralizationEditModel" connectionRouterKind="Manual" source="//@children.5" target="//@children.6" targetEnd="//@children.5/@sourceConnections.0/@children.1" sourceEnd="//@children.5/@sourceConnections.0/@children.0">
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+      <children xsi:type="editmodel:AssociationEndEditModel"/>
+    </sourceConnections>
+  </children>
+  <children xsi:type="editmodel:InterfaceEditModel" location="72,50" size="211,81" targetConnections="//@children.5/@sourceConnections.0" id="rockwellsaxmanJavaCosign21" runTimeClassModel="rockwellsaxmanJavaCosign23">
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+    <children xsi:type="editmodel:CompartmentEditModel" size="122,18" viewSorter="Name">
+      <children xsi:type="editmodel:MethodEditModel" id="rockwellsaxmanJavaCosign23"/>
+    </children>
+    <children xsi:type="editmodel:CompartmentEditModel" viewSorter="Name"/>
+  </children>
+</editmodel:ClassDiagramEditModel>
