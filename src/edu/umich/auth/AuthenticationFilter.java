@@ -23,21 +23,35 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * This class is a Servlet Specification v2.3 Servlet Filter for
+ * user authentication via a JAAS <code>LoginModule</code>.
+ * This class is only responsible for the creation, initialization,
+ * and appropriate use of a user-specified <code>ServletCallbackHandler</code>
+ * and the JAAS API.  All user authentication is handled in the
+ * <code>ServletCallbackHandler</code> and JAAS <code>LoginModule</code>.
+ * 
  * @see javax.servlet.Filter
+ * @see javax.security.auth.login.LoginModule
  * @author $Author$
  * @version $Name$ $Revision$ $Date$
  */
 public class AuthenticationFilter implements Filter
 {
+  // Configuration parameter names (from web.xml).
   public static final String LOGIN_CONFIG_INIT_PARAM     = "Auth.LoginConfiguration";
   public static final String LOGIN_MODULE_INIT_PARAM     = "Auth.LoginModule";
   public static final String CALLBACK_HANDLER_INIT_PARAM = "Auth.CallbackHandler";
   public static final String JAAS_CONFIG_FILE_INIT_PARAM = "Auth.JAASConfigurationFile";
 
+  // The name of the subject that's stored in the user's session.
   private static final String USER_SUBJECT_ATTRIBUTE = "edu.umich.auth.AuthentincatonFilter:Subject";
 
+  // Parameter required in the Java Runtime specifying the location
+  // of the JAAS configuration file.  The location of the file is determined by
+  // the value of the JAAS_CONFIG_FILE INIT_PARAM parameter.
   private static final String JAAS_CONFIG_PROPERTY = "java.security.auth.login.config";
 
+  // Class variables configured in the init method.
   private Class callbackHandlerClass;
   private FilterConfig filterConfig;
   private Map parameters = new HashMap();
@@ -45,6 +59,15 @@ public class AuthenticationFilter implements Filter
   private File jaasFile;
 
   /**
+   * Initializes the filter, retrieving and verifying the properties
+   * from the <code>FilterConfig</code> and constructing the appropriate
+   * <code>CallbackHandler</code> class.
+   * 
+   * Since this method is callled when the application is started,
+   * it's important to prevent as many critical errors here as possible.
+   * It's better for the application to die at load time then for it
+   * to die in production.
+   *  
    * @see javax.servlet.Filter#init(FilterConfig)
    */
   public void init( FilterConfig filterConfig )
@@ -54,6 +77,8 @@ public class AuthenticationFilter implements Filter
 
   	try
     {
+  	  /* Instantiate a JAAS config. file, and verify that it's readable. */
+  	  
   	  jaasFile = new File( filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) );
 
       if ( !jaasFile.exists() )
@@ -89,6 +114,18 @@ public class AuthenticationFilter implements Filter
   }
 
   /**
+   * This method is called once per request to the application server
+   * (for a protected context).  Thererfore, it's important that it
+   * return expediently for normal requests.
+   * 
+   * The method (re)checks the JAAS config. file runtime property,
+   * retrieves the user's subject from the session if it exists,
+   * and instantiates the apporpriate <code>ServletCallbackHandler</code>.
+   * The <code>ServletCallbackHandler</code> is then initialized,
+   * and the user is logged in.  The <code>ServletCallbackHandler</code>
+   * can abort or grant user access at any stage of the login. 
+   * 
+   * @see edu.umich.auth.ServletCallbackHandler
    * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
    */
   public void doFilter( ServletRequest request, ServletResponse response, FilterChain filterChain )
