@@ -3,10 +3,7 @@ package edu.umich.auth.cosign.pool;
 import java.util.TreeMap;
 
 import edu.umich.auth.cosign.CosignConfig;
-import edu.umich.auth.cosign.CosignConfig1;
-import edu.umich.auth.cosign.CosignServer;
 
-import org.apache.commons.pool.impl.*;
 
 /**
  * @author htchan
@@ -70,32 +67,6 @@ public class CosignConnectionManager
   public void returnConnection( String cookie, CosignConnection cc) {
   	cc.returnToPool();
   	strategyMap.remove( cookie );
-  }
-
-  public void addCosignConnectionPool( CosignServer cosignServer )
-  {
-    String address = cosignServer.getAddress();
-    int port = cosignServer.getPort();
-    GenericObjectPool.Config config = cosignServer.getConfig();
-    
-    CosignConnectionFactory ccf = new CosignConnectionFactory( address, port );
-    GenericObjectPoolFactory gopf;
-    if ( null != config )
-    {
-      if ( DEBUG2OUT )
-        System.out.println( "Using custom config for " + cosignServer + " ..." );
-      gopf = new GenericObjectPoolFactory( ccf, config );
-    }
-    else
-    {
-      if ( DEBUG2OUT )
-        System.out.println( "Using default config for " + cosignServer + " ..." );
-
-      gopf = new GenericObjectPoolFactory( ccf );
-    }
-    String poolId = address + ":" + port;
-    poolMap.put( poolId, new CosignConnectionPool( (GenericObjectPool) gopf.createPool(), cosignServer ) );
-    
   }
 
   protected void finalize() throws Throwable
