@@ -4,86 +4,91 @@ import java.util.TreeMap;
 
 import edu.umich.auth.cosign.CosignConfig;
 
-
 /**
- * @author htchan
+ * This class manages all the activities related to a
+ * Cosign connection.
  * 
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates. To enable and disable the creation of
- * type comments go to Window>Preferences>Java>Code Generation.
+ * @author htchan
  * 
  * @uml.stereotype name="tagged" isDefined="true"
  */
 
-public class CosignConnectionManager
-{
-  private static final boolean DEBUG2OUT = true;
+public class CosignConnectionManager {
+	private static final boolean DEBUG2OUT = true;
 
-  public static final CosignConnectionManager INSTANCE = new CosignConnectionManager();
+	public static final CosignConnectionManager INSTANCE = new CosignConnectionManager();
 
-  /**
-   * 
-   * @uml.property name="strategyMap" @uml.associationEnd multiplicity="(0 1)"
-   * qualifier="cookie:java.lang.String
-   * ccs:edu.umich.auth.cosign.pool.CosignConnectionStrategy"
-   */
-  TreeMap strategyMap = new TreeMap();
+	/**
+	 * This map stores all the <code>CosignConnectionStrategy</code>
+	 * objects for all the active users.
+	 * 
+	 * @uml.property name="strategyMap"
+	 * @uml.associationEnd multiplicity="(0 1)"
+	 *                     qualifier="cookie:java.lang.String
+	 *                     ccs:edu.umich.auth.cosign.pool.CosignConnectionStrategy"
+	 */
+	TreeMap strategyMap = new TreeMap();
 
-  /**
-   * 
-   * @uml.property name="poolMap"
-   */
-  TreeMap poolMap = new TreeMap();
+	/**
+	 * Constructor for ConnectionManager.  It starts the monitor
+	 * threads for the Cosign configuation file and the Cosign
+	 * connection pools.
+	 */
+	private CosignConnectionManager() {
+		super();
+		Thread t1 = new Thread(CosignConfig.INSTANCE);
+		t1.start();
+		Thread t2 = new Thread(CosignConnectionPoolManager.INSTANCE);
+		t2.start();
+	}
 
-  /**
-   * Constructor for ConnectionManager.
-   */
-  private CosignConnectionManager()
-  {
-    super();
-    Thread t1 = new Thread(CosignConfig.INSTANCE);
-    t1.start();
-    Thread t2 = new Thread(CosignConnectionPoolManager.INSTANCE);
-    t2.start();
-  }
+	/**
+	 * This method returns a Cosign connection.  It uses an existing
+	 * Cosign connection strategy specific to the cookie or creates
+	 * one if it does not exist.
+	 * @param cookie
+	 * @return
+	 */
+	public CosignConnection getConnection(String cookie) {
+		CosignConnectionStrategy ccs;
 
-  public CosignConnection getConnection( String cookie )
-  {
-    CosignConnectionStrategy ccs;
+		if (strategyMap.containsKey(cookie)) {
+			ccs = (CosignConnectionStrategy) strategyMap.get(cookie.toString());
+		} else {
+			ccs = new CosignConnectionStrategy();
+			strategyMap.put(cookie, ccs);
+		}
 
-    if ( strategyMap.containsKey( cookie ) )
-    {
-      ccs = (CosignConnectionStrategy) strategyMap.get( cookie.toString() );
-    }
-    else
-    {
-      ccs = new CosignConnectionStrategy();
-      strategyMap.put( cookie, ccs );
-    }
-    
-    return ccs.getConnection();
-  }
-  
-  public void returnConnection( CosignConnection cc ) {
-  	cc.returnToPool();
-  }
-  
-  public void cleanUpStrategy( String cookie ) {
-  	strategyMap.remove( cookie );
-  }
+		return ccs.getConnection();
+	}
 
-  protected void finalize() throws Throwable
-  {
-    try
-    {
-      strategyMap.clear();
-      poolMap.clear();
-      strategyMap = null;
-      poolMap = null;
-    }
-    finally
-    {
-      super.finalize();
-    }
-  }
+	/**
+	 * This method returns the Cosign connection back to the pool.
+	 * @param cc  The Cosign connection.
+	 */
+	public void returnConnection(CosignConnection cc) {
+		cc.returnToPool();
+	}
+
+	/**
+	 * This method removes the <cpde>CosignConnectionStrategy</code>
+	 * object related to a Cosign service cookie after it is done
+	 * from the <code>strategyMap</code>.
+	 * @param cookie
+	 */
+	public void cleanUpStrategy(String cookie) {
+		strategyMap.remove(cookie);
+	}
+
+	/**
+	 * Cleans up code when this is garbage collected.
+	 */
+	protected void finalize() throws Throwable {
+		try {
+			strategyMap.clear();
+			strategyMap = null;
+		} finally {
+			super.finalize();
+		}
+	}
 }

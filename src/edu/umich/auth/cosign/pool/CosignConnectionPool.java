@@ -11,8 +11,11 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import edu.umich.auth.cosign.CosignServer;
 
 /**
- * @author htchan *  * To change the template for this generated type comment go to * Window>Preferences>Java>Code Generation>Code and Comments
+ * This class is a wrapper class to the GenericObjectPool;
  * 
+ * @author htchan
+ * 
+ * @see org.apache.commons.pool.impl.GenericObjectPool * 
  * @uml.stereotype name="tagged" isDefined="true" 
  */
 
