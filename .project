@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
 	<name>JavaCosign</name>
-	<comment></comment>
+	<comment>@key 6D697373696E67204A617661436F7369676E </comment>
 	<projects>
 	</projects>
 	<buildSpec>
@@ -11,14 +11,14 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-			<name>com.omondo.uml.enterprise.Builder</name>
+			<name>com.omondo.uml.std.Builder</name>
 			<arguments>
 			</arguments>
 		</buildCommand>
 	</buildSpec>
 	<natures>
-		<nature>com.omondo.uml.enterprise.Nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>com.sysdeo.eclipse.tomcat.tomcatnature</nature>
+		<nature>com.omondo.uml.std.Nature</nature>
 	</natures>
 </projectDescription>

@@ -197,6 +197,8 @@ Future:
 
   - uPortal v2.x integration.
 
+  - log4j support.
+
   - JMX support for live connection pool re/configuration.
 
   - More/cleaner documentation (inline, JavaDocs, and otherwise).
