@@ -84,8 +84,8 @@ public class CosignConnectionPoolManager implements Runnable {
 		Iterator itOld = oldKeys.iterator();
 		Set newKeys = newPoolMap.keySet();
 		lockPoolMap();
-		System.out.println("Old pools = " + oldKeys);
-		System.out.println("New pools = " + newKeys);
+		//System.out.println("Old pools = " + oldKeys);
+		//System.out.println("New pools = " + newKeys);
 		boolean changed = false;
 		while (itOld.hasNext()) {
 			Object oldKey = itOld.next();
@@ -102,10 +102,10 @@ public class CosignConnectionPoolManager implements Runnable {
 			changed = true;
 		}
 		if (changed) {
-			System.out.println("poolMap updated!");
+			//System.out.println("poolMap updated!");
 		}
 		else {
-			System.out.println("No update on poolMap!");
+			//System.out.println("No update on poolMap!");
 		}
 		releasePoolMap();
 	}
@@ -122,12 +122,12 @@ public class CosignConnectionPoolManager implements Runnable {
 	
 	private void lockPoolMap() {
 		poolMapLock = true;
-		System.out.println("Locked poolMap!");
+		//System.out.println("Locked poolMap!");
 	}
 
 	private void releasePoolMap() {
 		poolMapLock = false;
-		System.out.println("Released poolMap!");
+		//System.out.println("Released poolMap!");
 	}
 	
 	public boolean isPoolMapLocked() {
