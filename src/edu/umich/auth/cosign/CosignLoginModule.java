@@ -15,7 +15,7 @@ import javax.security.auth.login.FailedLoginException;
 
 import javax.security.auth.spi.LoginModule;
 
-import edu.umich.auth.cosign.pool.ConnectionManager;
+import edu.umich.auth.cosign.pool.CosignConnectionManager;
 import edu.umich.auth.cosign.pool.CosignConnection;
 
 /**
@@ -24,28 +24,26 @@ import edu.umich.auth.cosign.pool.CosignConnection;
  */
 public class CosignLoginModule implements LoginModule
 {
-
-  private static final int COSIGN_CODE_DEFAULT = -1;
-  private static final int COSIGN_USER_AUTHENTICATED = 2;
+  private static final int COSIGN_CODE_DEFAULT           = -1;
+  private static final int COSIGN_USER_AUTHENTICATED     = 2;
   private static final int COSIGN_USER_NOT_AUTHENTICATED = 4;
-  private static final int COSIGN_SERVER_NOT_READY = 5;
+  private static final int COSIGN_SERVER_NOT_READY       = 5;
 
   public static final long SERVER_CHECK_DELAY = 60000;
 
-  public static final String REMOTE_COOKIE_CODE = "1";
-  public static final String REMOTE_IP_CODE = "2";
-  public static final String USER_IP_CODE = "3";
-  public static final String USER_NAME_CODE = "4";
-  public static final String USER_REALM_CODE = "5";
+  public static final String REMOTE_COOKIE_CODE  = "1";
+  public static final String REMOTE_IP_CODE      = "2";
+  public static final String USER_IP_CODE        = "3";
+  public static final String USER_NAME_CODE      = "4";
+  public static final String USER_REALM_CODE     = "5";
   public static final String USER_TIMESTAMP_CODE = "6";
-  public static final String SERVICE_NAME_CODE = "7";
+  public static final String SERVICE_NAME_CODE   = "7";
 
   /**
    * 
    * @uml.property name="cm"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private ConnectionManager cm;
 
   private boolean initError = false;
 
@@ -70,8 +68,8 @@ public class CosignLoginModule implements LoginModule
    */
   private CosignPrincipal principal = null;
 
-  private int cosignCode = COSIGN_CODE_DEFAULT;
 
+  private int cosignCode = COSIGN_CODE_DEFAULT;
   private String cosignResponse;
 
   /**
@@ -79,26 +77,31 @@ public class CosignLoginModule implements LoginModule
    * @uml.property name="remoteCookieIn"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private TextInputCallback remoteCookieIn = new TextInputCallback( REMOTE_COOKIE_CODE );
+  private TextInputCallback remoteCookieIn = new TextInputCallback(
+    REMOTE_COOKIE_CODE);
 
   /**
    * 
    * @uml.property name="remoteIPIn"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private TextInputCallback remoteIPIn = new TextInputCallback( REMOTE_IP_CODE );
+  private TextInputCallback remoteIPIn = new TextInputCallback(REMOTE_IP_CODE);
 
   /**
    * 
    * @uml.property name="serviceNameIn"
    * @uml.associationEnd multiplicity="(0 1)"
    */
-  private TextInputCallback serviceNameIn = new TextInputCallback( SERVICE_NAME_CODE );
+  private TextInputCallback serviceNameIn = new TextInputCallback(
+    SERVICE_NAME_CODE);
 
   /**
    * @see javax.security.auth.spi.LoginModule#initialize(Subject, CallbackHandler, Map, Map)
    */
-  public void initialize( Subject subject, CallbackHandler callbackHandler, Map arg2, Map arg3 )
+  public void initialize( Subject subject,
+                          CallbackHandler callbackHandler,
+                          Map arg2,
+                          Map arg3 )
   {
     // Insure that we have a CallbackHandler.
     if ( callbackHandler != null )
@@ -145,50 +148,29 @@ public class CosignLoginModule implements LoginModule
     if ( !CosignCookie.isCookieValid( remoteCookie ) )
       throw new FailedLoginException( "Service cookie not valid." );
 
-    // Check if a principal already exists.
-    Iterator iterator = subject.getPrincipals().iterator();
-    Object object;
-
-    while ( iterator.hasNext() )
-    {
-      object = iterator.next();
-
-      if ( object instanceof CosignPrincipal )
-      {
-        principal = (CosignPrincipal) object;
-        break;
-      }
-    }
-
     // Check cookie against Cosign server.
     CosignConnection connection;
     String serviceName = serviceNameIn.getText();
 
-    try
+    // Keep trying until we get a server which will serve us,
+    // or there are no servers avaiable in the pool.
+    while ( ( connection = CosignConnectionManager.INSTANCE.getConnection( remoteCookie ) ) != null )
     {
-      // Keep trying until we get a server which will serve us,
-      // or there are no servers avaiable in the pool.
-      while ( ( connection = ConnectionManager.INSTANCE.getConnection( remoteCookie ) ) != null )
+      cosignResponse = connection.checkCookie( serviceName, remoteCookie );
+      CosignConnectionManager.INSTANCE.returnConnection( remoteCookie, connection );
+
+      // CosignConnection encountered and error; try another connection.
+      if ( cosignResponse != null )
       {
-        cosignResponse = connection.checkCookie( serviceName, remoteCookie );
-        connection.returnToPool();
+        cosignCode = Integer.parseInt( cosignResponse.substring( 0, 1 ) );
 
-        // CosignConnection encountered and error; try another connection.
-        if ( cosignResponse != null )
+        // Stop checking servers if valid code returned.
+        if ( cosignCode == COSIGN_USER_AUTHENTICATED ||
+             cosignCode == COSIGN_USER_NOT_AUTHENTICATED )
         {
-          cosignCode = Integer.parseInt( cosignResponse.substring( 0, 1 ) );
-
-          // Stop checking servers if valid code returned.
-          if ( cosignCode == COSIGN_USER_AUTHENTICATED || cosignCode == COSIGN_USER_NOT_AUTHENTICATED )
-          {
-            break;
-          }
+          break;
         }
       }
-    }
-    finally
-    {
-      ConnectionManager.INSTANCE.complete( remoteCookie );
     }
 
     // No servers to authenticate to.
@@ -205,7 +187,7 @@ public class CosignLoginModule implements LoginModule
       throw new FailedLoginException( "User not authenticated to Cosign." );
 
     // Server response code not recognized.
-    throw new LoginException( "Invalid server response code." );
+    throw new LoginException( "Invalid server response code.  Should never get here!" );
   }
 
   /**
@@ -217,12 +199,28 @@ public class CosignLoginModule implements LoginModule
     // assign credentials from server (name, ip, realm) and update the timestamp.
     if ( cosignCode == COSIGN_USER_AUTHENTICATED )
     {
+    	
+      // Check if a principal already exists.
+      Iterator iterator = subject.getPrincipals().iterator();
+      Object object;
+
+      while ( iterator.hasNext() )
+      {
+        object = iterator.next();
+
+        if ( object instanceof CosignPrincipal )
+        {
+          principal = (CosignPrincipal)object;
+          break;
+        }
+      }
+      
       // The subject didn't have an appropriate principal
       // (first-time login), so create one.
       if ( principal == null )
       {
         principal = new CosignPrincipal();
-        subject.getPrincipals().add( principal );
+		subject.getPrincipals().add( principal );
       }
 
       // Parse the cosign response string.
@@ -232,8 +230,9 @@ public class CosignLoginModule implements LoginModule
       principal.setAddress( tokenizer.nextToken() );
       principal.setName( tokenizer.nextToken() );
       principal.setRealm( tokenizer.nextToken() );
-
+      
       principal.setTimestamp( System.currentTimeMillis() );
+	  
     }
     else
       throw new IllegalStateException();
