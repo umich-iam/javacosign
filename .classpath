@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="var" path="JRE_LIB" rootpath="JRE_SRCROOT" sourcepath="JRE_SRC"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet.jar"/>
+    <classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
+    <classpathentry kind="src" path="web/WEB-INF/src"/>
+    <classpathentry kind="output" path="web\WEB-INF\classes"/>
+</classpath>

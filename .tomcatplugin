@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tomcatProjectProperties>
+    <rootDir></rootDir>
+    <exportSource>false</exportSource>
+    <updateXml>false</updateXml>
+    <warLocation></warLocation>
+    <webPath></webPath>
+</tomcatProjectProperties>
