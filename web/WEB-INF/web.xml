@@ -24,7 +24,7 @@
 
     <init-param>
       <param-name>Auth.CallbackHandler</param-name>
-      <param-value>edu.umich.auth.CosignServletCallbackHandler</param-value>
+      <param-value>edu.umich.auth.cosign.CosignServletCallbackHandler</param-value>
     </init-param>
 
     <init-param>

@@ -8,6 +8,6 @@
     <classpathentry kind="lib" path="web/WEB-INF/lib/jnet.jar"/>
     <classpathentry kind="lib" path="web/WEB-INF/lib/jsse.jar"/>
     <classpathentry kind="lib" path="web/WEB-INF/lib/jaas.jar"/>
-    <classpathentry kind="src" path="web/WEB-INF/src"/>
-    <classpathentry kind="output" path="web\WEB-INF\classes"/>
+    <classpathentry kind="src" path="src"/>
+    <classpathentry kind="output" path="web/WEB-INF/classes"/>
 </classpath>
