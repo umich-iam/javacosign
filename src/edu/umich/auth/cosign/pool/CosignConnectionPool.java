@@ -6,7 +6,7 @@
  */
 package edu.umich.auth.cosign.pool;
 
-import org.apache.commons.pool.impl.*;
+import org.apache.commons.pool.impl.GenericObjectPool;
 
 import edu.umich.auth.cosign.CosignServer;
 
@@ -16,8 +16,8 @@ import edu.umich.auth.cosign.CosignServer;
  * @uml.stereotype name="tagged" isDefined="true" 
  */
 
-public class CosignConnectionPool implements CosignConnectionPoolMBean {
-
+public class CosignConnectionPool
+{
   /**
    * 
    * @uml.property name="thePool"
@@ -150,5 +150,4 @@ public class CosignConnectionPool implements CosignConnectionPoolMBean {
 	public void setWhenExhaustedAction(byte whenExhaustedAction) {
 		thePool.setWhenExhaustedAction(whenExhaustedAction);
 	}
-
 }
