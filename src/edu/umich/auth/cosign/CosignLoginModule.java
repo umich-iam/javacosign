@@ -157,7 +157,7 @@ public class CosignLoginModule implements LoginModule
     while ( ( connection = CosignConnectionManager.INSTANCE.getConnection( remoteCookie ) ) != null )
     {
       cosignResponse = connection.checkCookie( serviceName, remoteCookie );
-      CosignConnectionManager.INSTANCE.returnConnection( remoteCookie, connection );
+      CosignConnectionManager.INSTANCE.returnConnection( connection );
 
       // CosignConnection encountered and error; try another connection.
       if ( cosignResponse != null )
@@ -172,6 +172,7 @@ public class CosignLoginModule implements LoginModule
         }
       }
     }
+    CosignConnectionManager.INSTANCE.cleanUpStrategy( remoteCookie );
 
     // No servers to authenticate to.
     if ( connection == null )

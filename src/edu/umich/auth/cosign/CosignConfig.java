@@ -1,6 +1,5 @@
 package edu.umich.auth.cosign;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -20,6 +19,7 @@ public class CosignConfig implements Runnable {
 	public static final String COSIGN_DOMAIN = "COSIGN_DOMAIN";
 	public static final String COSIGN_PORT = "COSIGN_PORT";
 	public static final String COSIGN_POOL_CONFIG = "COSIGN_POOL_CONFIG";
+	public static final String COSIGN_POOL_LOCKED_SLEEP_TIME = "COSIGN_POOL_LOCKED_SLEEP_TIME";
 	public static final String COSIGN_POOL_MONITORING_INTERVAL = "COSIGN_POOL_MONITORING_INTERVAL";
 	public static final String CONFIG_FILE_MONITORING_INTERVAL = "CONFIG_FILE_MONITORING_INTERVAL";
 	public static final String CONFIG_FILE_PATH = "CONFIG_FILE_PATH";
@@ -42,8 +42,6 @@ public class CosignConfig implements Runnable {
 		while (true) {
 			try {
 				Thread.sleep(configFileMonitoringInterval);
-				System.out.println("File is there = " + configFile.exists());
-				System.out.println("lastUpdate = " + lastUpdate);
 				if (configFile.exists() && configFile.lastModified() > lastUpdate) {
 					System.out.println("cosignConfig.properties got updated!");
 					lastUpdate = configFile.lastModified();
