@@ -1,0 +1,27 @@
+<CosignConfig>
+
+  <KeyStorePath>/Developer/Applications/Eclipse/workspace/JavaCosign/jks/keystore.jks</KeyStorePath>
+  <KeyStorePassword>burned</KeyStorePassword>
+
+  <ServiceName>java</ServiceName>
+
+  <CosignServerHost>weblogin.umich.edu</CosignServerHost>
+  <CosignServerPort>6663</CosignServerPort>
+  <ConnectionPoolSize>20</ConnectionPoolSize>
+  
+  <CookieExpireSecs>120</CookieExpireSecs>	
+  <CookieCacheExpireSecs>30</CookieCacheExpireSecs>
+ 
+  <LoginRedirectUrl>http://weblogin.umich.edu/</LoginRedirectUrl>
+  <LoginPostErrorUrl>http://www.umich.edu/</LoginPostErrorUrl>
+  <LoginSiteEntryUrl>http://localhost:8080/cosign/</LoginSiteEntryUrl>
+
+  <CheckClientIP>false</CheckClientIP>
+  
+  <AllowPublicAccess>false</AllowPublicAccess>	
+  <HttpsOnly>false</HttpsOnly>
+  <HttpsPort>8443</HttpsPort>
+  
+  <ConfigFileMonitoringIntervalSecs>5</ConfigFileMonitoringIntervalSecs>
+  
+</CosignConfig>
