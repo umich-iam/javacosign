@@ -27,7 +27,7 @@ public interface ServletCallbackHandler extends CallbackHandler
 				Subject subject )
 	throws Exception;
 
-  void handleFailedLogin( Exception ex ) throws ServletException;
+  boolean handleFailedLogin( Exception ex ) throws ServletException;
   void handleSuccessfulLogin() throws ServletException;
 
   HttpServletRequest getRequest();

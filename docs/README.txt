@@ -1,5 +1,4 @@
-jCoSign v1.0 beta 1
-
+jCoSign v1.0 beta 2
 
 Features:
 
@@ -13,6 +12,8 @@ Features:
 
   - A Jakarta Commons Pool-based framework for pooling connections to a cluster
     of CoSign servers.
+    
+  - A Jakarta Commons Logging for customizable log configuration.
 
   - A JSSE-based framework for SSL-based application server/CoSign server
     communication.
@@ -44,6 +45,9 @@ Requirements:
   - Jakarta Commons Collections
     (http://jakarta.apache.org/commons/collections/)
 
+  - Jakarta Commons Loggins
+    (http://jakarta.apache.org/commons/logging/)
+
   NOTE: The Jakarta Commons Pool and Collections libraries come with
         Jakarta Tomcat
 
@@ -57,46 +61,84 @@ Install:
        A description of how to use keytool can be found at
        http://java.sun.com/j2se/1.4.2/docs/tooldocs/solaris/keytool.html
 
+       a) Generate a new private key/public cert.
+          (keytool -genkey -keyalg "RSA" -keystore keystore)
+          
+       b) Generate a certificate signing request (CSR)
+          (keytool -certreq -keyalg "RSA" -file my.host.com.csr -keystore keystore)
+          
+       c) Have your CA sign the CSR
+       
+       d) Import the certificate received from the CA into the keystore
+          (keytool -keystore keystore -keyalg "RSA" -import -trustcacerts -file my.host.com.cer)
+
     2. Place your keystore somewhere that your application server has
        access.
 
-  - Configure JAAS:
+  - Configure the CoSign Filter:
 
-    1. Create a JAAS configuration file (named jaas.conf in our installation
-       example), containing the following:
+    1. Create a XML cosign configuration file continaing the following:
 
-CosignAuthentication
-{
-  edu.umich.auth.cosign.CosignLoginModule required;
-};
+<CosignConfig>
 
-       NOTE: If you already maintain a JAAS configuration file, add the above
-             to this file.
+  <!-- KeyStorePath: required -->
+  <KeyStorePath>/Developer/Applications/Eclipse/workspace/JavaCosign/jks/keystore.jks</KeyStorePath>
 
-    2. Place the file somewhere that your application server has access.
-       Perhaps even with your app. server's other configurationf files.
+  <!-- KeyStorePassword: required -->
+  <KeyStorePassword>burned</KeyStorePassword>
 
-  - Configure the CoSign Server Pool:
+  <!-- ServiceName: required -->
+  <ServiceName>java</ServiceName>
 
-    1. Create a file in your application's WEB-INF/classes directory, in the
-       subdirectory edu/umich/auth/cosign (to be fixed), named
-       cosignConfig.properties, continaing the following:
+  <!-- CosignServerHost: required -->
+  <CosignServerHost>weblogin.umich.edu</CosignServerHost>
 
-KEYSTORE_PATH=/usr/local/tomcat/conf/keystore
-KEYSTORE_PASSWORD=password
-COSIGN_DOMAIN=weblogin.umich.edu
-COSIGN_PORT=6663
-COSIGN_POOL_LOCKED_SLEEP_TIME=100
-COSIGN_POOL_MONITORING_INTERVAL=10000
-CONFIG_FILE_MONITORING_INTERVAL=5000
-CONFIG_FILE_PATH=/usr/local/webapps/app_name/WEB-INF/classes/edu/umich/auth/cosign/cosignConfig.properties
+  <!-- CosignServerPort: required -->
+  <CosignServerPort>6663</CosignServerPort>
+
+  <!-- ConnectionPoolSize: optional, defaults to 20 -->
+  <ConnectionPoolSize>20</ConnectionPoolSize>
+  
+  <!-- CookieExpireSecs: optional, defaults to 86400 -->
+  <CookieExpireSecs>120</CookieExpireSecs>	
+
+  <!-- CookieCacheExpireSecs: optional, defaults to 60 -->
+  <CookieCacheExpireSecs>30</CookieCacheExpireSecs> 
+
+  <!-- LoginRedirectUrl: required -->
+  <LoginRedirectUrl>http://weblogin.umich.edu/</LoginRedirectUrl>
+
+  <!-- LoginPostErrorUrl: required -->
+  <LoginPostErrorUrl>http://www.umich.edu/</LoginPostErrorUrl>
+
+  <!-- LoginSiteEntryUrl: optional -->
+  <LoginSiteEntryUrl>http://localhost:8080/cosign/</LoginSiteEntryUrl>
+
+  <!-- CheckClientIP: optional, defaults to false -->
+  <CheckClientIP>false</CheckClientIP>
+
+  <!-- AllowPublicAccess: optional, defaults to false -->
+  <AllowPublicAccess>false</AllowPublicAccess>	
+
+  <!-- HttpsOnly: optional, defaults to false -->
+  <HttpsOnly>false</HttpsOnly>
+
+  <!-- HttpsPort: optional, defaults to 443 -->
+  <HttpsPort>8443</HttpsPort>
+
+  <!-- ConfigFileMonitoringIntervalSecs: optional: defaults to 30 -->
+  <ConfigFileMonitoringIntervalSecs>30</ConfigFileMonitoringIntervalSecs>
+  
+</CosignConfig>
 
     2. Change these properties to those of your environment.
 
+    3. Place your XML cosign configuration file somewhere that your
+       application server has access.
 
   - Configure your Web Application:
 
-    1. Copy the jcosign-1.0b1.jar file into you application's WEB-INF/lib
+    1. Copy the jcosign-1.0b2.jar file into you application's WEB-INF/lib
        directory.
 
     2. If you are using a J2SE v1.3 JRE, copy the files jaas.jar
@@ -107,58 +149,15 @@ CONFIG_FILE_PATH=/usr/local/webapps/app_name/WEB-INF/classes/edu/umich/auth/cosi
     3. Edit your application's web application deployment descriptor file
        (WEB-INF/web.xml), adding the following:
 
-<filter>
-  <filter-name>Cosign Authentication Filter</filter-name>
-  <filter-class>edu.umich.auth.AuthenticationFilter</filter-class>
+  <filter>
+    <filter-name>Cosign Authentication Filter</filter-name>
+    <filter-class>edu.umich.auth.cosign.CosignAuthenticationFilter</filter-class>
 
-  <init-param>
-    <param-name>Auth.LoginConfiguration</param-name>
-    <param-value>CosignAuthentication</param-value>
-  </init-param>
-
-  <init-param>
-    <param-name>Auth.JAASConfigurationFile</param-name>
-    <param-value>/usr/local/tomcat/conf/jaas.conf</param-value>
-  </init-param>
-
-  <init-param>
-    <param-name>Auth.LoginModule</param-name>
-    <param-value>edu.umich.auth.cosign.CosignLoginModule</param-value>
-  </init-param>
-
-  <init-param>
-    <param-name>Auth.CallbackHandler</param-name>
-    <param-value>edu.umich.auth.cosign.CosignServletCallbackHandler</param-value>
-  </init-param>
-
-  <init-param>
-    <param-name>Auth.Cosign.ServiceName</param-name>
-    <param-value>cosign-java</param-value>
-  </init-param>
-
-  <init-param>
-    <param-name>Auth.Cosign.LoginServer</param-name>
-    <param-value>https://weblogin.umich.edu</param-value>
-  </init-param>
-
-  <!--
-    OPTIONAL: Sets whether or not login should fail if the client's IP address
-              changes. The default is 'true'.
-  -->
-  <init-param>
-    <param-name>Auth.Cosign.CheckClientIP</param-name>
-    <param-value>false</param-value>
-  </init-param>
-
-  <!--
-    OPTIONAL: Sets how many seconds between checks to the Cosign server.
-              The default is 60 seconds.
-  -->
-  <init-param>
-    <param-name>Auth.Cosign.ServerCheckDelay</param-name>
-    <param-value>30</param-value>
-  </init-param>
-</filter>
+    <init-param>
+      <param-name>Cosign.ConfigurationFile</param-name>
+      <param-value>[ PATH TO YOUR COSIGN CONFIG FILE ]</param-value>
+    </init-param>
+  </filter>
 
 <filter-mapping>
   <filter-name>Cosign Authentication Filter</filter-name>
@@ -174,9 +173,8 @@ CONFIG_FILE_PATH=/usr/local/webapps/app_name/WEB-INF/classes/edu/umich/auth/cosi
        NOTE: The CoSign filter-mapping generally should be listed in your
              web.xml before any other filter-mapping elements.
 
-    4. Set the parameters Auth.JAASConfigurationFile, Auth.Cosign.ServiceName,
-       and Auth.Cosign.LoginServer to the appropriate values, according to
-       your CoSign server installation and previous installation choices.
+    4. Set the parameter Cosign.ConfigurationFile to the appropriate path 
+       of your XML cosign config file.
 
     5. Change the "url-pattern" element of the filter mapping to the context
        inside of your applcation that you want CoSign protected.  If you want
@@ -197,8 +195,6 @@ Future:
 
   - uPortal v2.x integration.
 
-  - log4j support.
-
   - JMX support for live connection pool re/configuration.
 
   - More/cleaner documentation (inline, JavaDocs, and otherwise).
@@ -206,3 +202,4 @@ Future:
 Support:
 
   cosign@umich.edu
+  

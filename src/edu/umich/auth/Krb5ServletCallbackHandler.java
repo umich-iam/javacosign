@@ -147,7 +147,7 @@ public class Krb5ServletCallbackHandler implements ServletCallbackHandler
   /**
    * @see edu.umich.auth.ServletCallbackHandler#handleFailedLogin( Exception )
    */
-  public void handleFailedLogin( Exception ex ) throws ServletException
+  public boolean handleFailedLogin( Exception ex ) throws ServletException
   {
     try
     {
@@ -162,6 +162,7 @@ public class Krb5ServletCallbackHandler implements ServletCallbackHandler
     {
       throw new ServletException( exception );
     }
+    return false;
   }
 
   /**

@@ -18,9 +18,8 @@ public class AuthFilterRequestWrapper extends HttpServletRequestWrapper
   public AuthFilterRequestWrapper( HttpServletRequest request, Principal user, String authType )
   {
     super( request );
-    
-	this.user = user;
-	this.authType = authType;
+    this.user = user;
+    this.authType = authType;
   }
 
   /**

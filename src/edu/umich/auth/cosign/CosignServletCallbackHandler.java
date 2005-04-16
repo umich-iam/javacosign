@@ -19,261 +19,299 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import edu.umich.auth.AuthFilterRequestWrapper;
 import edu.umich.auth.ServletCallbackHandler;
 
 /**
+ * This class implements ServletCallbackHandler and is resposible for setting the
+ * cosign service cookie and redirecting the user to the login URL.  Additionally,
+ * this class instantiates a wrapper for the HttpServletRequest object to provide
+ * access to authenticated user's information.
  * @see edu.umich.auth.ServletCallbackHandler
  * @author $Author$
  * @version $Name$ $Revision$ $Date$
  */
-public class CosignServletCallbackHandler implements ServletCallbackHandler
-{
-  public static final String COSIGN_SERVICE_INIT_PARAM            = "Auth.Cosign.ServiceName";
-  public static final String COSIGN_LOGIN_SERVER_INIT_PARAM       = "Auth.Cosign.LoginServer";
-  public static final String COSIGN_IP_CHECK_INIT_PARAM           = "Auth.Cosign.CheckClientIP";
-  public static final String COSIGN_SERVER_CHECK_DELAY_INIT_PARAM = "Auth.Cosign.ServerCheckDelay";
-  public static final String COSIGN_DEFAULT_SERVER_PROTOCOL       = "Auth.Cosign.DefaultServerProtocol";
-  public static final String COSIGN_DEFAULT_INDEX_PAGE            = "Auth.Cosign.DefaultIndexPage";
-
-  private Map parameters;
+public class CosignServletCallbackHandler implements ServletCallbackHandler {
+  
+  private static final String COOKIE_NAME_PREFIX = "cosign-";
+  
   private HttpServletRequest request;
+
   private HttpServletResponse response;
+
   private Subject subject;
 
-  private boolean checkClientIP = true;
-  
-  // Default serverCheckDelay, could override
-  private long serverCheckDelay = 15000;
+  // Used for logging info and error messages
+  private Log log = LogFactory.getLog( CosignServletCallbackHandler.class );
 
   /**
-   * @see edu.umich.auth.ServletCallbackHandler#init( Map, HttpServletRequest, HttpServletResponse, Subject )
-   * @return true if the calling class should continue with authentication, false otherwise.
-   * @throws IllegalArgumentException if an improper parameter is passed in.
-   * @throws FailedLoginException if the client's IP address has changed and this check if turned on.
+   * This method copies the request, response, and subject variables provided to it.
+   * @see edu.umich.auth.ServletCallbackHandler#init( Map, HttpServletRequest,
+   *      HttpServletResponse, Subject )
+   * @return always returns true
+   * @throws IllegalArgumentException
+   *           if an improper parameter is passed in.
+   * @throws FailedLoginException
+   *           if the client's IP address has changed and this check if turned
+   *           on.
    */
-  public boolean init( Map parameters,
-                       HttpServletRequest request,
-                       HttpServletResponse response,
-                       Subject subject )
-    throws FailedLoginException
-  {
+  public boolean init( Map parameters, HttpServletRequest request, HttpServletResponse response, Subject subject )
+      throws FailedLoginException {
+    
     // Check for initialization errors.
-    if ( parameters == null ||
-         parameters.get( COSIGN_SERVICE_INIT_PARAM ) == null ||
-         parameters.get( COSIGN_LOGIN_SERVER_INIT_PARAM ) == null ||
-         response == null ||
-         request == null ||
-         subject == null )
-    {
+    if ( ( response == null ) || ( request == null ) || ( subject == null ) ) {
       throw new IllegalArgumentException( "Required initialization parameter(s) missing." );
     }
 
-    this.parameters = parameters;
     this.request = request;
     this.response = response;
     this.subject = subject;
-
-    Object object = parameters.get( COSIGN_IP_CHECK_INIT_PARAM );
-
-    if ( object != null )
-    {
-      String string = object.toString().toLowerCase();
-      
-      if ( string.equals( "0" ) ||
-           string.equals( "no" ) ||
-           string.equals( "false" ) ||
-           string.equals( "off" ) )
-      {
-        checkClientIP = false;
-      }
-    }
-
-    object = parameters.get( COSIGN_SERVER_CHECK_DELAY_INIT_PARAM );
-    
-    if ( object != null )
-      serverCheckDelay = Long.parseLong( object.toString() ) * 1000;
-
-    // Check if a principal already exists.
-    Iterator iterator = subject.getPrincipals().iterator();
-    CosignPrincipal principal = null;
-
-    while ( iterator.hasNext() )
-    {
-      object = iterator.next();
-
-      if ( object instanceof CosignPrincipal )
-      {
-        principal = (CosignPrincipal)object;
-        break;
-      }
-    }
-
-    // 'principal' is null if this is a first login.
-    if ( principal != null )
-    {
-      if ( checkClientIP &&
-           !request.getRemoteAddr().equals( principal.getAddress() ) &&
-           !request.getRemoteAddr().equals( "127.0.0.1" ) )
-      {
-        throw new FailedLoginException( "The client's IP address has changed." );
-      }
-
-      if ( ( System.currentTimeMillis() - principal.getTimestamp() ) < serverCheckDelay )
-        return false;
-    }
 
     return true;
   }
 
   /**
+   * This method sets a new cosign service cookie and redirects the user to the
+   * login url.  
+   * @return Returns false if the user's request is finished and should not
+   *    be processed by any other filters, or true if the request should
+   *    continue to be processed.
    * @see edu.umich.auth.ServletCallbackHandler#handleFailedLogin( Exception )
    */
-  public void handleFailedLogin( Exception ex )
-    throws ServletException
-  {
-    if ( ex instanceof FailedLoginException )
-    {
-      /* The session is being invalidated here since, if someone logs out
-       * of another Cosign service, and someone else uses their same browser
-       * window, logs into Cosign, and then comes to an app. that's Cosign
-       * protects, the previous user's session will still be active.
-       * 
-       * We should perhaps make this optional, and allow the admin. to define
-       * a default index page that clears out the last user's session information.
-       */
-       
-      request.getSession().invalidate();
+  public boolean handleFailedLogin( Exception ex ) throws ServletException {
+    /*
+     * The session is being invalidated here since, if someone logs out of
+     * another Cosign service, and someone else uses their same browser
+     * window, logs into Cosign, and then comes to an app. that's Cosign
+     * protects, the previous user's session will still be active.
+     * 
+     * We should perhaps make this optional, and allow the admin. to define a
+     * default index page that clears out the last user's session information.
+     */
+    if ( ex instanceof FailedLoginException ) {
       
-      /* Generate the cookie and assign it to the response. */
-      
-      String cookieString = new CosignCookie().toString();
-      Cookie cookie = new Cookie( parameters.get( COSIGN_SERVICE_INIT_PARAM ).toString(), cookieString );
-      cookie.setPath( "/" );
+      // Log the reason for the failed login
+      if ( log.isDebugEnabled() ) {
+        log.debug( ex.getMessage() );
+      }
 
+      // If a CosignPrincipal exists in this user's session, we need to 
+      // invalidate it.
+      if ( getCosignPrincipal() != null ) {
+        log.debug( "Invalidating HTTP servlet session." );
+        request.getSession().invalidate();
+      }
+      
+      // If 'AllowPublicAccess' is enabled, we can ignore any login errors
+      // and allow the user into the website
+      boolean allowPublicAccess = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.ALLOW_PUBLIC_ACCESS)).booleanValue();
+      if ( allowPublicAccess ) {
+        log.debug( "Anonymous user permitted access to site." );
+        return true;
+      }
+
+      /* Generate the cookie and assign it to the response. */
+      String cookieName = getCookieName ();
+      CosignCookie cosignCookie = new CosignCookie();
+      Cookie cookie = new Cookie( cookieName, cosignCookie.getCookie() );
+      cookie.setPath( "/" );
+      
+      // If Cosign is in HTTPS-only mode, we need to mark the cookie as secure
+      boolean isHttpOnly = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.HTTPS_ONLY )).booleanValue(); 
+      if ( isHttpOnly ) {
+        cookie.setSecure( true );
+      }
       response.addCookie( cookie );
 
-      /* Construct the query string to send to weblogin server.
+      /*
+       * Construct the query string to send to weblogin server.
        * 
-       * This code was taken from javax.servlet.http.HttpUtils
-       *   since it was deprecated in J2EE 1.3, yet we want to support J2EE 1.2;
-       *   consequently, we cannot use request.getRequestURL() since the method was
-       *   introduced in J2EE 1.2.
+       * This code was taken from javax.servlet.http.HttpUtils since it was
+       * deprecated in J2EE 1.3, yet we want to support J2EE 1.2; consequently,
+       * we cannot use request.getRequestURL() since the method was introduced
+       * in J2EE 1.2.
        */
-      
       String queryString = request.getQueryString();
-      queryString = ( null == queryString ) ? "" : "?" + queryString;
+      queryString = (null == queryString) ? "" : "?" + queryString;
 
       StringBuffer requestURL = new StringBuffer();
       String scheme = request.getScheme();
       int port = request.getServerPort();
-        
+      
+      // If we are in secure HTTPS-only mode, we need to fudge the current URL
+      // so that it is HTTPS.
+      if ( isHttpOnly ) {
+        scheme = "https";
+        if ( !request.isSecure() ) {
+          port = ((Integer)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.HTTPS_PORT )).intValue();
+        }
+      }
+
       requestURL.append( scheme ); // http, https
       requestURL.append( "://" );
       requestURL.append( request.getServerName() );
-        
-      if ( ( scheme.equals( "http" ) && port != 80 ) ||
-           ( scheme.equals( "https" ) && port != 443 ) )
-      {
+
+      if ((scheme.equals( "http" ) && port != 80) || (scheme.equals( "https" ) && port != 443)) {
         requestURL.append( ':' );
-        requestURL.append( request.getServerPort() );
+        requestURL.append( port );
       }
-        
+
       requestURL.append( request.getRequestURI() );
+      requestURL.append( queryString );
+      
+      // If a site entry URL was provided, we will use that for the redirect, 
+      // not the current URL.
+      String siteEntryUrl = (String)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_SITE_ENTRY_URL );
+      if ( siteEntryUrl == null ) {
+        siteEntryUrl = requestURL.toString();
+      }
+
+      // If the HTTP method was POST and we have a valid PostErrorRedirectUrl, we will redirect
+      // to that URL.  Otherwise, we will redirect to the normal login url.
+      String loginUrl;
+      String postRedirectErrorUrl = (String)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_POST_ERROR_URL );
+      if ( request.getMethod().toLowerCase().equals("post") ) {
+        loginUrl = postRedirectErrorUrl;
+      } else {
+        loginUrl = (String) CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_REDIRECT_URL );
+      }
 
       /*
        * Redirect the client to the weblogin server.
        */
+      try {   
+        String redirectUrl = loginUrl + "?" + getCookieName() + "=" + cosignCookie.getRandom() + ";&" + siteEntryUrl;
+        if ( log.isDebugEnabled() ) {
+          log.debug( "Redirecting user to: " + redirectUrl );
+        }
+        response.sendRedirect( redirectUrl );
+        
+      } catch (Exception e) {
+        // Hmm ... we weren't able to redirect the user to the login page.  We need
+        // to send him a 503.
+        throw new ServletException(e);
+      }
 
-      try
-      {
-        response.sendRedirect( parameters.get( COSIGN_LOGIN_SERVER_INIT_PARAM ) + "/?" +
-                               parameters.get( COSIGN_SERVICE_INIT_PARAM ) + "=" + cookieString + ";&" +
-                               requestURL + queryString );
-      }
-      catch ( Exception e )
-      {
-        throw new ServletException( e );
-      }
+    } else {
+      // we didn't handle the exception and anon access isn't enabled, 
+      // we want to display a 503.
+      throw new ServletException(ex);
     }
+    
+    // FALSE indicates that we don't want to continue processing other filters
+    return false;
   }
 
   /**
+   * This method creates a wrapper for the HttpServletRequest to provide
+   * the client application with access to the cosign authentication details.
    * @see edu.umich.auth.ServletCallbackHandler#handleSuccessfulLogin()
    */
-  public void handleSuccessfulLogin() throws ServletException
-  {
-    // Check if a principal already exists.
-    Iterator iterator = subject.getPrincipals().iterator();
-    Object object;
-    CosignPrincipal principal = null;
-
-    while ( iterator.hasNext() )
-    {
-      object = iterator.next();
-
-      if ( object instanceof CosignPrincipal )
-      {
-        principal = (CosignPrincipal)object;
-        break;
-      }
-    }
-
-    if ( principal == null )
-      throw new IllegalStateException( "CosignPrincipal does not exist." );
+  public void handleSuccessfulLogin() throws ServletException {
     
+    // Check if a principal already exists.
+    CosignPrincipal principal = getCosignPrincipal();
+    if (principal == null) {
+      throw new IllegalStateException( "CosignPrincipal does not exist." );
+    }
     request = new AuthFilterRequestWrapper( request, principal, "CoSign" );
   }
 
-  public HttpServletResponse getResponse()
-  {
+  /**
+   * This method returns the HttpServletResponse of the current user. 
+   */
+  public HttpServletResponse getResponse() {
     return response;
   }
 
+  /**
+   * This method returns the HttpServletRequest of the current user.  This
+   * HttpServletRequest might be the wrapped version created by 
+   * handleSuccessfulLogin.
+   */
   public HttpServletRequest getRequest() {
     return request;
   }
 
   /**
+   * This method processes all the callbacks of CosignLoginModule and
+   * provides access to the cookie name, cookie value, and ip addr.
    * @see edu.umich.auth.ServletCallbackHandler#handle( Callback[] )
    */
-  public void handle( Callback[] callbacks )
-    throws IOException, UnsupportedCallbackException
-  {
-    for (int i = 0; i < callbacks.length; i++)
-    {
+  public void handle( Callback[] callbacks ) throws IOException,
+      UnsupportedCallbackException {
+    for (int i = 0; i < callbacks.length; i++) {
       TextInputCallback inputCallback;
       String string;
 
-      if ( callbacks[ i ] instanceof TextInputCallback )
-      {
-        inputCallback = (TextInputCallback)callbacks[ i ];
+      if (callbacks[i] instanceof TextInputCallback) {
+        inputCallback = (TextInputCallback) callbacks[i];
         string = inputCallback.getPrompt();
 
-        if ( string.equals( CosignLoginModule.REMOTE_COOKIE_CODE ) )
-        {
+        if (string.equals( CosignLoginModule.COOKIE_VALUE_IN_CODE )) {
           Cookie[] cookies = request.getCookies();
 
           // No cookies...
-          if ( cookies == null )
+          if (cookies == null)
             return;
 
           // Find the cosign service cookie.
-          for ( int j = 0; j < cookies.length; j++ )
-          {
-            if ( cookies[ j ].getName().equals( parameters.get( COSIGN_SERVICE_INIT_PARAM ).toString() ) )
-              inputCallback.setText( cookies[ j ].getValue() );
+          for (int j = 0; j < cookies.length; j++) {
+            if (cookies[j].getName().equals( getCookieName() ))
+              inputCallback.setText( cookies[j].getValue() );
           }
-        }
-        else if ( string.equals( CosignLoginModule.REMOTE_IP_CODE ) )
+
+        } else if (string.equals( CosignLoginModule.COOKIE_NAME_IN_CODE )) {
+          inputCallback.setText( getCookieName() );
+
+        } else if (string.equals( CosignLoginModule.IP_ADDR_IN_CODE )) {
           inputCallback.setText( request.getRemoteAddr() );
-        else if ( string.equals( CosignLoginModule.SERVICE_NAME_CODE ) )
-          inputCallback.setText( parameters.get( COSIGN_SERVICE_INIT_PARAM ).toString() );
-        else
-          throw new UnsupportedCallbackException( callbacks[ i ], "Unrecognized text callback request." );
-      }
-      else
-        throw new UnsupportedCallbackException( callbacks[ i ], "Unrecognized callback type." );
+
+        } else {
+          throw new UnsupportedCallbackException( callbacks[i],
+              "Unrecognized text callback request." );
+        }
+      } else
+        throw new UnsupportedCallbackException( callbacks[i],
+            "Unrecognized callback type." );
     }
   }
+  
+  /**
+   * This method attempts to retrieve the CosignPrincipal from the
+   * current Subject object.  
+   * @return  CosignPrincipal Active CosignPrincipal or null if 
+   *    not found.
+   */
+  private CosignPrincipal getCosignPrincipal () {
+    // Check if a principal already exists.
+    Iterator iterator = subject.getPrincipals().iterator();
+    Object object;
+    CosignPrincipal principal = null;
+
+    while (iterator.hasNext()) {
+      object = iterator.next();
+      if (object instanceof CosignPrincipal) {
+        principal = (CosignPrincipal) object;
+        break;
+      }
+    }
+    return principal;
+  }
+
+  /**
+   * This method constructs a cookie name from the ServiceName config property.
+   */
+  private String getCookieName() {
+    String serviceName = (String) CosignConfig.INSTANCE
+            .getPropertyValue( CosignConfig.SERVICE_NAME );
+    if ( ( serviceName.startsWith( COOKIE_NAME_PREFIX ) ) && ( COOKIE_NAME_PREFIX.length() < serviceName.length()) ) {
+      return serviceName;
+    }
+    return COOKIE_NAME_PREFIX + serviceName;
+  }
+
 }

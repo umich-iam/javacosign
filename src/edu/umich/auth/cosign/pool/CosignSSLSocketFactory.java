@@ -1,12 +1,17 @@
 package edu.umich.auth.cosign.pool;
 
 import javax.net.ssl.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sun.net.ssl.*;
 import java.net.Socket;
 import java.security.*;
 import java.io.*;
 
 import edu.umich.auth.cosign.CosignConfig;
+import edu.umich.auth.cosign.util.RWLock;
 
 /**
  * This singleton class creates SSL Sockets for Cosign connections. It
@@ -21,81 +26,29 @@ public class CosignSSLSocketFactory {
 
 	public static final CosignSSLSocketFactory INSTANCE = new CosignSSLSocketFactory();
 
-	/**
-	 * The SSL socket factory to create secure Cosign connection
-	 * @uml.property name="sslSocketFactory"
-	 * @uml.associationEnd multiplicity="(1 1)"
-	 */
-	private SSLSocketFactory sslSocketFactory;
+	// The SSL socket factory to create secure Cosign connection
+	private SSLSocketFactory sslSocketFactory = null;
 
-	/**
+  // Reader/writer lock to prevent software from creating an SSL connection
+  // while we are rebuilding the factory
+  private RWLock rwLock = new RWLock();
+
+  // Used for logging info and error messages
+  private Log log = LogFactory.getLog( CosignSSLSocketFactory.class );
+
+  /**
 	 * Constructor for CosignSSLSocketFactory.
 	 */
 	private CosignSSLSocketFactory() {
-		super();
 		init();
-	}
+    CosignConfig.INSTANCE.addUpdateListener( new CosignConfig.UpdateListener () {
 
-	/**
-	 * This methods do a bunch of SSL initialization.  It adds the SSL 
-	 * provider (For Java 1.3 backward compatibility). It creates the
-	 * SSLContext with the keystore/truststore specified by
-	 * the CosignConfig class.
-	 */
-	private void init() {
-		try {
-			// Adds this provider for Java 1.3 backward compatibility
-			Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-			
-			// Creates SSL Context
-			SSLContext ctx = SSLContext.getInstance("TLS");
-			
-			// Creates KeyManager Factory
-			KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-			
-			// Creates TrustManager Factory
-			TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
-			
-			// Creates a keystore instance
-			KeyStore ks = KeyStore.getInstance("JKS");
-			
-			// Gets the location the keystore from CosignConfig
-			String keyStorePath = CosignConfig.INSTANCE.getProperty("KEYSTORE_PATH");
-			
-			// Gets the password of the keystore from ConsignConfig
-			String keyStorePwd = CosignConfig.INSTANCE.getProperty("KEYSTORE_PASSWORD");
-			
-			// Loads the keystore into memory
-			ks.load(new FileInputStream(keyStorePath), keyStorePwd.toCharArray());
-			
-			// Initializes KeyManager Factory
-			kmf.init(ks, keyStorePwd.toCharArray());
-			
-			// Initializes TrustManager Factory
-			tmf.init(ks);
-			
-			// Initializes the SSL Context with KeyManager and TrustManager Factory
-			ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-			
-			// Get a socket factory from the context
-			this.sslSocketFactory = (SSLSocketFactory) ctx.getSocketFactory();
-			
-		} catch (IOException ioe) {
-			System.out.println("Failed to locate keystore file!");
-			ioe.printStackTrace();
-		} catch (Exception e) {
-			System.out.println("Failed to create CosignSSLSccketFactory!");
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * This method reInitializes the SSL Socket Factory if 
-	 * the CosignConfig file has been modified.
-	 */
-	public synchronized void reInitialize() {
-		System.out.println("Re-initialize the CosignSSLSocketFactory!");
-		init();
+      public void configUpdated() {
+        // Whenever CosignConfig is updated, we need to re-initialize the SSLSocketFactory
+        init();
+      }
+      
+    });
 	}
 
 	/**
@@ -107,10 +60,75 @@ public class CosignSSLSocketFactory {
 	 * @return				SSL Socket for Cosign connection
 	 * @throws IOException
 	 */
-	public SSLSocket createSSLSocket(Socket s, String hostname, int port,
-			boolean autoClose) throws IOException {
-		return (SSLSocket) sslSocketFactory.createSocket(s, hostname, port,
-				autoClose);
+	public SSLSocket createSSLSocket(Socket s, String hostname, int port, boolean autoClose) throws IOException {
+    rwLock.getReadLock();
+    try {
+      if (sslSocketFactory == null) {
+        throw new IllegalStateException( "SSLSocketFactory has not been initialized." );
+      }
+    		return (SSLSocket) sslSocketFactory.createSocket(s, hostname, port, autoClose);
+    } finally {
+      rwLock.releaseLock();
+    }
 	}
+
+  /**
+   * This methods do a bunch of SSL initialization.  It adds the SSL 
+   * provider (For Java 1.3 backward compatibility). It creates the
+   * SSLContext with the keystore/truststore specified by
+   * the CosignConfig class.
+   */
+  private synchronized void init() {
+    rwLock.getWriteLock();
+    try {
+      // Adds this provider for Java 1.3 backward compatibility
+      Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+      
+      // Creates SSL Context
+      SSLContext ctx = SSLContext.getInstance("TLS");
+      
+      // Creates KeyManager Factory
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+      
+      // Creates TrustManager Factory
+      TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+      
+      // Creates a keystore instance
+      KeyStore ks = KeyStore.getInstance("JKS");
+      
+      // Gets the location the keystore from CosignConfig
+      String keyStorePath = (String)CosignConfig.INSTANCE.getPropertyValue(CosignConfig.KEY_STORE_PATH);
+      
+      // Gets the password of the keystore from ConsignConfig
+      String keyStorePwd = (String)CosignConfig.INSTANCE.getPropertyValue(CosignConfig.KEY_STORE_PASSWORD);
+      
+      // Loads the keystore into memory
+      ks.load(new FileInputStream(keyStorePath), keyStorePwd.toCharArray());
+      
+      // Initializes KeyManager Factory
+      kmf.init(ks, keyStorePwd.toCharArray());
+      
+      // Initializes TrustManager Factory
+      tmf.init(ks);
+      
+      // Initializes the SSL Context with KeyManager and TrustManager Factory
+      ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+      
+      // Get a socket factory from the context
+      this.sslSocketFactory = (SSLSocketFactory) ctx.getSocketFactory();
+      
+    } catch (IOException ioe) {
+      log.error("Failed to locate keystore file!", ioe);
+      this.sslSocketFactory = null;
+      
+    } catch (Exception e) {
+      log.error("Failed to create CosignSSLSccketFactory!", e);
+      this.sslSocketFactory = null;
+
+    } finally {
+      rwLock.releaseLock();
+    }
+
+  }
 
 }

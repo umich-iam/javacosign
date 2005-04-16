@@ -1,58 +1,21 @@
-<!DOCTYPE web-app
-          PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
-          "http://java.sun.com/dtd/web-app_2_3.dtd">
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+    version="2.4">
+  
+  <display-name>Welcome to Tomcat</display-name>
+  <description>
+     Welcome to Tomcat
+  </description>
 
-<web-app>
   <filter>
     <filter-name>Cosign Authentication Filter</filter-name>
-    <filter-class>edu.umich.auth.AuthenticationFilter</filter-class>
+    <filter-class>edu.umich.auth.cosign.CosignAuthenticationFilter</filter-class>
 
     <init-param>
-      <param-name>Auth.LoginConfiguration</param-name>
-      <param-value>CosignAuthentication</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>Auth.JAASConfigurationFile</param-name>
-      <param-value>C:\Program Files\eclipse\workspace\JavaCosign\etc\jaas.conf</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>Auth.LoginModule</param-name>
-      <param-value>edu.umich.auth.cosign.CosignLoginModule</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>Auth.CallbackHandler</param-name>
-      <param-value>edu.umich.auth.cosign.CosignServletCallbackHandler</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>Auth.Cosign.ServiceName</param-name>
-      <param-value>cosign-java</param-value>
-    </init-param>
-
-    <init-param>
-      <param-name>Auth.Cosign.LoginServer</param-name>
-      <param-value>https://weblogin.umich.edu</param-value>
-    </init-param>
-
-	<!--
-	  OPTIONAL: Sets whether or not login should fail if the client's IP address changes.
-				The default is 'true'.
-	-->
-    <init-param>
-      <param-name>Auth.Cosign.CheckClientIP</param-name>
-      <param-value>false</param-value>
-    </init-param>
-
-	<!--
-	  OPTIONAL: Sets how many seconds between checks to the Cosign server.
-				The default is 60 seconds.
-	-->
-    <init-param>
-      <param-name>Auth.Cosign.ServerCheckDelay</param-name>
-      <param-value>30</param-value>
+      <param-name>Cosign.ConfigurationFile</param-name>
+      <param-value>/Developer/Applications/Eclipse/workspace/JavaCosign/etc/cosignConfig.xml</param-value>
     </init-param>
   </filter>
 
@@ -67,7 +30,7 @@
     
     <init-param>
       <param-name>Auth.JAASConfigurationFile</param-name>
-      <param-value>C:\Program Files\eclipse\workspace\JavaCosign\etc\jaas.conf</param-value>
+      <param-value>/Developer/Applications/Eclipse/workspace/JavaCosign/etc/jaas.conf</param-value>
     </init-param>
     
     <init-param>
@@ -110,4 +73,5 @@
       <filter-name>Krb5 Authentication Filter</filter-name>
       <url-pattern>/krb5-secure/*</url-pattern>
   </filter-mapping>
+
 </web-app>

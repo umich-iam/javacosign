@@ -22,6 +22,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This class is a Servlet Specification v2.3 Servlet Filter for
  * user authentication via a JAAS <code>LoginModule</code>.
@@ -39,7 +42,6 @@ public class AuthenticationFilter implements Filter
 {
   // Configuration parameter names (from web.xml).
   public static final String LOGIN_CONFIG_INIT_PARAM     = "Auth.LoginConfiguration";
-  public static final String LOGIN_MODULE_INIT_PARAM     = "Auth.LoginModule";
   public static final String CALLBACK_HANDLER_INIT_PARAM = "Auth.CallbackHandler";
   public static final String JAAS_CONFIG_FILE_INIT_PARAM = "Auth.JAASConfigurationFile";
 
@@ -52,12 +54,18 @@ public class AuthenticationFilter implements Filter
   private static final String JAAS_CONFIG_PROPERTY = "java.security.auth.login.config";
 
   // Class variables configured in the init method.
+  private String appConfigurationEntryName;
   private Class callbackHandlerClass;
-  private FilterConfig filterConfig;
   private Map parameters = new HashMap();
 
   private File jaasFile;
+  
+  // When this boolean is false, the filter will return "503" HTTP errors
+  private boolean isConfigValid = false;
 
+  // Commons Logging for reporting errors/debug info
+  private Log log = LogFactory.getLog ( AuthenticationFilter.class );
+  
   /**
    * Initializes the filter, retrieving and verifying the properties
    * from the <code>FilterConfig</code> and constructing the appropriate
@@ -70,16 +78,11 @@ public class AuthenticationFilter implements Filter
    *  
    * @see javax.servlet.Filter#init(FilterConfig)
    */
-  public void init( FilterConfig filterConfig )
-    throws ServletException
-  {
-  	this.filterConfig = filterConfig;
+  public void init( FilterConfig filterConfig ) {
+    try {
 
-  	try
-    {
-  	  /* Instantiate a JAAS config. file, and verify that it's readable. */
-  	  
-  	  jaasFile = new File( filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) );
+      /* Instantiate a JAAS config. file, and verify that it's readable. */
+      jaasFile = new File( filterConfig.getInitParameter( JAAS_CONFIG_FILE_INIT_PARAM ) );
 
       if ( !jaasFile.exists() )
         throw new ServletException( "Cannot find JAAS configuration file " +
@@ -98,18 +101,20 @@ public class AuthenticationFilter implements Filter
       Object obj;
       Enumeration eNum = filterConfig.getInitParameterNames();
 
-      while ( eNum.hasMoreElements() )
-      {
+      while ( eNum.hasMoreElements() ) {
         obj = eNum.nextElement();
         parameters.put( obj, filterConfig.getInitParameter( obj.toString() ) );
       }
 
       // Prepare the callback handler class for instantiation later.
-      callbackHandlerClass = Class.forName( filterConfig.getInitParameter( CALLBACK_HANDLER_INIT_PARAM ) );
-    }
-    catch ( Exception ex )
-    {
-      throw new ServletException( ex );
+      setJAASAppConfigurationEntryName( filterConfig.getInitParameter( LOGIN_CONFIG_INIT_PARAM ) );
+      setJAASServletCallbackHandler ( Class.forName( filterConfig.getInitParameter( CALLBACK_HANDLER_INIT_PARAM ) ) );
+      this.isConfigValid = true;
+      
+    } catch ( Exception ex ) {
+      log.error( "Failed to init AuthenticationFilter!", ex );
+      this.isConfigValid = false;
+
     }
   }
 
@@ -128,63 +133,100 @@ public class AuthenticationFilter implements Filter
    * @see edu.umich.auth.ServletCallbackHandler
    * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
    */
-  public void doFilter( ServletRequest request, ServletResponse response, FilterChain filterChain )
-		throws IOException, ServletException
-  {
-    // Insure that the JAAS configuration property hasn't been overwritten.
-    // Synchronization may be worthwhile between here and the login call.
-    if ( !System.getProperty( JAAS_CONFIG_PROPERTY ).equals( jaasFile.getAbsolutePath() ) )
-      throw new ServletException( "JAAS configuration file system property has been overwritten.\n" +
-          						  "NOTE: All Web applications configured to use JAAS must share the same JAAS configuration file." );
+  public void doFilter( ServletRequest request, ServletResponse response, FilterChain filterChain ) 
+    throws IOException {
 
     HttpServletRequest httpRequest = (HttpServletRequest)request;
     HttpServletResponse httpResponse = (HttpServletResponse)response;
 
-    // Get, or instantiate, the a Subject for user Principals and Credentials.
-    Subject subject;
-    Object object = httpRequest.getSession().getAttribute( USER_SUBJECT_ATTRIBUTE );
-
-    if ( object == null )
-      httpRequest.getSession().setAttribute( USER_SUBJECT_ATTRIBUTE, subject = new Subject() );
-    else if ( object instanceof Subject )
-      subject = (Subject) object;
-    else
-	  throw new ServletException( "Invalid authentication Subject in user's session." );
-
-    ServletCallbackHandler callbackHandler = null;
-
-    try
-    {
-      // Create a callback handler of the type specified in the filter configuration.
-      callbackHandler = (ServletCallbackHandler)callbackHandlerClass.newInstance();
-
-      // Attempt to log the user in if the callback handler initializes.
-      if ( callbackHandler.init( parameters, httpRequest, httpResponse, subject ) )
-      {
-        LoginContext loginContext = new LoginContext( filterConfig.getInitParameter( LOGIN_CONFIG_INIT_PARAM ), subject, callbackHandler );
-        loginContext.login();
+    try {
+      
+      // Ensure that the filter and JAAS is configured properly
+      validateFilter ();
+        
+      // Get, or instantiate, the a Subject for user Principals and Credentials.
+      Subject subject;
+      Object object = httpRequest.getSession().getAttribute( USER_SUBJECT_ATTRIBUTE );
+  
+      if ( object == null ) {
+        httpRequest.getSession().setAttribute( USER_SUBJECT_ATTRIBUTE, subject = new Subject() );
+      } else if ( object instanceof Subject ) {
+        subject = (Subject) object;
+      } else {
+        throw new ServletException( "Invalid authentication Subject in user's session." );
       }
+      
+      ServletCallbackHandler callbackHandler = null;
+  
+      try {
+        // Create a callback handler of the type specified in the filter configuration.
+        callbackHandler = (ServletCallbackHandler)callbackHandlerClass.newInstance();
+  
+        // Attempt to log the user in if the callback handler initializes.
+        if ( callbackHandler.init( parameters, httpRequest, httpResponse, subject ) ) {
+          LoginContext loginContext = new LoginContext( appConfigurationEntryName, subject, callbackHandler );
+          loginContext.login();
+        }
+        callbackHandler.handleSuccessfulLogin();
+        
+      } catch ( LoginException ex ) {
+        if ( !callbackHandler.handleFailedLogin( ex ) ) {
+          return;
+        }
+      }
+      
+      // User authenticated; continue request processing.
+      filterChain.doFilter( callbackHandler.getRequest(), callbackHandler.getResponse() );
+
+    } catch ( Exception ex ) {
+      // log the error and give the user a "503" HTTP error
+      log.error( ex.getMessage(), ex );
+      httpResponse.sendError ( HttpServletResponse.SC_SERVICE_UNAVAILABLE, ex.getMessage() );
+      
     }
-    // Authentication failed.
-    catch ( LoginException ex )
-    {
-      callbackHandler.handleFailedLogin( ex );
-      return;
-    }
-    catch ( Exception ex )
-    {
-      throw new ServletException( ex );
-    }
-    
-    callbackHandler.handleSuccessfulLogin();
-    
-    // User authenticated; continue request processing.
-    filterChain.doFilter( callbackHandler.getRequest(), callbackHandler.getResponse() );
+  
   }
 
   /**
    * @see javax.servlet.Filter#destroy()
    */
-  public void destroy()
-  {}
+  public void destroy() {
+  }
+  
+  /**
+   * The method sets the JAAS App Configuration Entry name that will be used
+   * to lookup the appropriate JAAS LoginModule
+   */
+  protected void setJAASAppConfigurationEntryName ( String appConfigurationEntryName ) {
+      this.appConfigurationEntryName = appConfigurationEntryName;
+  }
+  
+  /**
+   * This method sets the ServletCallbackHandler that will be given
+   * to the JAAS LoginModule
+   */
+  protected void setJAASServletCallbackHandler ( Class callbackHandlerClass ) {
+      this.callbackHandlerClass = callbackHandlerClass;
+  }
+  
+  /**
+   * This method ensures that the filter initialized correctly and that JAAS is
+   * properly setup.
+   */
+  protected void validateFilter () throws ServletException {
+    
+    // Ensure that the initialization of the filter proceeded
+    if ( !this.isConfigValid ) {
+      throw new ServletException( "AuthorizationFilter failed to initialize." );      
+    }
+      
+    // Insure that the JAAS configuration property hasn't been overwritten.
+    // Synchronization may be worthwhile between here and the login call.
+    if ( !System.getProperty( JAAS_CONFIG_PROPERTY ).equals( jaasFile.getAbsolutePath() ) ) {
+      throw new ServletException( "JAAS configuration file system property has been overwritten.\n" +
+                                    "NOTE: All Web applications configured to use JAAS must share the same JAAS configuration file." );
+    }
+      
+  }
+ 
 }
