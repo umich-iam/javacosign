@@ -22,11 +22,35 @@ public class CosignAuthenticationFilter extends AuthenticationFilter {
   // Psuedo-unique JAAS configuration name. We don't want a collision with a
   // name that is in a "jaas.conf" file.
   private static final String COSIGN_APP_CONFIG_ENTRY_NAME = 
-      "edu.umich.auth.cosign.CosignAuthenticationFilter:" + 
-      CosignAuthenticationFilter.class.hashCode() + ":" + 
-      System.currentTimeMillis();
+      "edu.umich.auth.cosign.CosignAuthenticationFilter:JAAS";
     
   private String cosignConfigFile;
+  
+  /********************************************************************************
+   * This class provide a wrapper for the necessary JAAS app config entry
+   ********************************************************************************/
+  private static class CosignAppConfigurationEntry extends AppConfigurationEntry {
+
+    /**
+     * Constructor for JAAS cosign app configuration entry
+     */
+    public CosignAppConfigurationEntry( String cosignConfigFile ) {
+      super( CosignLoginModule.class.getName(), 
+          AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+          createOptions( cosignConfigFile ) );
+    }
+
+    /**
+     * Create a Map which contains the cosignConfigFile 
+     */
+    private static HashMap createOptions ( String cosignConfigFile ) {
+      HashMap options = new HashMap();
+      options.put ( CosignLoginModule.COSIGN_CONFIG_FILE_OPTION, cosignConfigFile );
+      return options;
+    }
+    
+  }
+  
     
   /**
    * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
@@ -61,19 +85,10 @@ public class CosignAuthenticationFilter extends AuthenticationFilter {
       currentConfiguration.getAppConfigurationEntry( COSIGN_APP_CONFIG_ENTRY_NAME );
     
     if ( cosignAppConfigurationEntries == null ) {
-        
-      // Create a Map which contains the cosignConfigFile 
-      HashMap options = new HashMap();
-      options.put ( CosignLoginModule.COSIGN_CONFIG_FILE_OPTION, cosignConfigFile );
-      
-      // Create an AppConfigurationEntry that will invoke the CosignLoginModule
-      final AppConfigurationEntry[] newCosignAppConfigurationEntries = new AppConfigurationEntry[] {
-              new AppConfigurationEntry(
-                      CosignLoginModule.class.getName(), 
-                      AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
-                      options )
+      final CosignAppConfigurationEntry[] newCosignAppConfigurationEntries = new CosignAppConfigurationEntry[] {
+          new CosignAppConfigurationEntry( cosignConfigFile )
       };
-      
+        
       // Wrap the existing Configuration with one that will return
       // our AppConfigurationEntry when requested
       Configuration.setConfiguration(new Configuration () {
@@ -98,9 +113,14 @@ public class CosignAuthenticationFilter extends AuthenticationFilter {
       // Verify that the CosignLoginModule configuration is using the same configuration
       // that we want it to use.  If not, throw an error since only one CosignConfig is
       // possible within a single JVM (for now, at least).
-      String cosignConfigFile = (String) 
-        cosignAppConfigurationEntries[0].getOptions().get( CosignLoginModule.COSIGN_CONFIG_FILE_OPTION );
-      if ( ( cosignConfigFile == null) || ( !cosignConfigFile.equals( this.cosignConfigFile ) ) ) {
+      String cosignConfigFile = (String) cosignAppConfigurationEntries[0].getOptions().get( 
+          CosignLoginModule.COSIGN_CONFIG_FILE_OPTION );
+      if ( ( cosignAppConfigurationEntries.length == 0 ) || ( ! ( cosignAppConfigurationEntries[0] instanceof CosignAppConfigurationEntry ) ) ) {
+        throw new ServletException ( 
+            "Possible duplicate JAAS app configuration name detected: " + COSIGN_APP_CONFIG_ENTRY_NAME + ". " + 
+            "Only one JAAS app configuration of that name is possible for each instance of a JVM." );
+
+      } else if ( ( cosignConfigFile == null ) || ( !cosignConfigFile.equals( this.cosignConfigFile ) ) ) {
         throw new ServletException ( 
             "Cosign config file path is different than expected. " + 
             "Only one CosignConfig file is possible for each instance of a JVM." );

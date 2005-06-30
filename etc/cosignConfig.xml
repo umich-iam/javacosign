@@ -9,9 +9,9 @@
   <CosignServerPort>6663</CosignServerPort>
   <ConnectionPoolSize>20</ConnectionPoolSize>
   
-  <CookieExpireSecs>120</CookieExpireSecs>	
+  <CookieExpireSecs>120</CookieExpireSecs>
   <CookieCacheExpireSecs>30</CookieCacheExpireSecs>
- 
+
   <LoginRedirectUrl>http://weblogin.umich.edu/</LoginRedirectUrl>
   <LoginPostErrorUrl>http://www.umich.edu/</LoginPostErrorUrl>
   <LoginSiteEntryUrl>http://localhost:8080/cosign/</LoginSiteEntryUrl>
@@ -22,6 +22,7 @@
   <HttpsOnly>false</HttpsOnly>
   <HttpsPort>8443</HttpsPort>
   
+  <ClearSessionOnLogin>false</ClearSessionOnLogin>
   <ConfigFileMonitoringIntervalSecs>5</ConfigFileMonitoringIntervalSecs>
   
 </CosignConfig>

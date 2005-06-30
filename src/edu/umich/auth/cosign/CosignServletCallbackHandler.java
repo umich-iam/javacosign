@@ -99,10 +99,21 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
       }
 
       // If a CosignPrincipal exists in this user's session, we need to 
-      // invalidate it.
-      if ( getCosignPrincipal() != null ) {
-        log.debug( "Invalidating HTTP servlet session." );
-        request.getSession().invalidate();
+      // remove it.
+      final CosignPrincipal oldCosignPrincipal = getCosignPrincipal();
+      if ( oldCosignPrincipal != null ) {
+        if ( !subject.getPrincipals().remove(oldCosignPrincipal) ) {
+          throw new ServletException( "Failed to remove cosign principal from subject." );
+        }
+        
+        // optionally, clear the HTTP session to prevent data xfer
+        // between different user sessions
+        final boolean clearSession = ((Boolean)CosignConfig.INSTANCE.getPropertyValue(
+            CosignConfig.CLEAR_SESSION_ON_LOGIN)).booleanValue();
+        if ( clearSession ) {
+          log.debug( "Invalidating HTTP servlet session." );
+          request.getSession().invalidate();
+        }
       }
       
       // If 'AllowPublicAccess' is enabled, we can ignore any login errors
@@ -183,7 +194,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
        * Redirect the client to the weblogin server.
        */
       try {   
-        String redirectUrl = loginUrl + "?" + getCookieName() + "=" + cosignCookie.getRandom() + ";&" + siteEntryUrl;
+        String redirectUrl = loginUrl + "?" + getCookieName() + "=" + cosignCookie.getNonce() + ";&" + siteEntryUrl;
         if ( log.isDebugEnabled() ) {
           log.debug( "Redirecting user to: " + redirectUrl );
         }

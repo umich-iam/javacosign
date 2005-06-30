@@ -44,6 +44,7 @@ public class CosignConfig {
   public static final String HTTPS_ONLY               = "HttpsOnly";
   public static final String HTTPS_PORT               = "HttpsPort";
   public static final String CHECK_CLIENT_IP          = "CheckClientIP";
+  public static final String CLEAR_SESSION_ON_LOGIN   = "ClearSessionOnLogin";
   public static final String CONFIG_FILE_MONITOR_INT_SECS = "ConfigFileMonitoringIntervalSecs";
 
   // List of all the properties that will be read from the XML file
@@ -56,7 +57,7 @@ public class CosignConfig {
       new IntegerProperty(COSIGN_SERVER_PORT, new Integer(6663), 0, 65535),
       new IntegerProperty(CONNECTION_POOL_SIZE, new Integer(20), 0, Integer.MAX_VALUE),
       new IntegerProperty(COOKIE_EXPIRE_SECS, new Integer(86400), 0, Integer.MAX_VALUE),
-      new IntegerProperty(COOKIE_CACHE_EXPIRE_SECS, new Integer(60), 0, Integer.MAX_VALUE),
+      new IntegerProperty(COOKIE_CACHE_EXPIRE_SECS, new Integer(120), 0, Integer.MAX_VALUE),
       new StringProperty(LOGIN_REDIRECT_URL),
       new StringProperty(LOGIN_POST_ERROR_URL),
       new StringProperty(LOGIN_SITE_ENTRY_URL, null), 
@@ -64,6 +65,7 @@ public class CosignConfig {
       new BooleanProperty(HTTPS_ONLY, new Boolean(false)),
       new IntegerProperty(HTTPS_PORT, new Integer(443), 0, 65535),
       new BooleanProperty(CHECK_CLIENT_IP, new Boolean(false)),
+      new BooleanProperty(CLEAR_SESSION_ON_LOGIN, new Boolean(false)),
       new IntegerProperty(CONFIG_FILE_MONITOR_INT_SECS, new Integer(30), 5, Integer.MAX_VALUE / 1000)
   };
   
@@ -294,11 +296,16 @@ public class CosignConfig {
           Thread.sleep(configFileMonitoringIntervalSecs * 1000);
           
           log.debug( "MonitoringThread woke up: checking config file for modification" );
-          if ((configFile.exists()) && (configFile.lastModified() > lastUpdate)) {
-            if (log.isInfoEnabled()) {
-              log.info ( configFile.getPath() + " got updated!" );
-            }
-            readProperties( configFile );
+          final boolean wasDeleted = ( ( !configFile.exists() ) && ( isConfigValid ) );
+          final boolean wasUpdated = ( (configFile.exists() ) && ( configFile.lastModified() > lastUpdate ) );
+          if ( wasDeleted && log.isInfoEnabled() ) {
+            log.info ( configFile.getPath() + " got deleted!" );
+          }
+          if ( wasUpdated && log.isInfoEnabled() ) {
+            log.info ( configFile.getPath() + " got updated!" );
+          }
+          if ( wasDeleted || wasUpdated ) {
+            readPropertiesFromConfig( configFile );
             notifyUpdateListeners();
           }
         } catch (InterruptedException ie) {
@@ -318,7 +325,12 @@ public class CosignConfig {
    * This method returns true if the configuration is valid, false otherwise
    */
   public boolean isConfigValid () {
-    return isConfigValid;
+    rwLock.getReadLock();
+    try {
+      return isConfigValid;
+    } finally {
+      rwLock.releaseLock();
+    }
   }
   
   /**
@@ -346,7 +358,7 @@ public class CosignConfig {
     // Create a new thread to monitor the given configFile and
     // read the properties from the file
     File configFile = new File( configFilePath );
-    readProperties( configFile );
+    readPropertiesFromConfig( configFile );
     
     // Start monitoring the config file for changes
     monitoringThread = new MonitoringThread( configFile );
@@ -408,14 +420,15 @@ public class CosignConfig {
 	 * This method reads all the properties in the Cosign
 	 * configuration file.
 	 */
-	private boolean readProperties( File configFile ) {
+	private boolean readPropertiesFromConfig( File configFile ) {
     rwLock.getWriteLock();
     try {
-      // update the file modification time stamp
+      // update the file modification time stamp (returns 0 if file doesn't exist)
       lastUpdate = configFile.lastModified();
 
       // reset the previous properties
       propertyKeyToValue.clear();
+      isConfigValid = false;
       
       // Make sure that we have a semi-valid config file
       if ( ( configFile == null ) || ( !configFile.exists() ) ) {
@@ -427,19 +440,26 @@ public class CosignConfig {
       DocumentBuilder builder = factory.newDocumentBuilder();
       Document document = builder.parse(configFile);
       
-      boolean missingRequiredProperty = false;
+      boolean missingOrInvalidProperty = false;
+      int propertyCount[] = new int[1];
       
       // loop through each of the properties
       Element rootElement = document.getDocumentElement();
       for (int propIdx=0; propIdx<PROPERTIES.length; propIdx++) {
         Property property = PROPERTIES[propIdx];
-        Object propertyValue = property.parseProperty(getNodeValueFromTag(rootElement, property.propertyKey));
+        Object propertyValue = property.parseProperty(getNodeValueFromTag(rootElement, property.propertyKey, propertyCount));
         
-        if ((property.isRequired) && (propertyValue == null)) {
+        if ( propertyCount[0] > 1 ) {
+          if (log.isErrorEnabled()) {
+            log.error("Duplicate property value in config file: " + property.propertyKey);
+          }
+          missingOrInvalidProperty = true;
+
+        } else if ((property.isRequired) && (propertyValue == null)) {
           if (log.isErrorEnabled()) {
             log.error("Required property missing from config file: " + property.propertyKey);
           }
-          missingRequiredProperty = true;
+          missingOrInvalidProperty = true;
           
         } else {
           if ( property.isDefaultValue( propertyValue) ) {
@@ -453,7 +473,7 @@ public class CosignConfig {
       
       // If the config isn't valid due to a missing required property,
       // bail out now
-      if ( missingRequiredProperty ) {
+      if ( missingOrInvalidProperty ) {
         propertyKeyToValue.clear();
         return false;
       }
@@ -505,8 +525,8 @@ public class CosignConfig {
   /**
    * Retrieves the nodeValue from the node with the given tagName
    */
-  private String getNodeValueFromTag (Element parentElement, String tagName) {
-    Element element = getElementByTagName (parentElement, tagName);
+  private String getNodeValueFromTag (Element parentElement, String tagName, int[] propertyCount) {
+    Element element = getElementByTagName (parentElement, tagName, propertyCount);
     if ((element == null) || (element.getFirstChild() == null)) {
       return null;
     }
@@ -516,9 +536,13 @@ public class CosignConfig {
   /**
    * Retrieves the first element from the parent element with the given tagName
    */
-  private Element getElementByTagName (Element parentElement, String tagName) {
+  private Element getElementByTagName (Element parentElement, String tagName, int[] propertyCount) {
     NodeList nodeList = parentElement.getElementsByTagName(tagName);
-    if (nodeList.getLength() == 0) {
+    final int length = nodeList.getLength();
+    if (propertyCount != null) {
+      propertyCount[0] = length;
+    }
+    if (length != 1) {
       return null;
     }
     return (Element)nodeList.item(0);

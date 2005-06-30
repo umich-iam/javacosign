@@ -102,7 +102,7 @@ Install:
   <!-- CookieExpireSecs: optional, defaults to 86400 -->
   <CookieExpireSecs>120</CookieExpireSecs>	
 
-  <!-- CookieCacheExpireSecs: optional, defaults to 60 -->
+  <!-- CookieCacheExpireSecs: optional, defaults to 120 -->
   <CookieCacheExpireSecs>30</CookieCacheExpireSecs> 
 
   <!-- LoginRedirectUrl: required -->
@@ -125,6 +125,9 @@ Install:
 
   <!-- HttpsPort: optional, defaults to 443 -->
   <HttpsPort>8443</HttpsPort>
+  
+  <!-- ClearSessionOnLogin: optional, defaults to false -->
+  <ClearSessionOnLogin>true</ClearSessionOnLogin>
 
   <!-- ConfigFileMonitoringIntervalSecs: optional: defaults to 30 -->
   <ConfigFileMonitoringIntervalSecs>30</ConfigFileMonitoringIntervalSecs>

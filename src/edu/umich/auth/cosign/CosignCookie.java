@@ -13,7 +13,7 @@ public class CosignCookie {
   private static final int COOKIE_LENGTH = 120;
 
   private final String cookie;
-  private final String random;
+  private final String nonce;
   private final long timestamp;
   
   /**
@@ -32,7 +32,7 @@ public class CosignCookie {
    * @param timestamp
    */
   private CosignCookie( String random, long timestamp ) {
-    this.random = random;
+    this.nonce = random;
     this.timestamp = timestamp;
     this.cookie = random + COOKIE_DIVIDER + Long.toString( timestamp );
   }
@@ -48,8 +48,8 @@ public class CosignCookie {
   /**
    * This method will return the random portion of the cosign cookie.
    */
-  public String getRandom() {
-    return random;
+  public String getNonce() {
+    return nonce;
   }
   
   /**

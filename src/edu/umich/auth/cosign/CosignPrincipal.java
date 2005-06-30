@@ -16,7 +16,6 @@ import org.apache.commons.logging.LogFactory;
 public class CosignPrincipal implements Principal, Serializable
 {
   private String name;
-
   private String address;
   private String realm;
   private long timestamp;

@@ -108,12 +108,12 @@ public class CosignLoginModule implements LoginModule {
     // If cookie is invalid, we need to restrict service access.
     CosignCookie cosignCookie = CosignCookie.parseCosignCookie( cookieValue );
     if ( cosignCookie == null ) {
-      throw new FailedLoginException( "The client's service cookie does not exists or is not valid." );
+      throw new FailedLoginException( "The client's service cookie does not exist or is not valid." );
     }
 
     // Check the timestamp on the Cosign Cookie.  If the timestamp is expired, 
     // we need to fail the login so that a new cookie is issued.
-    long cookieExpireMillis = ((Integer) CosignConfig.INSTANCE
+    final long cookieExpireMillis = ((Integer) CosignConfig.INSTANCE
         .getPropertyValue( CosignConfig.COOKIE_EXPIRE_SECS )).intValue() * 1000;
     if ( System.currentTimeMillis() - cosignCookie.getTimestamp() >= cookieExpireMillis ) {
       throw new FailedLoginException( "The client's service cookie has expired." );
@@ -130,15 +130,15 @@ public class CosignLoginModule implements LoginModule {
     }
 
     // 'principal' is null if this is a first login.
+    final boolean checkClientIP = ((Boolean) CosignConfig.INSTANCE
+        .getPropertyValue( CosignConfig.CHECK_CLIENT_IP )).booleanValue();
     if ( userPrincipal != null ) {
-      boolean checkClientIP = ((Boolean) CosignConfig.INSTANCE
-          .getPropertyValue( CosignConfig.CHECK_CLIENT_IP )).booleanValue();
-      if (checkClientIP && !ipAddr.equals( userPrincipal.getAddress() ) && !ipAddr.equals( "127.0.0.1" )) {
+      if (checkClientIP && !ipAddr.equals( userPrincipal.getAddress() )) {
         throw new FailedLoginException( "The client's IP address has changed." );
       }
 
-      // If the cookie is not expired, we don't need to check the CoSign server
-      long cookieCacheExpireMillis = ((Integer) CosignConfig.INSTANCE
+      // If the locally cached cookie is not expired, we don't need to check the CoSign server
+      final long cookieCacheExpireMillis = ((Integer) CosignConfig.INSTANCE
           .getPropertyValue( CosignConfig.COOKIE_CACHE_EXPIRE_SECS )).intValue() * 1000;
       if ((System.currentTimeMillis() - userPrincipal.getTimestamp()) < cookieCacheExpireMillis) {
         if ( log.isDebugEnabled () ) {
@@ -158,14 +158,15 @@ public class CosignLoginModule implements LoginModule {
     }
     
     // Keep trying until we get a server which will serve us,
-    // or there are no servers avaiable in the pool.
-    String cosignResponse = cosignConnectionList.checkCookie( cookieName, cosignCookie.getRandom() );
+    // or there are no servers available in the pool.
+    String cosignResponse = cosignConnectionList.checkCookie( cookieName, cosignCookie.getNonce() );
     cosignCode = CosignConnection.convertResponseToCode ( cosignResponse );
 
     // Return the connection list back to the pool
     try {
       CosignConnectionPool.INSTANCE.returnCosignConnectionList(cosignConnectionList);
     } catch (Exception e) {
+      log.error("Failed to return cosign connections to pool.");
     }
 
     // Translate server response to boolean return or exception.
@@ -186,14 +187,14 @@ public class CosignLoginModule implements LoginModule {
     // The user was validated against the cosign server.  We need to check their
     // user stats as returned by the server to what we expect
     if ( userPrincipal != null ) {
-      if ( !serverPrincipal.getAddress().equals( userPrincipal.getAddress() ) ) {
+      if ( checkClientIP && !serverPrincipal.getAddress().equals( userPrincipal.getAddress() ) ) {
         throw new FailedLoginException( "Server and client disagree about client's IP address" );
       }
       if ( !serverPrincipal.getName().equals( userPrincipal.getName() ) ) {
         throw new FailedLoginException( "Server and client disagree about client's name" );
       }
       if ( !serverPrincipal.getRealm().equals( userPrincipal.getRealm() ) ) {
-        throw new FailedLoginException( "Server and client disagree about client's realm" );
+        log.info("Server and client disagree about client's realm");
       }
     }
 
