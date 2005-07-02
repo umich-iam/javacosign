@@ -14,7 +14,7 @@
 
   <LoginRedirectUrl>http://weblogin.umich.edu/</LoginRedirectUrl>
   <LoginPostErrorUrl>http://www.umich.edu/</LoginPostErrorUrl>
-  <LoginSiteEntryUrl>http://localhost:8080/cosign/</LoginSiteEntryUrl>
+  <LoginSiteEntryUrl>https://localhost:8080/cosign/</LoginSiteEntryUrl>
 
   <CheckClientIP>false</CheckClientIP>
   
@@ -22,7 +22,7 @@
   <HttpsOnly>false</HttpsOnly>
   <HttpsPort>8443</HttpsPort>
   
-  <ClearSessionOnLogin>false</ClearSessionOnLogin>
+  <ClearSessionOnLogin>true</ClearSessionOnLogin>
   <ConfigFileMonitoringIntervalSecs>5</ConfigFileMonitoringIntervalSecs>
   
 </CosignConfig>

@@ -91,60 +91,62 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
      * We should perhaps make this optional, and allow the admin. to define a
      * default index page that clears out the last user's session information.
      */
-    if ( ex instanceof FailedLoginException ) {
+    if ( ! ( ex instanceof FailedLoginException ) ) {
+      // we didn't handle the exception and anon access isn't enabled, 
+      // we want to display a 503.
+      throw new ServletException(ex);
+    }
       
-      // Log the reason for the failed login
-      if ( log.isDebugEnabled() ) {
-        log.debug( ex.getMessage() );
-      }
+    // Log the reason for the failed login
+    if ( log.isDebugEnabled() ) {
+      log.debug( ex.getMessage() );
+    }
 
-      // If a CosignPrincipal exists in this user's session, we need to 
-      // remove it.
-      final CosignPrincipal oldCosignPrincipal = getCosignPrincipal();
-      if ( oldCosignPrincipal != null ) {
-        if ( !subject.getPrincipals().remove(oldCosignPrincipal) ) {
-          throw new ServletException( "Failed to remove cosign principal from subject." );
-        }
-        
-        // optionally, clear the HTTP session to prevent data xfer
-        // between different user sessions
-        final boolean clearSession = ((Boolean)CosignConfig.INSTANCE.getPropertyValue(
-            CosignConfig.CLEAR_SESSION_ON_LOGIN)).booleanValue();
-        if ( clearSession ) {
-          log.debug( "Invalidating HTTP servlet session." );
-          request.getSession().invalidate();
-        }
+    // If a CosignPrincipal exists in this user's session, we need to 
+    // remove it.
+    final CosignPrincipal oldCosignPrincipal = getCosignPrincipal();
+    if ( oldCosignPrincipal != null ) {
+      if ( !subject.getPrincipals().remove(oldCosignPrincipal) ) {
+        throw new ServletException( "Failed to remove cosign principal from subject." );
       }
       
-      // If 'AllowPublicAccess' is enabled, we can ignore any login errors
-      // and allow the user into the website
-      boolean allowPublicAccess = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.ALLOW_PUBLIC_ACCESS)).booleanValue();
-      if ( allowPublicAccess ) {
-        log.debug( "Anonymous user permitted access to site." );
-        return true;
+      // optionally, clear the HTTP session to prevent data xfer
+      // between different user sessions
+      final boolean clearSession = ((Boolean)CosignConfig.INSTANCE.getPropertyValue(
+          CosignConfig.CLEAR_SESSION_ON_LOGIN)).booleanValue();
+      if ( clearSession ) {
+        log.debug( "Invalidating HTTP servlet session." );
+        request.getSession().invalidate();
       }
+    }
+    
+    // If 'AllowPublicAccess' is enabled, we can ignore any login errors
+    // and allow the user into the website
+    boolean allowPublicAccess = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.ALLOW_PUBLIC_ACCESS)).booleanValue();
+    if ( allowPublicAccess ) {
+      log.debug( "Anonymous user permitted access to site." );
+      return true;
+    }
 
-      /* Generate the cookie and assign it to the response. */
-      String cookieName = getCookieName ();
-      CosignCookie cosignCookie = new CosignCookie();
-      Cookie cookie = new Cookie( cookieName, cosignCookie.getCookie() );
-      cookie.setPath( "/" );
+    /* Generate the cookie and assign it to the response. */
+    String cookieName = getCookieName ();
+    CosignCookie cosignCookie = new CosignCookie();
+    Cookie cookie = new Cookie( cookieName, cosignCookie.getCookie() );
+    cookie.setPath( "/" );
+    
+    // If Cosign is in HTTPS-only mode, we need to mark the cookie as secure
+    boolean isHttpsOnly = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.HTTPS_ONLY )).booleanValue(); 
+    if ( isHttpsOnly ) {
+      cookie.setSecure( true );
+    }
+    response.addCookie( cookie );
+
+    // If a site entry URL was provided, we will use that for the redirect, 
+    // not the current URL.
+    String siteEntryUrl = (String)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_SITE_ENTRY_URL );
+    if ( siteEntryUrl == null ) {
       
-      // If Cosign is in HTTPS-only mode, we need to mark the cookie as secure
-      boolean isHttpOnly = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.HTTPS_ONLY )).booleanValue(); 
-      if ( isHttpOnly ) {
-        cookie.setSecure( true );
-      }
-      response.addCookie( cookie );
-
-      /*
-       * Construct the query string to send to weblogin server.
-       * 
-       * This code was taken from javax.servlet.http.HttpUtils since it was
-       * deprecated in J2EE 1.3, yet we want to support J2EE 1.2; consequently,
-       * we cannot use request.getRequestURL() since the method was introduced
-       * in J2EE 1.2.
-       */
+      // Construct the query string to send to weblogin server.
       String queryString = request.getQueryString();
       queryString = (null == queryString) ? "" : "?" + queryString;
 
@@ -154,7 +156,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
       
       // If we are in secure HTTPS-only mode, we need to fudge the current URL
       // so that it is HTTPS.
-      if ( isHttpOnly ) {
+      if ( isHttpsOnly ) {
         scheme = "https";
         if ( !request.isSecure() ) {
           port = ((Integer)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.HTTPS_PORT )).intValue();
@@ -172,44 +174,33 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
 
       requestURL.append( request.getRequestURI() );
       requestURL.append( queryString );
-      
-      // If a site entry URL was provided, we will use that for the redirect, 
-      // not the current URL.
-      String siteEntryUrl = (String)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_SITE_ENTRY_URL );
-      if ( siteEntryUrl == null ) {
-        siteEntryUrl = requestURL.toString();
-      }
 
-      // If the HTTP method was POST and we have a valid PostErrorRedirectUrl, we will redirect
-      // to that URL.  Otherwise, we will redirect to the normal login url.
-      String loginUrl;
-      String postRedirectErrorUrl = (String)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_POST_ERROR_URL );
-      if ( request.getMethod().toLowerCase().equals("post") ) {
-        loginUrl = postRedirectErrorUrl;
-      } else {
-        loginUrl = (String) CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_REDIRECT_URL );
-      }
+      siteEntryUrl = requestURL.toString();
 
-      /*
-       * Redirect the client to the weblogin server.
-       */
-      try {   
-        String redirectUrl = loginUrl + "?" + getCookieName() + "=" + cosignCookie.getNonce() + ";&" + siteEntryUrl;
-        if ( log.isDebugEnabled() ) {
-          log.debug( "Redirecting user to: " + redirectUrl );
-        }
-        response.sendRedirect( redirectUrl );
-        
-      } catch (Exception e) {
-        // Hmm ... we weren't able to redirect the user to the login page.  We need
-        // to send him a 503.
-        throw new ServletException(e);
-      }
+    }
 
+    // If the HTTP method was POST and we have a valid PostErrorRedirectUrl, we will redirect
+    // to that URL.  Otherwise, we will redirect to the normal login url.
+    String loginUrl;
+    String postRedirectErrorUrl = (String)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_POST_ERROR_URL );
+    if ( request.getMethod().toLowerCase().equals("post") ) {
+      loginUrl = postRedirectErrorUrl;
     } else {
-      // we didn't handle the exception and anon access isn't enabled, 
-      // we want to display a 503.
-      throw new ServletException(ex);
+      loginUrl = (String) CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_REDIRECT_URL );
+    }
+
+    // Redirect the client to the weblogin server.
+    try {   
+      String redirectUrl = loginUrl + "?" + getCookieName() + "=" + cosignCookie.getNonce() + ";&" + siteEntryUrl;
+      if ( log.isDebugEnabled() ) {
+        log.debug( "Redirecting user to: " + redirectUrl );
+      }
+      response.sendRedirect( redirectUrl );
+      
+    } catch (Exception e) {
+      // Hmm ... we weren't able to redirect the user to the login page.  We need
+      // to send him a 503.
+      throw new ServletException(e);
     }
     
     // FALSE indicates that we don't want to continue processing other filters
@@ -256,13 +247,13 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
       UnsupportedCallbackException {
     for (int i = 0; i < callbacks.length; i++) {
       TextInputCallback inputCallback;
-      String string;
+      String callbackCode;
 
       if (callbacks[i] instanceof TextInputCallback) {
         inputCallback = (TextInputCallback) callbacks[i];
-        string = inputCallback.getPrompt();
+        callbackCode = inputCallback.getPrompt();
 
-        if (string.equals( CosignLoginModule.COOKIE_VALUE_IN_CODE )) {
+        if (callbackCode.equals( CosignLoginModule.COOKIE_VALUE_IN_CODE )) {
           Cookie[] cookies = request.getCookies();
 
           // No cookies...
@@ -270,15 +261,18 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
             return;
 
           // Find the cosign service cookie.
+          final String cookieName = getCookieName();
           for (int j = 0; j < cookies.length; j++) {
-            if (cookies[j].getName().equals( getCookieName() ))
+            if (cookies[j].getName().equals( cookieName )) {
               inputCallback.setText( cookies[j].getValue() );
+              break;
+            }
           }
 
-        } else if (string.equals( CosignLoginModule.COOKIE_NAME_IN_CODE )) {
+        } else if (callbackCode.equals( CosignLoginModule.COOKIE_NAME_IN_CODE )) {
           inputCallback.setText( getCookieName() );
 
-        } else if (string.equals( CosignLoginModule.IP_ADDR_IN_CODE )) {
+        } else if (callbackCode.equals( CosignLoginModule.IP_ADDR_IN_CODE )) {
           inputCallback.setText( request.getRemoteAddr() );
 
         } else {

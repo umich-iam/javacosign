@@ -470,6 +470,19 @@ public class CosignConfig {
           propertyKeyToValue.put (property.propertyKey, propertyValue);
         }
       }
+
+      // Ensure that if HTTPS_ONLY is enabled and SITE_ENTRY is defined, 
+      // the SITE_ENTRY must start with "https://"
+      Boolean httpsOnly = (Boolean)propertyKeyToValue.get( HTTPS_ONLY );
+      if ( ( httpsOnly != null ) && ( httpsOnly.booleanValue() ) ) {
+        String siteEntry = (String)propertyKeyToValue.get( LOGIN_SITE_ENTRY_URL );
+        if ( ( siteEntry != null ) && ( !siteEntry.toLowerCase().startsWith("https://") ) ) {
+          if (log.isErrorEnabled()) {
+            log.error("'" + HTTPS_ONLY + "' is enabled and '" + LOGIN_SITE_ENTRY_URL + "' property specifies a non-HTTPS URL: " + siteEntry);
+          }
+          missingOrInvalidProperty = true;
+        }
+      }
       
       // If the config isn't valid due to a missing required property,
       // bail out now

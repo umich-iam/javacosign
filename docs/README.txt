@@ -1,4 +1,4 @@
-jCoSign v1.0 beta 2
+jCoSign v1.0
 
 Features:
 

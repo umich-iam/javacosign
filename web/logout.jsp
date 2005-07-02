@@ -3,7 +3,7 @@
 <%
    session.invalidate();
 
-   Cookie cookie = new Cookie( "cosign-java", "" );
+   Cookie cookie = new Cookie( "cosign-java", "null" );
    cookie.setPath( "/" );
 
    response.addCookie( cookie );

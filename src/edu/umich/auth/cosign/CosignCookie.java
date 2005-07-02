@@ -22,7 +22,7 @@ public class CosignCookie {
    * time.
    */
   public CosignCookie() {
-    this( generateRandom(), System.currentTimeMillis() );
+    this( generateNonce(), System.currentTimeMillis() );
   }
   
   /**
@@ -99,7 +99,7 @@ public class CosignCookie {
   /**
    * This method will generate a random string in Base64 encoding.
    */
-  private static String generateRandom () {
+  private static String generateNonce () {
     byte[] bytes = new byte[COOKIE_LENGTH];
 
     SecureRandom random = new SecureRandom();
