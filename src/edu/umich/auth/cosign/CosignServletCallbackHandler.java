@@ -35,9 +35,9 @@ import edu.umich.auth.ServletCallbackHandler;
  * @version $Name$ $Revision$ $Date$
  */
 public class CosignServletCallbackHandler implements ServletCallbackHandler {
-  
+
   private static final String COOKIE_NAME_PREFIX = "cosign-";
-  
+
   private HttpServletRequest request;
 
   private HttpServletResponse response;
@@ -60,7 +60,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
    */
   public boolean init( Map parameters, HttpServletRequest request, HttpServletResponse response, Subject subject )
       throws FailedLoginException {
-    
+
     // Check for initialization errors.
     if ( ( response == null ) || ( request == null ) || ( subject == null ) ) {
       throw new IllegalArgumentException( "Required initialization parameter(s) missing." );
@@ -75,7 +75,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
 
   /**
    * This method sets a new cosign service cookie and redirects the user to the
-   * login url.  
+   * login url.
    * @return Returns false if the user's request is finished and should not
    *    be processed by any other filters, or true if the request should
    *    continue to be processed.
@@ -87,29 +87,29 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
      * another Cosign service, and someone else uses their same browser
      * window, logs into Cosign, and then comes to an app. that's Cosign
      * protects, the previous user's session will still be active.
-     * 
+     *
      * We should perhaps make this optional, and allow the admin. to define a
      * default index page that clears out the last user's session information.
      */
     if ( ! ( ex instanceof FailedLoginException ) ) {
-      // we didn't handle the exception and anon access isn't enabled, 
+      // we didn't handle the exception and anon access isn't enabled,
       // we want to display a 503.
       throw new ServletException(ex);
     }
-      
+
     // Log the reason for the failed login
     if ( log.isDebugEnabled() ) {
       log.debug( ex.getMessage() );
     }
 
-    // If a CosignPrincipal exists in this user's session, we need to 
+    // If a CosignPrincipal exists in this user's session, we need to
     // remove it.
     final CosignPrincipal oldCosignPrincipal = getCosignPrincipal();
     if ( oldCosignPrincipal != null ) {
       if ( !subject.getPrincipals().remove(oldCosignPrincipal) ) {
         throw new ServletException( "Failed to remove cosign principal from subject." );
       }
-      
+
       // optionally, clear the HTTP session to prevent data xfer
       // between different user sessions
       final boolean clearSession = ((Boolean)CosignConfig.INSTANCE.getPropertyValue(
@@ -119,33 +119,38 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
         request.getSession().invalidate();
       }
     }
-    
+
+    // add additional filtering here. //
+
+
     // If 'AllowPublicAccess' is enabled, we can ignore any login errors
     // and allow the user into the website
-    boolean allowPublicAccess = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.ALLOW_PUBLIC_ACCESS)).booleanValue();
-    if ( allowPublicAccess ) {
-      log.debug( "Anonymous user permitted access to site." );
-      return true;
-    }
+    //This needs to be re-worked for url level only
+    //
+    //boolean allowPublicAccess = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.ALLOW_PUBLIC_ACCESS)).booleanValue();
+    //if ( allowPublicAccess ) {
+    //  log.debug( "Anonymous user permitted access to site." );
+    //  return true;
+   // }
 
     /* Generate the cookie and assign it to the response. */
     String cookieName = getCookieName ();
     CosignCookie cosignCookie = new CosignCookie();
     Cookie cookie = new Cookie( cookieName, cosignCookie.getCookie() );
     cookie.setPath( "/" );
-    
+
     // If Cosign is in HTTPS-only mode, we need to mark the cookie as secure
-    boolean isHttpsOnly = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.HTTPS_ONLY )).booleanValue(); 
+    boolean isHttpsOnly = ((Boolean)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.HTTPS_ONLY )).booleanValue();
     if ( isHttpsOnly ) {
       cookie.setSecure( true );
     }
     response.addCookie( cookie );
 
-    // If a site entry URL was provided, we will use that for the redirect, 
+    // If a site entry URL was provided, we will use that for the redirect,
     // not the current URL.
     String siteEntryUrl = (String)CosignConfig.INSTANCE.getPropertyValue( CosignConfig.LOGIN_SITE_ENTRY_URL );
     if ( siteEntryUrl == null ) {
-      
+
       // Construct the query string to send to weblogin server.
       String queryString = request.getQueryString();
       queryString = (null == queryString) ? "" : "?" + queryString;
@@ -153,7 +158,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
       StringBuffer requestURL = new StringBuffer();
       String scheme = request.getScheme();
       int port = request.getServerPort();
-      
+
       // If we are in secure HTTPS-only mode, we need to fudge the current URL
       // so that it is HTTPS.
       if ( isHttpsOnly ) {
@@ -190,19 +195,19 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
     }
 
     // Redirect the client to the weblogin server.
-    try {   
+    try {
       String redirectUrl = loginUrl + "?" + getCookieName() + "=" + cosignCookie.getNonce() + ";&" + siteEntryUrl;
       if ( log.isDebugEnabled() ) {
         log.debug( "Redirecting user to: " + redirectUrl );
       }
       response.sendRedirect( redirectUrl );
-      
+
     } catch (Exception e) {
       // Hmm ... we weren't able to redirect the user to the login page.  We need
       // to send him a 503.
       throw new ServletException(e);
     }
-    
+
     // FALSE indicates that we don't want to continue processing other filters
     return false;
   }
@@ -213,7 +218,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
    * @see edu.umich.auth.ServletCallbackHandler#handleSuccessfulLogin()
    */
   public void handleSuccessfulLogin() throws ServletException {
-    
+
     // Check if a principal already exists.
     CosignPrincipal principal = getCosignPrincipal();
     if (principal == null) {
@@ -223,7 +228,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
   }
 
   /**
-   * This method returns the HttpServletResponse of the current user. 
+   * This method returns the HttpServletResponse of the current user.
    */
   public HttpServletResponse getResponse() {
     return response;
@@ -231,7 +236,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
 
   /**
    * This method returns the HttpServletRequest of the current user.  This
-   * HttpServletRequest might be the wrapped version created by 
+   * HttpServletRequest might be the wrapped version created by
    * handleSuccessfulLogin.
    */
   public HttpServletRequest getRequest() {
@@ -284,11 +289,11 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
             "Unrecognized callback type." );
     }
   }
-  
+
   /**
    * This method attempts to retrieve the CosignPrincipal from the
-   * current Subject object.  
-   * @return  CosignPrincipal Active CosignPrincipal or null if 
+   * current Subject object.
+   * @return  CosignPrincipal Active CosignPrincipal or null if
    *    not found.
    */
   private CosignPrincipal getCosignPrincipal () {
