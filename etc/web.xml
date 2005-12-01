@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+<web-app>
+  <display-name>Welcome to Tomcat</display-name>
+  <description>Welcome to Tomcat</description>
+  <filter>
+    <filter-name>Cosign Authentication Filter</filter-name>
+    <filter-class>edu.umich.auth.cosign.CosignAuthenticationFilter</filter-class>
+    <init-param>
+      <param-name>Cosign.ConfigurationFile</param-name>
+      <param-value>/usr/local/webapps/webapps/CoTestWeb/WEB-INF/conf/cosignConfig.xml</param-value>
+    </init-param>
+  </filter>
+  <filter>
+    <filter-name>Krb5 Authentication Filter</filter-name>
+    <filter-class>edu.umich.auth.AuthenticationFilter</filter-class>
+    <init-param>
+      <param-name>Auth.LoginConfiguration</param-name>
+      <param-value>Krb5Authentication</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Auth.JAASConfigurationFile</param-name>
+      <param-value>/usr/local/webapps/webapps/CoTestWeb/WEB-INF/conf/jaas.conf</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Auth.LoginModule</param-name>
+      <param-value>com.sun.security.auth.module.Krb5LoginModule</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Auth.CallbackHandler</param-name>
+      <param-value>edu.umich.auth.Krb5ServletCallbackHandler</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Auth.Krb5.LoginPage</param-name>
+      <param-value>krb5-login/login.jsp</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Auth.Krb5.FailedLoginPage</param-name>
+      <param-value>krb5-login/relogin.jsp</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Auth.Krb5.Realm</param-name>
+      <param-value>UMICH.EDU</param-value>
+    </init-param>
+    <init-param>
+      <param-name>DEBUG</param-name>
+      <param-value>4</param-value>
+    </init-param>
+    <init-param>
+      <param-name>Auth.Krb5.KDC</param-name>
+      <param-value>fear.ifs.umich.edu</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>Cosign Authentication Filter</filter-name>
+    <url-pattern>/cosign-secure/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>Krb5 Authentication Filter</filter-name>
+    <url-pattern>/krb5-secure/*</url-pattern>
+  </filter-mapping>
+</web-app>
