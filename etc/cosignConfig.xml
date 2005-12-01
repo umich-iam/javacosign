@@ -1,28 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <CosignConfig>
 
-  <KeyStorePath>/Developer/Applications/Eclipse/workspace/JavaCosign/jks/keystore.jks</KeyStorePath>
-  <KeyStorePassword>burned</KeyStorePassword>
+  <KeyStorePath>/usr/local/webapps/webapps/CoTestWeb/WEB-INF/conf/jcosign_keystore.jks</KeyStorePath>
+<!-- <KeyStorePassword>changeit</KeyStorePassword> -->
+  <KeyStorePassword>jcosigncert</KeyStorePassword>
 
-  <ServiceName>java</ServiceName>
+  <ServiceName>jcosigncert</ServiceName>
 
   <CosignServerHost>weblogin.umich.edu</CosignServerHost>
   <CosignServerPort>6663</CosignServerPort>
   <ConnectionPoolSize>20</ConnectionPoolSize>
-  
+
   <CookieExpireSecs>120</CookieExpireSecs>
   <CookieCacheExpireSecs>30</CookieCacheExpireSecs>
 
   <LoginRedirectUrl>http://weblogin.umich.edu/</LoginRedirectUrl>
   <LoginPostErrorUrl>http://www.umich.edu/</LoginPostErrorUrl>
-  <LoginSiteEntryUrl>https://localhost:8080/cosign/</LoginSiteEntryUrl>
+  <!-- <LoginSiteEntryUrl>http://localhost:8080/CoTestWeb/</LoginSiteEntryUrl> -->
 
   <CheckClientIP>false</CheckClientIP>
-  
-  <AllowPublicAccess>false</AllowPublicAccess>	
+
+
   <HttpsOnly>false</HttpsOnly>
   <HttpsPort>8443</HttpsPort>
-  
+
   <ClearSessionOnLogin>true</ClearSessionOnLogin>
   <ConfigFileMonitoringIntervalSecs>5</ConfigFileMonitoringIntervalSecs>
-  
+
 </CosignConfig>
