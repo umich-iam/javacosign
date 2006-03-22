@@ -1,30 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CosignConfig>
-
-  <KeyStorePath>/usr/local/webapps/webapps/CoTestWeb/WEB-INF/conf/jcosign_keystore.jks</KeyStorePath>
-<!-- <KeyStorePassword>changeit</KeyStorePassword> -->
+  <!-- <KeyStorePath>/usr/local/webapps/webapps/CoTestWeb/WEB-INF/conf/jcosign_keystore.jks</KeyStorePath>-->
+  <KeyStorePath>C:/JavaWorkII/JavaCosignII/CoTestWeb/WEB-INF/conf/jcosign_keystore.jks</KeyStorePath>
+  <!-- <KeyStorePassword>changeit</KeyStorePassword> -->
   <KeyStorePassword>jcosigncert</KeyStorePassword>
-
   <ServiceName>jcosigncert</ServiceName>
-
+  <!--<CosignServerHost>cosign-test.www.umich.edu</CosignServerHost> -->
   <CosignServerHost>weblogin.umich.edu</CosignServerHost>
   <CosignServerPort>6663</CosignServerPort>
-  <ConnectionPoolSize>20</ConnectionPoolSize>
-
+  <ConnectionPoolSize>30</ConnectionPoolSize>
   <CookieExpireSecs>120</CookieExpireSecs>
   <CookieCacheExpireSecs>30</CookieCacheExpireSecs>
-
-  <LoginRedirectUrl>http://weblogin.umich.edu/</LoginRedirectUrl>
+  <!-- <LoginRedirectUrl>https://cosign-test.www.umich.edu/</LoginRedirectUrl>-->
+  <LoginRedirectUrl>https://weblogin.umich.edu/</LoginRedirectUrl>
   <LoginPostErrorUrl>http://www.umich.edu/</LoginPostErrorUrl>
-  <!-- <LoginSiteEntryUrl>http://localhost:8080/CoTestWeb/</LoginSiteEntryUrl> -->
-
+  <LoginSiteEntryUrl>  </LoginSiteEntryUrl>
   <CheckClientIP>false</CheckClientIP>
-
-
   <HttpsOnly>false</HttpsOnly>
   <HttpsPort>8443</HttpsPort>
-
   <ClearSessionOnLogin>true</ClearSessionOnLogin>
   <ConfigFileMonitoringIntervalSecs>5</ConfigFileMonitoringIntervalSecs>
-
+  <!-- new elements for 1.5 beta multi service -->
+  <services>
+    <service name="cosign-javareauth">
+      <protected>/cosign-secure/protected/reauth/</protected>
+      <protected allowpublicaccess="true">/cosign-secure/protected/here/openhere/</protected>
+    </service>
+    <service name="service2">
+      <protected rs="andhere.jsp" qs="junk=test">/cosign-secure/protected/andhere/</protected>
+      <protected>/cosign-secure/protected/here/thereagain/</protected>
+      <protected allowpublicaccess="true">/cosign-secure/openandhere/</protected>
+    </service>
+    <service name="cosign-wolverineaccess">
+      <protected>/cosign-secure/servlets/iclientservlet/</protected>
+      <protected allowpublicaccess="true" qs="cmd=start&amp;authType=2">/cosign-secure/servlets/iclientservlet/*</protected>
+      <protected>/servlets/iclientservlet/*</protected>
+      <protected allowpublicaccess="true" qs="cmd=start&amp;authType=2">/servlets/iclientservlet/*</protected>
+      <protected allowpublicaccess="true" qs="ICType=Script&amp;ICScriptProgramName=WEBLIB_MENU.ISCRIPT3.FieldFormula.IScript_RedirectToDrillDown">/servlets/iclientservlet/*</protected>
+    </service>
+    <service name="cosign-maisreauth">
+      <protected>/cosign-secure/reauth/servlets/iclientservlet/*</protected>
+    </service>
+    </services>
 </CosignConfig>
