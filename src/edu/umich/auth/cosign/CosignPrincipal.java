@@ -19,7 +19,7 @@ public class CosignPrincipal implements Principal, Serializable
   private String address;
   private String realm;
   private long timestamp;
-  
+
   // Used for logging info and error messages
   private Log log = LogFactory.getLog( CosignPrincipal.class );
 
@@ -29,19 +29,19 @@ public class CosignPrincipal implements Principal, Serializable
    */
   public CosignPrincipal () {
   }
-  
+
   /**
    * Constructor for CosignPrincipal.  This constructor parses the supplied
    * cosignResponse variable and builds a new principal from the given
    * information.
-   * @param cosignResponse String The response from the CHECK command issued 
+   * @param cosignResponse String The response from the CHECK command issued
    *    against the cosignd server.
    */
   public CosignPrincipal ( String cosignResponse ) throws Exception {
     try {
       StringTokenizer tokenizer = new StringTokenizer( cosignResponse );
       tokenizer.nextToken();
-  
+
       setAddress( tokenizer.nextToken() );
       setName( tokenizer.nextToken() );
       setRealm( tokenizer.nextToken() );
@@ -53,7 +53,7 @@ public class CosignPrincipal implements Principal, Serializable
       throw e;
     }
   }
-  
+
   /**
    * This method sets the name associated with this principal.
    * @uml.property name="name"
@@ -112,7 +112,7 @@ public class CosignPrincipal implements Principal, Serializable
   }
 
   /**
-   * This method sets the "last validated" timestamp associated 
+   * This method sets the "last validated" timestamp associated
    * with this principal.
    * @uml.property name="timestamp"
    */

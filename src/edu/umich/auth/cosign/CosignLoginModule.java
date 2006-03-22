@@ -20,21 +20,21 @@ import edu.umich.auth.cosign.pool.CosignConnectionPool;
 
 /**
  * A JAAS <code>LoginModule</code> for Cosign authentication.
- * 
+ *
  * @see javax.security.auth.spi.LoginModule
  * @author dillaman
  */
 public class CosignLoginModule implements LoginModule {
-  
+
   // JAAS AppConfigurationEntry options
   public static final String COSIGN_CONFIG_FILE_OPTION  = "cosignConfigFile";
-  
+  public static final String COSIGN_FINE_CONFIG_FILE_OPTION = "cosignFineConfigFile";
   // Codes for the information sent to the callback handler
   // via callback objects.
   public static final String COOKIE_NAME_IN_CODE  = "CosignGetCookieName";
   public static final String COOKIE_VALUE_IN_CODE = "CosignGetCookieValue";
   public static final String IP_ADDR_IN_CODE      = "CosignGetIpAddr";
-  
+
   private boolean initError = false;
   private boolean cosignServerCheckSkipped = false;
 
@@ -42,26 +42,26 @@ public class CosignLoginModule implements LoginModule {
   private Subject subject;
   private CosignPrincipal userPrincipal = null;
   private CosignPrincipal serverPrincipal = null;
-  
+
   private int cosignCode = CosignConnection.COSIGN_CODE_UNKNOWN;
 
   // Callbacks sent to the callback handler.
   private TextInputCallback cookieNameIn  = new TextInputCallback( COOKIE_NAME_IN_CODE );
   private TextInputCallback cookieValueIn = new TextInputCallback( COOKIE_VALUE_IN_CODE );
   private TextInputCallback ipAddrIn      = new TextInputCallback( IP_ADDR_IN_CODE );
-  
+
   // Used for logging info and error messages
   private Log log = LogFactory.getLog( CosignLoginModule.class );
-  
+
   /**
    * Initialize the module, ensuring that appropriate
    * <code>CallbackHandler</code> is passed in.
-   * 
+   *
    * @see javax.security.auth.spi.LoginModule#initialize(Subject, CallbackHandler, Map, Map)
    */
   public void initialize( Subject subject, CallbackHandler callbackHandler,
                           Map arg2, Map arg3 ) {
-    
+
     // Insure that we have a CallbackHandler.
     if ( callbackHandler != null ) {
       this.callbackHandler = callbackHandler;
@@ -70,28 +70,28 @@ public class CosignLoginModule implements LoginModule {
       initError = true;
     }
     this.subject = subject;
-    
+
   }
 
   /**
    * The method used to log the user in.  Please refer to the
    * <code>LoginModule</code> API specification for details concerning
    * the return and exceptions.
-   * 
+   *
    * @see javax.security.auth.spi.LoginModule#login()
    */
   public boolean login() throws LoginException {
-    
+
     // Do a quick check to make sure that the configuration is valid
     if ( !CosignConfig.INSTANCE.isConfigValid() ) {
       throw new LoginException( "Initialization Error: Invalid configuration state." );
     }
-    
+
     // Error if no CallbackHandler.
     if ( initError ) {
       throw new LoginException( "Initialization Error: CallbackHandler required." );
     }
-    
+
     // Try to retrieve info from callbackHandler.
     try {
       Callback[] inCallbacks = new Callback[] { cookieNameIn, cookieValueIn, ipAddrIn };
@@ -111,7 +111,7 @@ public class CosignLoginModule implements LoginModule {
       throw new FailedLoginException( "The client's service cookie does not exist or is not valid." );
     }
 
-    // Check the timestamp on the Cosign Cookie.  If the timestamp is expired, 
+    // Check the timestamp on the Cosign Cookie.  If the timestamp is expired,
     // we need to fail the login so that a new cookie is issued.
     final long cookieExpireMillis = ((Integer) CosignConfig.INSTANCE
         .getPropertyValue( CosignConfig.COOKIE_EXPIRE_SECS )).intValue() * 1000;
@@ -156,7 +156,7 @@ public class CosignLoginModule implements LoginModule {
     } catch (Exception e) {
       throw new LoginException ( "Failed to borrow cosign connections from pool." );
     }
-    
+
     // Keep trying until we get a server which will serve us,
     // or there are no servers available in the pool.
     String cosignResponse = cosignConnectionList.checkCookie( cookieName, cosignCookie.getNonce() );
@@ -176,7 +176,7 @@ public class CosignLoginModule implements LoginModule {
     } else if ( cosignCode != CosignConnection.COSIGN_USER_AUTHENTICATED ) {
       throw new FailedLoginException( "User not authenticated to Cosign." );
     }
-    
+
     // Attempt to parse the response from the cosignd server
     try {
       serverPrincipal = new CosignPrincipal ( cosignResponse );
@@ -205,18 +205,18 @@ public class CosignLoginModule implements LoginModule {
    * @see javax.security.auth.spi.LoginModule#commit()
    */
   public boolean commit() throws LoginException {
-    
+
     // Since we might have bailed out early in the Login method due to the
     // cookie being cached, we need to bail out of this function early.
     if ( cosignServerCheckSkipped ) {
       return true;
     }
-    
+
     // If we checked the user's cookie w/the Cosign server, and they're authenticated,
     // assign credentials from server (name, ip, realm) and update the timestamp.
     if ( ( cosignCode ==  CosignConnection.COSIGN_USER_AUTHENTICATED ) &&
          ( serverPrincipal != null ) ) {
-      
+
       // The subject didn't have an appropriate principal
       // (first-time login), so create one.
       if ( userPrincipal == null ) {
@@ -229,11 +229,11 @@ public class CosignLoginModule implements LoginModule {
       userPrincipal.setName( serverPrincipal.getName() );
       userPrincipal.setRealm( serverPrincipal.getRealm() );
       userPrincipal.setTimestamp( serverPrincipal.getTimestamp() );
-      
+
     } else {
       throw new IllegalStateException();
     }
-    
+
     return true;
   }
 

@@ -9,14 +9,14 @@ import org.apache.commons.pool.impl.*;
 
 /**
  * This class represents a Cosign server and its connection pool config.
- * 
+ *
  * @author dillaman
  */
 public class CosignServer {
 
 	private final String host;
   private final String[] hostAddrs;
-  
+
 	private final int port;
 
 	/**
@@ -45,7 +45,7 @@ public class CosignServer {
   public String[] getHostAddresses() {
     return hostAddrs;
   }
-  
+
   /**
    * Returns the host name.
    * @return  String  The DNS hostname of the cosign server.
@@ -53,12 +53,12 @@ public class CosignServer {
   public String getHost () {
     return host;
   }
-  
+
   /**
    * Returns the port.
-   * 
+   *
    * @return int
-   * 
+   *
    * @uml.property name="port"
    */
   public int getPort() {
@@ -67,9 +67,9 @@ public class CosignServer {
 
 	/**
 	 * Returns the config.
-	 * 
+	 *
 	 * @return CosignConnectionPool.Config
-	 * 
+	 *
 	 * @uml.property name="config"
 	 */
 	public GenericObjectPool.Config getConfig() {
@@ -78,7 +78,7 @@ public class CosignServer {
 
 	/**
 	 * Returns the Cosign server ID.
-	 * 
+	 *
 	 * @return The Cosign server ID.
 	 */
 	public String getCosignServerId() {
@@ -91,9 +91,9 @@ public class CosignServer {
 	public String toString() {
 		return getCosignServerId();
 	}
-  
+
   /**
-   * 
+   *
    * @return
    * @throws UnknownHostException
    */
