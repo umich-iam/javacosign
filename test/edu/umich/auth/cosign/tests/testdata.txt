@@ -1,0 +1,7 @@
+/*format: <url>,<level of filter: filter><directory><file><queryString>,<expectedService> */
+/servlets/iclientservlet/*, ,ICType=Script&ICScriptProgramName=WEBLIB_MENU.ISCRIPT3.FieldFormula.IScript_RedirectToDrillDown,cosign-wolverineaccess
+/cosign-secure/protected/reauth/, , ,cosign-javareauth
+/cosign-secure/protected/here/openhere/, , ,jcosigncert
+/cosign-secure/protected/andhere/,andhere.jsp,junk=test,service2
+/cosign-secure/protected/andhere/, , ,jcosigncert
+/cosign-secure/servlets/iclientservlet/, ,cmd=start&authType=2,cosign-wolverineaccess
