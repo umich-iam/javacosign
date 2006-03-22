@@ -11,19 +11,19 @@ import edu.umich.auth.cosign.CosignServer;
  * @author dillaman
  */
 public class CosignConnectionListFactory implements PoolableObjectFactory {
-  
+
   // Class-wide counter for giving each CosignConnectionList a unique id
   private static int s_uniqueId = 1;
-  
+
   // The poolId of the CosignConnectionPool
   private final int poolId;
-  
+
   // The CosignServer that will be used whe constructing new ConnectionLists
   private final CosignServer cosignServer;
-  
+
   // Log used for reporting errors / info
   private Log log = LogFactory.getLog( CosignConnectionListFactory.class );
-  
+
   /**
    * Constructor for CosignConnectionFactory.
    */
@@ -43,7 +43,7 @@ public class CosignConnectionListFactory implements PoolableObjectFactory {
   }
 
   /**
-   * This method closes all the CosignConnections associated with 
+   * This method closes all the CosignConnections associated with
    * the given CosignConnectionList object.
    * @see org.apache.commons.pool.PoolableObjectFactory#destroyObject(Object)
    */
