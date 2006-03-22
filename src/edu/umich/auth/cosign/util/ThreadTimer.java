@@ -23,12 +23,12 @@ public class ThreadTimer {// implements Runnable {
 	private int theRunCount;
 
 	/**
-	 * 
+	 *
 	 */
 	public ThreadTimer() {
 		super();
 	}
-  
+
 	private static void Total()
 	{
 		synchronized ( ThreadTimer.class )
@@ -36,7 +36,7 @@ public class ThreadTimer {// implements Runnable {
 			total += getElapsedTime().value;
 		}
 	}
-	
+
 	public static long getTotalElapsedTime() {
 		return total;
 	}
@@ -61,7 +61,7 @@ public class ThreadTimer {// implements Runnable {
 
 	static class ElapsedTime {
 		private long value = 0;
-		
+
 		public ElapsedTime() {}
 	}
 }

@@ -10,7 +10,7 @@ public class RWLock {
   private int numWaitingWriters = 0;
 
   /**
-   * This method ensures that no writers are waiting to acquire a 
+   * This method ensures that no writers are waiting to acquire a
    * lock, then grabs a reader lock.
    */
   public synchronized void getReadLock() {
