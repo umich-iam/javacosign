@@ -35,7 +35,7 @@ public class Krb5ServletCallbackHandler implements ServletCallbackHandler
   public static final String REALM_INIT_PARAM             = "Auth.Krb5.Realm";
   public static final String KDC_INIT_PARAM               = "Auth.Krb5.KDC";
   public static final String DEBUG_MODE_INIT_PARAM        = "Auth.Krb5.DebugMode";
-  
+
   private static final String NAME_PARAMETER     = "j_username";
   private static final String PASSWORD_PARAMETER = "j_password";
 

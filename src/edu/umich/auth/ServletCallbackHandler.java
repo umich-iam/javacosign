@@ -32,6 +32,6 @@ public interface ServletCallbackHandler extends CallbackHandler
 
   HttpServletRequest getRequest();
   HttpServletResponse getResponse();
-  
+
   void handle( Callback[] callbacks ) throws IOException, UnsupportedCallbackException;
 }
