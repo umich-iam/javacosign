@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>Java Cosign Test Application</title>
+<script type="text/javascript" language="JavaScript">
+<!--
+function delete_cookie ( cookie_name )
+{
+  var cookie_date = new Date ( );  // current date & time
+  cookie_date.setTime ( cookie_date.getTime() - 1 );
+  document.cookie = cookie_name += "=; expires=" + cookie_date.toGMTString();
+}
+
+
+
+	function trim(str){
+
+		// trim off leading spaces
+		while (str.charAt(0) == ' '){
+			str = str.substring(1);
+		}
+
+		//trim off trailing spaces
+		while (str.charAt(str.length-1) == ' '){
+			str = str.substring(0,str.length-1);
+		}
+
+		return str;
+	}
+	function delete_all_cookies(){
+		var cookie = document.cookie;
+		var cookie_pieces = cookie.split(';');
+		for(var i=0; i<cookie_pieces.length; i++){
+
+			// get the cookie piece and trim it
+			var piece = trim(cookie_pieces[i]);
+
+			// find the location of the '=' and split the string
+			var a = piece.indexOf('=');
+			if (a == -1){
+				// there was no '=' - so we have a key and no value
+				var key = piece;
+				var value = '';
+			}else{
+				// we found an '=' - split the string in two
+				var key = piece.substr(0,a);
+				var value = piece.substr(a+1);
+			}
+			delete_cookie ( key );
+		}
+
+	}
+
+	function show_all_cookies(){
+		var cookie = document.cookie;
+
+		// split it into key-value pairs
+		var cookie_pieces = cookie.split(';');
+		document.writeln('<table cols="2"><thead><tr><th colspan="2">Browser cookies</th></tr></thead>');
+		// for each of those pairs, split into key and value
+		for(var i=0; i<cookie_pieces.length; i++){
+
+			// get the cookie piece and trim it
+			var piece = trim(cookie_pieces[i]);
+
+			// find the location of the '=' and split the string
+			var a = piece.indexOf('=');
+			if (a == -1){
+				// there was no '=' - so we have a key and no value
+				var key = piece;
+				var value = '';
+			}else{
+				// we found an '=' - split the string in two
+				var key = piece.substr(0,a);
+				var value = piece.substr(a+1);
+			}
+
+			// now display our cookies
+
+			document.writeln('<tr><font size=2 pts><td nowrap="true"><FONT color="Brown">Key:</FONT> ' + key +'</td><td>'+ '<FONT color="Brown">Value : </FONT>'+ value + '</td></font><br/></tr>');
+
+		}
+	}
+
+function MM_callJS(jsStr) { //v2.0
+  return eval(jsStr)
+}
+//-->
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+<!--
+body {
+	background-color: #FFFFCC;
+}
+-->
+</style>
+</head>
+<body >
+Select a directory to test that area.<br/>
+<a href="cosign-secure/index.jsp">A default service protected directory</a><br>
+<a href="cosign-secure/protected/here/openhere/index.jsp">A public access directory
+inside a cosign protected directory.</a><br>
+
+<a href="cosign-secure/protected/reauth/reauth.jsp">Defined for re-authentication
+inside an already cosign protected directory.</a><br>
+
+
+<a href="cosign-secure/servlets/iclientservlet/hewebdevnonop/index.jsp">
+A service defined as multi factor.  Requires umich.edu </a><br>
+
+
+<a href="cosign-secure/servlets/iclientservlet/hewebdevop/index.jsp">
+A service defined as multi factor.  Requires umich.edu and mtoken</a><br>
+<br />
+
+<SCRIPT LANGUAGE="JavaScript" type="text/javascript">
+ 		show_all_cookies();
+</SCRIPT>
+
+</body>
+</html>
