@@ -1,7 +1,13 @@
 package edu.umich.auth.cosign.util;
 
+import java.util.Vector;
+import java.util.Enumeration;
+
 /**
  <service name="service1">
+    <factors>
+      <factor></factor>
+    </factors>
     <protected>/protected/here</protected>
     <protected>/protected/here/there</protected>
     <protected allowpublicaccess="true">/openhere</protected>
@@ -16,9 +22,58 @@ public class ServiceConfig {
     private String qs;
     private boolean hasQs=false;
     private boolean hasResource=false;
+    Vector factors;
 
     public ServiceConfig() {
         super();
+        factors = new Vector();
+    }
+
+    public void addFactor(String factor){
+        this.factors.add(factor);
+    }
+
+
+    public void removeFactors(){
+        this.factors.clear();
+    }
+
+    public void setFactors(Vector v){
+        this.factors = v;
+    }
+
+    public Vector getFactors(){
+        return factors;
+    }
+
+    public String factorsAsString(){
+        if(hasFactors()){
+            Enumeration e = getFactors().elements();
+            StringBuffer strBuff = new StringBuffer();
+            while(e.hasMoreElements()){
+                strBuff.append((String)e.nextElement());
+                if(e.hasMoreElements())
+                    strBuff.append(",");
+            }
+            return strBuff.toString();
+        }
+        else
+            return new String();
+    }
+
+    public boolean  hasFactors(){
+
+        return !this.factors.isEmpty();
+    }
+
+    public boolean containsFactor(String factor){
+       Enumeration e = this.factors.elements();
+       while(e.hasMoreElements()){
+           String fact = (String) e.nextElement();
+           if(fact.equalsIgnoreCase(factor))
+               return true;
+       }
+       return false;
     }
 
     public void setName(String name) {

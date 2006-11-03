@@ -7,6 +7,7 @@ import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.TextInputCallback;
+
 import javax.security.auth.login.LoginException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.spi.LoginModule;
@@ -17,6 +18,11 @@ import org.apache.commons.logging.LogFactory;
 import edu.umich.auth.cosign.pool.CosignConnectionList;
 import edu.umich.auth.cosign.pool.CosignConnection;
 import edu.umich.auth.cosign.pool.CosignConnectionPool;
+import java.util.Vector;
+import edu.umich.auth.ServletCallbackHandler;
+import edu.umich.auth.cosign.util.FactorInputCallBack;
+import edu.umich.auth.cosign.util.ServiceConfig;
+import java.util.Enumeration;
 
 /**
  * A JAAS <code>LoginModule</code> for Cosign authentication.
@@ -49,7 +55,7 @@ public class CosignLoginModule implements LoginModule {
   private TextInputCallback cookieNameIn  = new TextInputCallback( COOKIE_NAME_IN_CODE );
   private TextInputCallback cookieValueIn = new TextInputCallback( COOKIE_VALUE_IN_CODE );
   private TextInputCallback ipAddrIn      = new TextInputCallback( IP_ADDR_IN_CODE );
-
+  private FactorInputCallBack factorsCb  = new FactorInputCallBack();
   // Used for logging info and error messages
   private Log log = LogFactory.getLog( CosignLoginModule.class );
 
@@ -69,6 +75,7 @@ public class CosignLoginModule implements LoginModule {
     } else {
       initError = true;
     }
+
     this.subject = subject;
 
   }
@@ -94,7 +101,7 @@ public class CosignLoginModule implements LoginModule {
 
     // Try to retrieve info from callbackHandler.
     try {
-      Callback[] inCallbacks = new Callback[] { cookieNameIn, cookieValueIn, ipAddrIn };
+      Callback[] inCallbacks = new Callback[] { cookieNameIn, cookieValueIn, ipAddrIn, factorsCb };
       callbackHandler.handle( inCallbacks );
     } catch ( Exception ex ) {
       throw new LoginException( "Callback handler does not have the proper information, or could not be accessed." );
@@ -118,6 +125,7 @@ public class CosignLoginModule implements LoginModule {
     if ( System.currentTimeMillis() - cosignCookie.getTimestamp() >= cookieExpireMillis ) {
       throw new FailedLoginException( "The client's service cookie has expired." );
     }
+
 
     // Check if a principal already exists.
     Iterator iterator = subject.getPrincipals().iterator();
@@ -159,7 +167,9 @@ public class CosignLoginModule implements LoginModule {
 
     // Keep trying until we get a server which will serve us,
     // or there are no servers available in the pool.
+
     String cosignResponse = cosignConnectionList.checkCookie( cookieName, cosignCookie.getNonce() );
+
     cosignCode = CosignConnection.convertResponseToCode ( cosignResponse );
 
     // Return the connection list back to the pool
@@ -177,12 +187,21 @@ public class CosignLoginModule implements LoginModule {
       throw new FailedLoginException( "User not authenticated to Cosign." );
     }
 
+
+
     // Attempt to parse the response from the cosignd server
     try {
       serverPrincipal = new CosignPrincipal ( cosignResponse );
     } catch ( Exception e ) {
       throw new FailedLoginException( "Cosignd server returned invalid response." );
     }
+
+    //check for multi factors here.  They should have been placed in the serverPriciple above
+
+     if((factorsCb.getFactors()!=null) && !(checkServiceFactors(factorsCb.getFactors(),serverPrincipal)) ){
+         throw new FailedLoginException( "All factors for service have not been satisfied" );
+     }
+
 
     // The user was validated against the cosign server.  We need to check their
     // user stats as returned by the server to what we expect
@@ -229,6 +248,7 @@ public class CosignLoginModule implements LoginModule {
       userPrincipal.setName( serverPrincipal.getName() );
       userPrincipal.setRealm( serverPrincipal.getRealm() );
       userPrincipal.setTimestamp( serverPrincipal.getTimestamp() );
+      userPrincipal.setFactors(serverPrincipal.getFactors());
 
     } else {
       throw new IllegalStateException();
@@ -255,5 +275,48 @@ public class CosignLoginModule implements LoginModule {
   public boolean logout() throws LoginException {
     throw new LoginException( "Method not supported." );
   }
+  /**
+    * This method checks required factors with factors that have been authorized
+    * from the server.
+    * @return  true if all factors required have been satisfied, False if not.
+    *
+    */
+   public boolean checkServiceFactors(Vector factors, CosignPrincipal principle) {
+      String ignoreFactorSuffix = (String) CosignConfig.INSTANCE.getPropertyValue(CosignConfig.COSIGN_FACTOR_SUFFIX_IGNORE);
+      String factorSuffix = (String) CosignConfig.INSTANCE.getPropertyValue(CosignConfig.COSIGN_FACTOR_SUFFIX);
+      Boolean ignore = new Boolean(ignoreFactorSuffix);
 
+       if(factors.size()>0){
+           Enumeration enuS = factors.elements();
+           String curServiceFactor;
+           while (enuS.hasMoreElements()) {
+               curServiceFactor = (String) enuS.nextElement();
+               Enumeration enuF = principle.getFactors().elements();
+               String curPricipleFactor;
+               boolean factorFound = false;
+               while (enuF.hasMoreElements()) {
+                   curPricipleFactor = stripIgnoreFactor((String) enuF.nextElement(),
+                                                         ignore.booleanValue(),factorSuffix);
+                   if (curServiceFactor.equalsIgnoreCase(curPricipleFactor)) {
+                       factorFound = true;
+                   }
+               }
+               if (!factorFound)
+                   return false;
+           }
+       }
+           return true;
+   }
+
+
+   private String stripIgnoreFactor(String factor, boolean shouldIgnore, String ignore){
+       if(!shouldIgnore)
+           return factor;
+          if(ignore== null)
+              return factor;
+          if( factor.endsWith(ignore))
+              return factor.substring(0,factor.indexOf(ignore));
+          return factor;
+
+    }
 }

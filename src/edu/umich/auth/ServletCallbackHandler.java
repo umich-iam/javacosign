@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import edu.umich.auth.cosign.CosignPrincipal;
 
 /**
  * @see javax.security.auth.callback.CallbackHandler
@@ -32,6 +33,5 @@ public interface ServletCallbackHandler extends CallbackHandler
 
   HttpServletRequest getRequest();
   HttpServletResponse getResponse();
-
   void handle( Callback[] callbacks ) throws IOException, UnsupportedCallbackException;
 }

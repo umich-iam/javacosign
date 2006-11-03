@@ -89,10 +89,11 @@ public class CosignSSLSocketFactory {
 
       // Creates KeyManager Factory
       com.sun.net.ssl.KeyManagerFactory kmf = com.sun.net.ssl.KeyManagerFactory.getInstance("SunX509");
+      //com.sun.net.ssl.KeyManagerFactory kmf = com.sun.net.ssl.KeyManagerFactory.getInstance("IbmX509");
 
       // Creates TrustManager Factory
       com.sun.net.ssl.TrustManagerFactory tmf = com.sun.net.ssl.TrustManagerFactory.getInstance("SunX509");
-
+      //com.sun.net.ssl.TrustManagerFactory tmf = com.sun.net.ssl.TrustManagerFactory.getInstance("IbmX509");
       // Creates a keystore instance
       KeyStore ks = KeyStore.getInstance("JKS");
 

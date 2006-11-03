@@ -36,6 +36,9 @@ public class CosignConfig {
     public static final String LOGIN_SITE_ENTRY_URL = "LoginSiteEntryUrl";
     public static final String LOGIN_POST_ERROR_URL = "LoginPostErrorUrl";
     public static final String ALLOW_PUBLIC_ACCESS = "AllowPublicAccess";
+    public static final String COSIGN_FACTOR_SUFFIX = "CosignFactorSuffix";
+    public static final String COSIGN_FACTOR_SUFFIX_IGNORE = "CosignFactorSuffixIgnore";
+    public static final String COSIGN_SERVER_VERSION = "CosignServerVersion";
     public static final String HTTPS_ONLY = "HttpsOnly";
     public static final String HTTPS_PORT = "HttpsPort";
     public static final String CHECK_CLIENT_IP = "CheckClientIP";
@@ -72,6 +75,12 @@ public class CosignConfig {
             LOGIN_SITE_ENTRY_URL, null),
                                                  new BooleanProperty(
             ALLOW_PUBLIC_ACCESS, new Boolean(false)),
+                                                 new StringProperty(
+            COSIGN_FACTOR_SUFFIX, null),
+                                                 new StringProperty(
+            COSIGN_FACTOR_SUFFIX_IGNORE, null),
+                                                 new StringProperty(
+            COSIGN_SERVER_VERSION, new String("")),
                                                  new BooleanProperty(HTTPS_ONLY,
             new Boolean(false)),
                                                  new IntegerProperty(HTTPS_PORT,
@@ -525,7 +534,7 @@ public class CosignConfig {
             rwLock.releaseLock();
         }
 
-        return null;
+        return null; //default service
     }
 
 
@@ -592,6 +601,21 @@ public class CosignConfig {
                         for (int i = 0; i < services.getLength(); i++) {
                             Element element = (Element) services.item(i);
                             /** start of service parsing **/
+                            Vector v = new Vector();
+                            /**do the factors**/
+
+                            NodeList reqF = element.getElementsByTagName("reqfactor");
+                            if(reqF.getLength()>0){
+
+                                Element factors = (Element) reqF.item(0);
+                                NodeList factor = factors.getElementsByTagName("factor");
+                                for(int k = 0; k < factor.getLength(); k++){
+                                    Element fac = (Element) factor.item(k);
+                                    if(fac.getFirstChild() != null)
+                                        v.add(fac.getFirstChild().getNodeValue());
+                                }
+                            }
+                            /**now specific mappings**/
                             NodeList prot = element.getElementsByTagName(
                                     "protected");
                             String sAttrValue = element.getAttribute(
@@ -622,6 +646,7 @@ public class CosignConfig {
                                     }
                                 }
                                 ServiceConfig serviceConfig = new ServiceConfig();
+                                serviceConfig.setFactors(v);
                                 if (pAttr.equalsIgnoreCase("true")) {
                                     serviceConfig.setPublicAccess("true");
                                 }
@@ -780,5 +805,12 @@ public class CosignConfig {
         return (Element) nodeList.item(0);
     }
 
+public void setServerVersion(String version){
+    propertyKeyToValue.put(COSIGN_SERVER_VERSION, version);
+}
 
+public boolean isServerVersion2(){
+    String version = (String)propertyKeyToValue.get(COSIGN_SERVER_VERSION);
+    return (((String)propertyKeyToValue.get(COSIGN_SERVER_VERSION)).equalsIgnoreCase("2"));
+}
 }

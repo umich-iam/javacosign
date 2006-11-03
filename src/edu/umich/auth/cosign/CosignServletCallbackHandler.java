@@ -27,6 +27,13 @@ import edu.umich.auth.ServletCallbackHandler;
 import edu.umich.auth.cosign.util.ServiceConfig;
 import java.util.StringTokenizer;
 import java.util.HashMap;
+import java.util.Vector;
+import java.util.Enumeration;
+import edu.umich.auth.cosign.util.FactorInputCallBack;
+import edu.umich.auth.cosign.pool.CosignConnectionPool;
+import edu.umich.auth.cosign.pool.CosignConnection;
+import javax.security.auth.login.LoginException;
+import edu.umich.auth.cosign.pool.CosignConnectionList;
 
 /**
  * This class implements ServletCallbackHandler and is resposible for setting the
@@ -85,12 +92,36 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
         String currentReqUrl = request.getRequestURI();
         this.currentPath = currentReqUrl.substring(request.getContextPath().
                 length());
-        this.resource = this.currentPath.substring(this.currentPath.lastIndexOf('/') + 1);
+        this.resource = this.currentPath.substring(this.currentPath.lastIndexOf(
+                '/') + 1);
         if (this.currentPath.charAt(this.currentPath.length() - 1) != '/') {
             this.currentPath = this.currentPath.substring(0,
                     this.currentPath.lastIndexOf('/') + 1);
         }
-         return true;
+        if ((((String) CosignConfig.INSTANCE.
+               getPropertyValue(
+                       CosignConfig.
+                       COSIGN_SERVER_VERSION)).length() == 0)) {
+            // Grab a connection list from the pool
+            CosignConnectionList cosignConnectionList;
+            try {
+                cosignConnectionList = CosignConnectionPool.INSTANCE.
+                                       borrowCosignConnectionList();
+            } catch (Exception e) {
+                throw new FailedLoginException(
+                        "Failed to borrow cosign connections from pool.");
+            }
+
+            // Return the connection list back to the pool
+            try {
+                CosignConnectionPool.INSTANCE.returnCosignConnectionList(
+                        cosignConnectionList);
+            } catch (Exception e) {
+                log.error("Failed to return cosign connections to pool.");
+            }
+
+        }
+        return true;
     }
 
     /**
@@ -233,13 +264,22 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
             loginUrl = (String) CosignConfig.INSTANCE.getPropertyValue(
                     CosignConfig.LOGIN_REDIRECT_URL);
         }
-
+        String serviceFactors = new String();
+        if (serviceConfig != null && serviceConfig.hasFactors()) {
+            if (!CosignConfig.INSTANCE.isServerVersion2()) {
+                throw new ServletException(
+                        "Service is configured with factors but Cosign server does not support factors");
+            }
+            serviceFactors = "factors=" + serviceConfig.factorsAsString() + "&";
+        }
         // Redirect the client to the weblogin server.
         try {
-            String redirectUrl = loginUrl + "?" + getCookieName() + "=" +
+            String redirectUrl = loginUrl + "?" + serviceFactors +
+                                 getCookieName() + "=" +
                                  cosignCookie.getNonce() + ";&" + siteEntryUrl;
             if (log.isDebugEnabled()) {
                 log.debug("Redirecting user to: " + redirectUrl);
+                System.out.println("Redirecting user to: " + redirectUrl);
             }
             response.sendRedirect(redirectUrl);
 
@@ -293,6 +333,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
             UnsupportedCallbackException {
         for (int i = 0; i < callbacks.length; i++) {
             TextInputCallback inputCallback;
+            FactorInputCallBack factorCallBack;
             String callbackCode;
 
             if (callbacks[i] instanceof TextInputCallback) {
@@ -328,6 +369,15 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
                     throw new UnsupportedCallbackException(callbacks[i],
                             "Unrecognized text callback request.");
                 }
+            } else if (callbacks[i] instanceof FactorInputCallBack) {
+                ServiceConfig serviceConfig = CosignConfig.INSTANCE.
+                                              hasServiceOveride(this.
+                        currentPath, this.resource, this.queryString);
+                factorCallBack = (FactorInputCallBack) callbacks[i];
+                if (!(serviceConfig == null)) {
+                    factorCallBack.setFactors(serviceConfig.getFactors());
+                }
+
             } else {
                 throw new UnsupportedCallbackException(callbacks[i],
                         "Unrecognized callback type.");
@@ -372,5 +422,6 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
         }
         return COOKIE_NAME_PREFIX + serviceName;
     }
+
 
 }

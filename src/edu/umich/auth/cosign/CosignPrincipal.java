@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import java.util.Vector;
 
 /**
  * This class stores the user name, realm, ip address, and "last validated"
@@ -18,6 +19,7 @@ public class CosignPrincipal implements Principal, Serializable
   private String name;
   private String address;
   private String realm;
+  private Vector factors;
   private long timestamp;
 
   // Used for logging info and error messages
@@ -28,6 +30,7 @@ public class CosignPrincipal implements Principal, Serializable
    * prinipal object.
    */
   public CosignPrincipal () {
+      factors = new Vector();
   }
 
   /**
@@ -41,10 +44,14 @@ public class CosignPrincipal implements Principal, Serializable
     try {
       StringTokenizer tokenizer = new StringTokenizer( cosignResponse );
       tokenizer.nextToken();
-
+      factors = new Vector();
       setAddress( tokenizer.nextToken() );
       setName( tokenizer.nextToken() );
       setRealm( tokenizer.nextToken() );
+      factors.add(getRealm());
+      while(tokenizer.hasMoreElements()){
+          factors.add(tokenizer.nextToken());
+      }
       setTimestamp( System.currentTimeMillis() );
     } catch ( Exception e ) {
       if ( log.isErrorEnabled() ) {
@@ -119,5 +126,17 @@ public class CosignPrincipal implements Principal, Serializable
   public void setTimestamp(long timestamp) {
     this.timestamp = timestamp;
   }
+
+public void setFactors(Vector factors){
+    this.factors = factors;
+}
+
+public Vector getFactors(){
+    return factors;
+}
+
+public void addFactor(String factor){
+    this.factors.add(factor);
+}
 
 }

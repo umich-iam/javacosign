@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.umich.auth.cosign.CosignServer;
+import java.util.Vector;
 
 /**
  * This class provides a collection of <code>CosignConnection</code>s.
@@ -178,6 +179,91 @@ public class CosignConnectionList {
     // Return a status that we weren't able to contact any Cosign servers
     return serverErrorResponse;
   }
+
+  /**
+    * This method loops through all active connections and invokes their
+    * checkCookie() method.
+    * @return The response from the cosign server.  Returns null
+    *            if no cosign servers were available to validate the cookie.
+    */
+   public String checkCookie(String serviceName, String cookie, Vector factors) {
+     String serverErrorResponse = null;
+     Iterator iter;
+
+     // Loop through all the active connections and invoke the checkCookie
+     // method on those connections
+     iter = cosignConnections.iterator();
+     while ( iter.hasNext() ) {
+       CosignConnection cosignConnection = (CosignConnection)iter.next();
+       String cosignResponse = cosignConnection.checkCookie( serviceName, cookie );
+       int cosignCode = CosignConnection.convertResponseToCode ( cosignResponse );
+
+       if ( ( cosignCode == CosignConnection.COSIGN_USER_AUTHENTICATED ) ||
+            ( cosignCode == CosignConnection.COSIGN_USER_NOT_AUTHENTICATED ) ) {
+
+         // Stop checking servers if valid code returned.
+         return cosignResponse;
+
+       } else if ( cosignCode == CosignConnection.COSIGN_SERVER_RETRY ) {
+         // We need to keep checking other servers
+         serverErrorResponse = cosignResponse;
+         continue;
+       }
+
+       // the response was invalid, this connection is no longer good
+       if ( log.isDebugEnabled() ) {
+         log.debug( "[" + cosignConnection.getCosignConId() + "]: failed to validate cookie, adding connection to invalid list" );
+       }
+       invalidIpAddrs.addFirst ( cosignConnection.getHostAddress() );
+       cosignConnection.close();
+       iter.remove();
+     }
+
+     // Loop through all the invalid IP addresses, attempt to establish a
+     // new connection, and again, invoke the checkCookie method on this
+     // connections
+     iter = invalidIpAddrs.iterator();
+     while( iter.hasNext() ) {
+       String hostAddr = (String)iter.next();
+       try {
+         CosignConnection cosignConnection = new CosignConnection ( cosignConListId, hostAddr, port );
+         String cosignResponse = cosignConnection.checkCookie( serviceName, cookie );
+         int cosignCode = CosignConnection.convertResponseToCode ( cosignResponse );
+
+         // Stop checking servers if valid code returned.
+         if ( cosignResponse != null ) {
+           if ( log.isDebugEnabled() ) {
+             log.debug( "[" + cosignConnection.getCosignConId() + "]: removing connection from invalid list" );
+           }
+
+           // We can re-add this connection into our valid connection list
+           cosignConnections.add( cosignConnection );
+           iter.remove();
+
+           if ( ( cosignCode == CosignConnection.COSIGN_USER_AUTHENTICATED ) ||
+                ( cosignCode == CosignConnection.COSIGN_USER_NOT_AUTHENTICATED ) ) {
+
+             // Stop checking servers if valid code returned.
+             return cosignResponse;
+           } else {
+             // Failed to get a valid response, so we need to keep checking other servers
+             serverErrorResponse = cosignResponse;
+             continue;
+           }
+         }
+
+         // Still had a problem with this connection (free up resources)
+         cosignConnection.close();
+
+       } catch (IOException e) {
+       }
+     }
+
+     // Return a status that we weren't able to contact any Cosign servers
+     return serverErrorResponse;
+  }
+
+
 
   /**
    * This method will loop through all the open connections and close them.
