@@ -7,6 +7,8 @@ import javax.xml.parsers.*;
 import edu.umich.auth.cosign.util.*;
 import org.apache.commons.logging.*;
 import org.w3c.dom.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 
 /**
@@ -42,9 +44,17 @@ public class CosignConfig {
     public static final String HTTPS_ONLY = "HttpsOnly";
     public static final String HTTPS_PORT = "HttpsPort";
     public static final String CHECK_CLIENT_IP = "CheckClientIP";
+    public static final String KERBEROS_GET_TICKETS = "KerberosGetTickets";
+    public static final String KERBEROS_TICKET_CACHE_DIRECTORY = "KerberosTicketCachDirectory";
+    public static final String KERBEROS_KERB5_CONF = "KerberosKrb5Conf";
+    public static final String KERBEROS_KERB5_DEBUG = "KerberosKrb5Debug";
+    public static final String COSIGN_GET_PROXIES = "CosignGetProxies";
     public static final String CLEAR_SESSION_ON_LOGIN = "ClearSessionOnLogin";
     public static final String CONFIG_FILE_MONITOR_INT_SECS =
             "ConfigFileMonitoringIntervalSecs";
+    public static final String LOCATION_HANDLER_URL = "LocationHandlerRef";
+     public static final String REDIRECT_REGEX = "RedirectRegex";
+    public static final String COSIGN_SERVER_HOST_IP_CHECK = "CosignServerHostIpCheck";
 
     // List of all the properties that will be read from the XML file
     // along with their default values (if not required)
@@ -52,11 +62,15 @@ public class CosignConfig {
                                                  new StringProperty(
             KEY_STORE_PATH),
                                                  new StringProperty(
-            KEY_STORE_PASSWORD),
+            LOCATION_HANDLER_URL),
                                                  new StringProperty(
-            SERVICE_NAME),
+            REDIRECT_REGEX),
+                                                 new StringProperty(
+            KEY_STORE_PASSWORD),
+                                              /*   new StringProperty(
+            SERVICE_NAME),*/
                                                  new BooleanProperty(
-            SERVICES, new Boolean(false)),
+            SERVICES, new Boolean(true)),
                                                  new StringProperty(
             COSIGN_SERVER_HOST),
                                                  new IntegerProperty(
@@ -83,12 +97,24 @@ public class CosignConfig {
             COSIGN_SERVER_VERSION, new String("")),
                                                  new BooleanProperty(HTTPS_ONLY,
             new Boolean(false)),
+                                                 new BooleanProperty(KERBEROS_KERB5_DEBUG,
+            new Boolean(false)),
+                                                 new BooleanProperty(KERBEROS_GET_TICKETS,
+            new Boolean(false)),
+                                                 new StringProperty(
+            KERBEROS_TICKET_CACHE_DIRECTORY, new String("")),
+                                                 new StringProperty(
+            KERBEROS_KERB5_CONF, new String("")),
+                                                 new BooleanProperty(COSIGN_GET_PROXIES,
+            new Boolean(false)),
                                                  new IntegerProperty(HTTPS_PORT,
             new Integer(443), 0, 65535),
                                                  new BooleanProperty(
             CHECK_CLIENT_IP, new Boolean(false)),
                                                  new BooleanProperty(
             CLEAR_SESSION_ON_LOGIN, new Boolean(false)),
+                                                 new StringProperty(
+            COSIGN_SERVER_HOST_IP_CHECK, new String("60000")), //default 1 hour ip check delay
                                                  new IntegerProperty(
             CONFIG_FILE_MONITOR_INT_SECS, new Integer(30), 5,
             Integer.MAX_VALUE / 1000)
@@ -470,6 +496,37 @@ public class CosignConfig {
         }
     }
 
+
+    public ServiceConfig matchServiceWithName( String serviceName ) {
+        rwLock.getReadLock();
+   boolean matchedName = false;
+
+   try {
+       Iterator it = servicePaths.iterator();
+       ServiceConfig theService;
+
+
+
+
+       while (it.hasNext()) {
+           //do the resou
+           theService = (ServiceConfig) it.next();
+
+           log.info("Service name in: " + serviceName);
+           log.info("Service name in compared to read in services: " + theService.getName());
+
+           if(theService.getName().equalsIgnoreCase(serviceName))
+               return theService;
+
+       }
+
+   } finally {
+       rwLock.releaseLock();
+   }
+
+   return null; //default service
+
+    }
     /**
      * This method returns a ServiceConfig Object on the basis of whether the services
      * map contains the requested path.
@@ -493,15 +550,15 @@ public class CosignConfig {
                 if (theService.getPath().equalsIgnoreCase(path))
                     matchedPath = true;
                 else{
-                    //System.out.println("Service path end char: " + theService.getPath().charAt(theService.getPath().length()-1));
-                    //System.out.println("Service path substring: " + theService.getPath().substring(0,theService.getPath().length()-1));
-                    //System.out.println("request Path: " + path);
+                    log.info("Service path end char: " + theService.getPath().charAt(theService.getPath().length()-1));
+                    log.info("Service path substring: " + theService.getPath().substring(0,theService.getPath().length()-1));
+                    log.info("request Path: " + path);
 
                     if(theService.getPath().charAt(theService.getPath().length()-1) =='*'){
                         String subPath = theService.getPath().substring(0,theService.getPath().length() - 1);
                         boolean isThere = path.startsWith(subPath);
                         if( isThere ){
-                           // System.out.println("Path found, matched path = true. /n");
+                            log.info("Path found, matched path = true. /n");
                             matchedPath = true;
                           }
                     }
@@ -516,8 +573,8 @@ public class CosignConfig {
 
 
                 if (theService.hasQs() && (qString != null)){
-                    //System.out.println("Service qs: " + theService.getQs());
-                    //System.out.println("path qs: " + qString);
+                    log.info("Service qs: " + theService.getQs());
+                    log.info("path qs: " + qString);
                     if (theService.getQs().equalsIgnoreCase(qString))
                         matchedQuery = true;
                 }
@@ -549,8 +606,7 @@ public class CosignConfig {
             Arrays.sort(keys);
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < keys.length; i++) {
-                sb.append(keys[i] + " = " + propertyKeyToValue.get(keys[i]) +
-                          "\n");
+                sb.append(keys[i] + " = " + propertyKeyToValue.get(keys[i]) + "\n");
             }
             return sb.toString();
         } finally {
@@ -618,13 +674,18 @@ public class CosignConfig {
                             /**now specific mappings**/
                             NodeList prot = element.getElementsByTagName(
                                     "protected");
+
                             String sAttrValue = element.getAttribute(
                                     "name");
+
+
+
                             for (int j = 0; j < prot.getLength(); j++) {
                                 Element pElement = (Element) prot.item(j);
                                 String pAttr = "";
                                 String pQs = "";
                                 String pRs = "";
+                                String proxies = "";
                                 if (pElement.hasAttributes()) {
                                     NamedNodeMap attribs = pElement.
                                             getAttributes();
@@ -644,9 +705,16 @@ public class CosignConfig {
                                                 "rs").getNodeValue();
                                     } catch (Exception ex2) {
                                     }
+                                    try {
+                                        proxies = attribs.getNamedItem(
+                                                "getproxies").getNodeValue();
+                                    } catch (Exception ex2) {
+                                    }
+
                                 }
                                 ServiceConfig serviceConfig = new ServiceConfig();
                                 serviceConfig.setFactors(v);
+
                                 if (pAttr.equalsIgnoreCase("true")) {
                                     serviceConfig.setPublicAccess("true");
                                 }
@@ -656,6 +724,9 @@ public class CosignConfig {
                                 if (pRs.length() > 0) {
                                     serviceConfig.setResource(pRs);
                                 }
+                                if (proxies.equalsIgnoreCase("true")) {
+                                    serviceConfig.setDoProxies(true);
+                                }
 
                                 serviceConfig.setName(sAttrValue);
                                 serviceConfig.setPath(pElement.getFirstChild().
@@ -663,7 +734,7 @@ public class CosignConfig {
                                 servicePaths.add(serviceConfig);
 
                             }
-                            //System.out.println(servicePaths);
+                            log.debug("Service Paths: " + servicePaths);
                             /* End of service parsing */
                         }
                     }
@@ -726,11 +797,14 @@ public class CosignConfig {
             // bail out now
             if (missingOrInvalidProperty) {
                 propertyKeyToValue.clear();
+                log.info("*** BAiling out of config file build");
                 return false;
             }
 
             // If we got this far without an error ... we have a valid config file
             this.isConfigValid = true;
+            log.info("*** Config file parsed ok");
+
             return true;
 
         } catch (Exception e) {
@@ -814,3 +888,22 @@ public boolean isServerVersion2(){
     return (((String)propertyKeyToValue.get(COSIGN_SERVER_VERSION)).equalsIgnoreCase("2"));
 }
 }
+
+/*Copyright (c) 2002-2008 Regents of The University of Michigan.
+All Rights Reserved.
+
+    Permission to use, copy, modify, and distribute this software and
+    its documentation for any purpose and without fee is hereby granted,
+    provided that the above copyright notice appears in all copies and
+    that both that copyright notice and this permission notice appear
+    in supporting documentation, and that the name of The University
+    of Michigan not be used in advertising or publicity pertaining to
+    distribution of the software without specific, written prior
+    permission. This software is supplied as is without expressed or
+    implied warranties of any kind.
+
+The University of Michigan
+c/o UM Webmaster Team
+Arbor Lakes
+Ann Arbor, MI  48105
+*/

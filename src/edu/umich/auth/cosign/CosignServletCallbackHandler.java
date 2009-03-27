@@ -14,7 +14,6 @@ import javax.security.auth.callback.TextInputCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,14 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import edu.umich.auth.AuthFilterRequestWrapper;
 import edu.umich.auth.ServletCallbackHandler;
 import edu.umich.auth.cosign.util.ServiceConfig;
-import java.util.StringTokenizer;
 import java.util.HashMap;
-import java.util.Vector;
-import java.util.Enumeration;
 import edu.umich.auth.cosign.util.FactorInputCallBack;
 import edu.umich.auth.cosign.pool.CosignConnectionPool;
-import edu.umich.auth.cosign.pool.CosignConnection;
-import javax.security.auth.login.LoginException;
 import edu.umich.auth.cosign.pool.CosignConnectionList;
 
 /**
@@ -144,7 +138,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
          */
 
 
-
+        String cookieName="";
         ServiceConfig serviceConfig = null;
         if (!(ex instanceof FailedLoginException)) {
             // we didn't handle the exception and anon access isn't enabled,
@@ -198,18 +192,20 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
         // }
 
         /* Generate the cookie and assign it to the response. */
-        String cookieName = getCookieName();
+
+        cookieName = getCookieName(serviceConfig);
         CosignCookie cosignCookie = new CosignCookie();
         Cookie cookie = new Cookie(cookieName, cosignCookie.getCookie());
         cookie.setPath("/");
-
+        cookie.setMaxAge(0);
         // If Cosign is in HTTPS-only mode, we need to mark the cookie as secure
         boolean isHttpsOnly = ((Boolean) CosignConfig.INSTANCE.getPropertyValue(
                 CosignConfig.HTTPS_ONLY)).booleanValue();
         if (isHttpsOnly) {
             cookie.setSecure(true);
         }
-        response.addCookie(cookie);
+       /* commented out for v3 */
+       response.addCookie(cookie); //this will remove the cookie
 
         // If a site entry URL was provided, we will use that for the redirect,
         // not the current URL.
@@ -274,12 +270,18 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
         }
         // Redirect the client to the weblogin server.
         try {
-            String redirectUrl = loginUrl + "?" + serviceFactors +
+           /* commented out for v3 - changed that is */
+            /*String redirectUrl = loginUrl + "?" + serviceFactors +
                                  getCookieName() + "=" +
-                                 cosignCookie.getNonce() + ";&" + siteEntryUrl;
+                                 cosignCookie.getNonce() + ";&" + siteEntryUrl;*/
+
+            String redirectUrl = loginUrl + "?" + serviceFactors +
+                                 getCookieName(serviceConfig) + "&" + siteEntryUrl;
+
+
             if (log.isDebugEnabled()) {
                 log.debug("Redirecting user to: " + redirectUrl);
-                System.out.println("Redirecting user to: " + redirectUrl);
+                log.info("Redirecting user to: " + redirectUrl);
             }
             response.sendRedirect(redirectUrl);
 
@@ -331,6 +333,14 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
      */
     public void handle(Callback[] callbacks) throws IOException,
             UnsupportedCallbackException {
+        ServiceConfig serviceConfig = CosignConfig.INSTANCE.
+                                              hasServiceOveride(this.
+                        currentPath, this.resource, this.queryString);
+
+        if(serviceConfig == null)
+            log.debug("Service config is null.");
+        else
+            log.debug("Service config found is: " + serviceConfig.getName());
         for (int i = 0; i < callbacks.length; i++) {
             TextInputCallback inputCallback;
             FactorInputCallBack factorCallBack;
@@ -349,7 +359,7 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
                     }
 
                     // Find the cosign service cookie.
-                    final String cookieName = getCookieName();
+                    final String cookieName = getCookieName(serviceConfig);
                     for (int j = 0; j < cookies.length; j++) {
                         if (cookies[j].getName().equals(cookieName)) {
                             inputCallback.setText(cookies[j].getValue());
@@ -359,20 +369,26 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
 
                 } else if (callbackCode.equals(CosignLoginModule.
                                                COOKIE_NAME_IN_CODE)) {
-                    inputCallback.setText(getCookieName());
+                    inputCallback.setText(getCookieName(serviceConfig));
 
                 } else if (callbackCode.equals(CosignLoginModule.
+                                               PROXY_IN_CODE )) {
+                    if(serviceConfig.isDoProxies())
+                        inputCallback.setText("true");
+                    else
+                        inputCallback.setText("false");
+                }
+                else if (callbackCode.equals(CosignLoginModule.
                                                IP_ADDR_IN_CODE)) {
                     inputCallback.setText(request.getRemoteAddr());
 
-                } else {
+                }
+                else {
                     throw new UnsupportedCallbackException(callbacks[i],
                             "Unrecognized text callback request.");
                 }
             } else if (callbacks[i] instanceof FactorInputCallBack) {
-                ServiceConfig serviceConfig = CosignConfig.INSTANCE.
-                                              hasServiceOveride(this.
-                        currentPath, this.resource, this.queryString);
+
                 factorCallBack = (FactorInputCallBack) callbacks[i];
                 if (!(serviceConfig == null)) {
                     factorCallBack.setFactors(serviceConfig.getFactors());
@@ -411,17 +427,38 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
      * This method constructs a cookie name from the ServiceName config property.
      */
 
-    private String getCookieName() {
-
-        String serviceName = (String) CosignConfig.INSTANCE
+    private String getCookieName(ServiceConfig serviceConfig) {
+         String cookieName;
+        if(serviceConfig != null)
+            cookieName = serviceConfig.getName();
+        else
+            cookieName = (String) CosignConfig.INSTANCE
                              .getPropertyValueinContext(CosignConfig.
                 SERVICE_NAME, this.currentPath, this.resource, this.queryString);
-        if ((serviceName.startsWith(COOKIE_NAME_PREFIX)) &&
-            (COOKIE_NAME_PREFIX.length() < serviceName.length())) {
-            return serviceName;
+        if ((cookieName.startsWith(COOKIE_NAME_PREFIX)) &&
+            (COOKIE_NAME_PREFIX.length() < cookieName.length())) {
+            return cookieName;
         }
-        return COOKIE_NAME_PREFIX + serviceName;
+        return COOKIE_NAME_PREFIX + cookieName;
     }
 
 
 }
+/*Copyright (c) 2002-2008 Regents of The University of Michigan.
+All Rights Reserved.
+
+    Permission to use, copy, modify, and distribute this software and
+    its documentation for any purpose and without fee is hereby granted,
+    provided that the above copyright notice appears in all copies and
+    that both that copyright notice and this permission notice appear
+    in supporting documentation, and that the name of The University
+    of Michigan not be used in advertising or publicity pertaining to
+    distribution of the software without specific, written prior
+    permission. This software is supplied as is without expressed or
+    implied warranties of any kind.
+
+The University of Michigan
+c/o UM Webmaster Team
+Arbor Lakes
+Ann Arbor, MI  48105
+*/

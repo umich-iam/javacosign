@@ -8,6 +8,8 @@ import java.util.StringTokenizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import java.util.Vector;
+import edu.umich.auth.cosign.util.ProxyCookie;
+import java.util.Iterator;
 
 /**
  * This class stores the user name, realm, ip address, and "last validated"
@@ -20,7 +22,9 @@ public class CosignPrincipal implements Principal, Serializable
   private String address;
   private String realm;
   private Vector factors;
+  private Vector proxies;
   private long timestamp;
+
 
   // Used for logging info and error messages
   private Log log = LogFactory.getLog( CosignPrincipal.class );
@@ -31,6 +35,7 @@ public class CosignPrincipal implements Principal, Serializable
    */
   public CosignPrincipal () {
       factors = new Vector();
+      proxies = new Vector();
   }
 
   /**
@@ -139,4 +144,46 @@ public void addFactor(String factor){
     this.factors.add(factor);
 }
 
+public void clearProxyCookies(){
+    this.proxies.clear();
 }
+
+public boolean addProxyCookie(ProxyCookie cookie){
+    return this.proxies.add(cookie);
+
+}
+
+public ProxyCookie getProxy(String serviceName, String host){
+    Iterator itr = this.proxies.iterator();
+    ProxyCookie p = null;
+    while(itr.hasNext()){
+        p = (ProxyCookie) itr.next();
+        if (p.getService().equalsIgnoreCase(serviceName) &&
+            p.getHost().equalsIgnoreCase(host)) {
+            break;
+        }
+    }
+    return p;
+
+}
+
+}
+
+/*Copyright (c) 2002-2008 Regents of The University of Michigan.
+All Rights Reserved.
+
+    Permission to use, copy, modify, and distribute this software and
+    its documentation for any purpose and without fee is hereby granted,
+    provided that the above copyright notice appears in all copies and
+    that both that copyright notice and this permission notice appear
+    in supporting documentation, and that the name of The University
+    of Michigan not be used in advertising or publicity pertaining to
+    distribution of the software without specific, written prior
+    permission. This software is supplied as is without expressed or
+    implied warranties of any kind.
+
+The University of Michigan
+c/o UM Webmaster Team
+Arbor Lakes
+Ann Arbor, MI  48105
+*/

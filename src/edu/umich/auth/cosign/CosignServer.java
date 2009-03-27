@@ -2,6 +2,7 @@ package edu.umich.auth.cosign;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,7 +16,8 @@ import org.apache.commons.pool.impl.*;
 public class CosignServer {
 
 	private final String host;
-  private final String[] hostAddrs;
+        private  String[] hostAddrs;
+        private long startMillis;
 
 	private final int port;
 
@@ -35,14 +37,28 @@ public class CosignServer {
     port = ((Integer)CosignConfig.INSTANCE.getPropertyValue(CosignConfig.COSIGN_SERVER_PORT)).intValue();
     hostAddrs = initHostAddresses();
     config = initObjectPoolConfig();
-	}
+    startMillis = new Date().getTime();
+}
+
+  /**
+   * This method checks for a time to update host ipaddess list
+   * and calls initHostAddresses () when times up.
+   * /
+
 
   /**
    * This method get all the available Cosign server IP addrs through
    * a DNS lookup.
    * @return An array of <code>String</code> IP addresses.
    */
-  public String[] getHostAddresses() {
+  public String[] getHostAddresses() throws UnknownHostException{
+
+      long delay = new Long(((String)CosignConfig.INSTANCE.getPropertyValue(CosignConfig.COSIGN_SERVER_HOST_IP_CHECK))).longValue();
+      long minutes = startMillis / 60000;
+      if(minutes > delay){
+         startMillis = new Date().getTime();
+         hostAddrs = initHostAddresses();
+      }
     return hostAddrs;
   }
 
@@ -99,6 +115,7 @@ public class CosignServer {
    */
   private String[] initHostAddresses () throws UnknownHostException {
     // Performs a DNS lookup.
+    log.debug("Performing host IP adjustment for cosign server host");
     InetAddress[] addresses = InetAddress.getAllByName(host);
     String[] hostAddrs = new String[addresses.length];
     for (int i = 0; i < addresses.length; i++) {
@@ -128,3 +145,22 @@ public class CosignServer {
   }
 
 }
+
+/*Copyright (c) 2002-2008 Regents of The University of Michigan.
+All Rights Reserved.
+
+    Permission to use, copy, modify, and distribute this software and
+    its documentation for any purpose and without fee is hereby granted,
+    provided that the above copyright notice appears in all copies and
+    that both that copyright notice and this permission notice appear
+    in supporting documentation, and that the name of The University
+    of Michigan not be used in advertising or publicity pertaining to
+    distribution of the software without specific, written prior
+    permission. This software is supplied as is without expressed or
+    implied warranties of any kind.
+
+The University of Michigan
+c/o UM Webmaster Team
+Arbor Lakes
+Ann Arbor, MI  48105
+*/

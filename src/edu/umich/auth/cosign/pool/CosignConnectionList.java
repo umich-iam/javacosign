@@ -9,10 +9,13 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.umich.auth.cosign.CosignServer;
 import java.util.Vector;
+import javax.security.auth.Subject;
+import edu.umich.auth.cosign.CosignPrincipal;
 
 /**
  * This class provides a collection of <code>CosignConnection</code>s.
  * @author dillaman
+ *  @author patkm
  */
 public class CosignConnectionList {
 
@@ -29,10 +32,10 @@ public class CosignConnectionList {
   private final int port;
 
   // Collection of open and valid CosignConnections
-  private LinkedList cosignConnections = new LinkedList();
+  private LinkedList <CosignConnection> cosignConnections  = new LinkedList<CosignConnection>();
 
   // Collection of IP addresses
-  private LinkedList invalidIpAddrs = new LinkedList();
+  private LinkedList <String> invalidIpAddrs = new LinkedList<String>();
 
   // Log used for reporting errors / info
   private Log log = LogFactory.getLog( CosignConnectionList.class );
@@ -264,6 +267,168 @@ public class CosignConnectionList {
   }
 
 
+  /**
+     * This method loops through all active connections and invokes their
+     * retreiveTGT() method.
+     * @return The response from the cosign server.  Returns null
+     *            if no cosign servers were available to validate the cookie.
+     */
+    public String retreiveTGT(String serviceName, String cookie, Subject subject, CosignPrincipal sPrinciple) {
+      String serverErrorResponse = null;
+      Iterator iter;
+      String cosignResponse="";
+      // Loop through all the active connections and invoke the checkCookie
+      // method on those connections
+      iter = cosignConnections.iterator();
+      while ( iter.hasNext() ) {
+        CosignConnection cosignConnection = (CosignConnection)iter.next();
+        cosignResponse = cosignConnection.retrieveTGT( serviceName, cookie, subject, sPrinciple );
+        int cosignCode = CosignConnection.convertResponseToCode ( cosignResponse );
+
+        if ( ( cosignCode == CosignConnection.COSIGN_USER_AUTHENTICATED ) ||
+             ( cosignCode == CosignConnection.COSIGN_USER_NOT_AUTHENTICATED ) ) {
+
+          // Stop checking servers if valid code returned.
+          return cosignResponse;
+
+        } else if ( cosignCode == CosignConnection.COSIGN_SERVER_RETRY ) {
+          // We need to keep checking other servers
+          serverErrorResponse = cosignResponse;
+          continue;
+        }
+
+        // the response was invalid, this connection is no longer good
+        if ( log.isDebugEnabled() ) {
+          log.debug( "[" + cosignConnection.getCosignConId() + "]: failed to validate cookie, adding connection to invalid list" );
+        }
+        invalidIpAddrs.addFirst ( cosignConnection.getHostAddress() );
+        cosignConnection.close();
+        iter.remove();
+      }
+
+      // Loop through all the invalid IP addresses, attempt to establish a
+      // new connection, and again, invoke the checkCookie method on this
+      // connections
+      iter = invalidIpAddrs.iterator();
+      while( iter.hasNext() ) {
+        String hostAddr = (String)iter.next();
+        try {
+          CosignConnection cosignConnection = new CosignConnection ( cosignConListId, hostAddr, port );
+          cosignResponse = cosignConnection.retrieveTGT( serviceName, cookie, subject, sPrinciple );
+          int cosignCode = CosignConnection.convertResponseToCode ( cosignResponse );
+
+          // Stop checking servers if valid code returned.
+          if ( cosignResponse != null ) {
+            if ( log.isDebugEnabled() ) {
+              log.debug( "[" + cosignConnection.getCosignConId() + "]: removing connection from invalid list" );
+            }
+
+            // We can re-add this connection into our valid connection list
+            cosignConnections.add( cosignConnection );
+            iter.remove();
+
+            if ( ( cosignCode == CosignConnection.COSIGN_USER_AUTHENTICATED ) ||
+                 ( cosignCode == CosignConnection.COSIGN_USER_NOT_AUTHENTICATED ) ) {
+
+              // Stop checking servers if valid code returned.
+              return cosignResponse;
+            } else {
+              // Failed to get a valid response, so we need to keep checking other servers
+              serverErrorResponse = cosignResponse;
+              continue;
+            }
+          }
+
+          // Still had a problem with this connection (free up resources)
+          cosignConnection.close();
+
+        } catch (IOException e) {
+        }
+      }
+
+      // Return a status that we weren't able to contact any Cosign servers
+      return serverErrorResponse;
+    }
+
+
+    public String retreiveProxyCookie(String serviceName, String cookie, Subject subject, CosignPrincipal sPrinciple) {
+
+         String serverErrorResponse = null;
+         Iterator iter;
+         String cosignResponse="";
+         // Loop through all the active connections and invoke the checkCookie
+         // method on those connections
+         iter = cosignConnections.iterator();
+         while ( iter.hasNext() ) {
+           CosignConnection cosignConnection = (CosignConnection)iter.next();
+           cosignResponse = cosignConnection.retrieveProxyCookies( serviceName, cookie, subject, sPrinciple );
+           int cosignCode = CosignConnection.convertResponseToCode ( cosignResponse );
+
+           if ( ( cosignCode == CosignConnection.COSIGN_USER_AUTHENTICATED ) ||
+                ( cosignCode == CosignConnection.COSIGN_USER_NOT_AUTHENTICATED ) ) {
+
+             // Stop checking servers if valid code returned.
+             return cosignResponse;
+   //add for null check
+           } else if ( cosignCode == CosignConnection.COSIGN_SERVER_RETRY ) {
+             // We need to keep checking other servers
+             serverErrorResponse = cosignResponse;
+             continue;
+           }
+
+           // the response was invalid, this connection is no longer good
+           if ( log.isDebugEnabled() ) {
+             log.debug( "[" + cosignConnection.getCosignConId() + "]: failed to validate cookie, adding connection to invalid list" );
+           }
+           invalidIpAddrs.addFirst ( cosignConnection.getHostAddress() );
+           cosignConnection.close();
+           iter.remove();
+         }
+
+         // Loop through all the invalid IP addresses, attempt to establish a
+         // new connection, and again, invoke the checkCookie method on this
+         // connections
+         iter = invalidIpAddrs.iterator();
+         while( iter.hasNext() ) {
+           String hostAddr = (String)iter.next();
+           try {
+             CosignConnection cosignConnection = new CosignConnection ( cosignConListId, hostAddr, port );
+             cosignResponse = cosignConnection.retrieveProxyCookies( serviceName, cookie, subject, sPrinciple );
+             int cosignCode = CosignConnection.convertResponseToCode ( cosignResponse );
+
+             // Stop checking servers if valid code returned.
+             if ( cosignResponse != null ) {
+               if ( log.isDebugEnabled() ) {
+                 log.debug( "[" + cosignConnection.getCosignConId() + "]: removing connection from invalid list" );
+               }
+
+               // We can re-add this connection into our valid connection list
+               cosignConnections.add( cosignConnection );
+               iter.remove();
+
+               if ( ( cosignCode == CosignConnection.COSIGN_USER_AUTHENTICATED ) ||
+                    ( cosignCode == CosignConnection.COSIGN_USER_NOT_AUTHENTICATED ) ) {
+
+                 // Stop checking servers if valid code returned.
+                 return cosignResponse;
+               } else {
+                 // Failed to get a valid response, so we need to keep checking other servers
+                 serverErrorResponse = cosignResponse;
+                 continue;
+               }
+             }
+
+             // Still had a problem with this connection (free up resources)
+             cosignConnection.close();
+
+           } catch (IOException e) {
+           }
+         }
+
+         // Return a status that we weren't able to contact any Cosign servers
+         return serverErrorResponse;
+    }
+
 
   /**
    * This method will loop through all the open connections and close them.
@@ -289,3 +454,22 @@ public class CosignConnectionList {
   }
 
 }
+
+/*Copyright (c) 2002-2008 Regents of The University of Michigan.
+All Rights Reserved.
+
+    Permission to use, copy, modify, and distribute this software and
+    its documentation for any purpose and without fee is hereby granted,
+    provided that the above copyright notice appears in all copies and
+    that both that copyright notice and this permission notice appear
+    in supporting documentation, and that the name of The University
+    of Michigan not be used in advertising or publicity pertaining to
+    distribution of the software without specific, written prior
+    permission. This software is supplied as is without expressed or
+    implied warranties of any kind.
+
+The University of Michigan
+c/o UM Webmaster Team
+Arbor Lakes
+Ann Arbor, MI  48105
+*/
