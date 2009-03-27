@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CosignConfig>
+  <KeyStorePath>/pathto/jcosign_keystore.jks</KeyStorePath>
+  <!--<KeyStorePassword>javacosign</KeyStorePassword> -->
+  <KeyStorePassword>yourpassword</KeyStorePassword>
+  <CosignServerHost>weblogin-test.itcs.umich.edu</CosignServerHost>
+  <!--<CosignServerHost>weblogin.umich.edu</CosignServerHost> -->
+  <CosignServerPort>6663</CosignServerPort>
+  <ConnectionPoolSize>30</ConnectionPoolSize>
+  <CookieExpireSecs>120</CookieExpireSecs>
+  <CookieCacheExpireSecs>30</CookieCacheExpireSecs>
+  <LoginRedirectUrl>https://weblogin-test.itcs.umich.edu/</LoginRedirectUrl>
+  <!-- <LoginRedirectUrl>https://weblogin.umich.edu/</LoginRedirectUrl>-->
+  <LoginPostErrorUrl>http://www.umich.edu/</LoginPostErrorUrl>
+  <LoginSiteEntryUrl>  </LoginSiteEntryUrl>
+  <CheckClientIP>false</CheckClientIP>
+  <HttpsOnly>false</HttpsOnly>
+  <HttpsPort>8443</HttpsPort>
+  <ClearSessionOnLogin>true</ClearSessionOnLogin>
+  <ConfigFileMonitoringIntervalSecs>5</ConfigFileMonitoringIntervalSecs>
+  <KerberosKrb5Debug>true</KerberosKrb5Debug>
+  <KerberosGetTickets>false</KerberosGetTickets>
+  <CosignGetProxies>false</CosignGetProxies>
+  <KerberosTicketCachDirectory>/pathto/cache</KerberosTicketCachDirectory>
+  <KerberosKrb5Conf>/pathto/kerb5.conf</KerberosKrb5Conf>
+  <LocationHandlerRef>/IDM/cosign/valid/</LocationHandlerRef>
+   <!--<RedirectRegex>http://patkm-xp</RedirectRegex> -->
+   <RedirectRegex>http://.*\.staff\.itd\.umich\.edu/.*</RedirectRegex>
+  <!-- how long - in minutes - before a cosign host DNS ip refresh is to occure -->
+  <CosignServerHostIpCheck>2</CosignServerHostIpCheck>
+   <services>
+   <service name="cosign-jcosigncert" getproxies="false">
+      <reqfactor>
+        <factor>UMICH.EDU</factor>
+      </reqfactor>
+      <protected>/IDM/cosign-secure/protected/andhere/</protected>
+      <protected>/IDM/cosign-secure/testagain/</protected>
+      <protected>/IDM/cosign-secure/defaultservice/</protected>
+    </service>
+    <service name="cosign-patkm-xp.staff.itd">
+      <reqfactor>
+        <factor>UMICH.EDU</factor>
+      </reqfactor>
+      <protected>/cosign-secure/</protected>
+      <protected allowpublicaccess="true">/IDM/cosign-secure/protected/here/openhere/</protected>
+    </service>
+    <service name="cosign-wolverineaccess2f">
+      <reqfactor>
+        <factor>UMICH.EDU</factor>
+        <factor>mtoken</factor>
+      </reqfactor>
+      <protected>/IDM/cosign-secure/servlets/iclientservlet/hewebdevop/*</protected>
+    </service>
+    <service name="cosign-wolverineaccess">
+    <reqfactor>
+        <factor>UMICH.EDU</factor>
+    </reqfactor>
+      <protected>/IDM/cosign-secure/servlets/iclientservlet/hewebdevnonop/*</protected>
+     </service>
+    <service name="cosign-maisreauth">
+      <protected>/IDM/cosign-secure/reauth/servlets/iclientservlet/*</protected>
+    </service>
+  </services>
+</CosignConfig>
+
+
