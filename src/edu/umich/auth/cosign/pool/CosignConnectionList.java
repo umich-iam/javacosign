@@ -32,10 +32,10 @@ public class CosignConnectionList {
   private final int port;
 
   // Collection of open and valid CosignConnections
-  private LinkedList <CosignConnection> cosignConnections  = new LinkedList<CosignConnection>();
+  private LinkedList  cosignConnections  = new LinkedList();
 
   // Collection of IP addresses
-  private LinkedList <String> invalidIpAddrs = new LinkedList<String>();
+  private LinkedList  invalidIpAddrs = new LinkedList();
 
   // Log used for reporting errors / info
   private Log log = LogFactory.getLog( CosignConnectionList.class );
