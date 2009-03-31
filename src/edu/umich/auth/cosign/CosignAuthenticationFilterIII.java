@@ -189,7 +189,7 @@ public class CosignAuthenticationFilterIII implements Filter {
                             entryName);
                 }
 
-                @Override
+               
                 public void refresh() {
                     currentConfiguration.refresh();
                 }
