@@ -393,7 +393,7 @@ public class CosignLoginModule implements LoginModule {
             while (iterator2.hasNext()) {
                 count++;
                 Object object = iterator2.next();
-                log.info("object connical name is: " + object.getClass().getCanonicalName());
+                log.info("object connical name is: " + object.getClass().getName());
                 if (object instanceof KerberosPrincipal) {
                     kerbPrinciple = (KerberosPrincipal) object;
                     log.info("kerb principle found");
@@ -403,7 +403,8 @@ public class CosignLoginModule implements LoginModule {
             log.info("Kerberos iterator count: " + count);
 
         } catch (Exception ex) {
-
+            throw new LoginException(
+                    "Failed to collect kerberos credentials. " + ex.getMessage());
         }
 
         if (kerbPrinciple != null) {
@@ -471,7 +472,7 @@ public class CosignLoginModule implements LoginModule {
                             cosignCookie.getNonce(), subject, serverPrincipal);
                 } catch (Exception e) {
                     throw new FailedLoginException(
-                            "Cosignd server failed kerberos proxies.");
+                            "Cosignd server failed cookie proxies.");
                 }
 
                 // Return the connection list back to the pool
