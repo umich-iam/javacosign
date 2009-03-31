@@ -476,6 +476,7 @@ public class CosignLoginModule implements LoginModule {
                 }
 
                 // Return the connection list back to the pool
+                
                 try {
                     CosignConnectionPool.INSTANCE.returnCosignConnectionList(
                             cosignConnectionList);
