@@ -280,8 +280,7 @@ public class CosignConnection {
             options.put("useTicketCache", "true");
             options.put("client", "true");
             options.put("debug",
-                        (Boolean) CosignConfig.INSTANCE.
-                        getPropertyValue(CosignConfig.KERBEROS_KERB5_DEBUG) ?
+                        ((Boolean) CosignConfig.INSTANCE.getPropertyValue(CosignConfig.KERBEROS_KERB5_DEBUG)).booleanValue() ?
                         "true" : "false");
             options.put("doNotPrompt", "true");
             options.put("ticketCache", file.getAbsolutePath());
@@ -289,9 +288,9 @@ public class CosignConnection {
             //System.setProperty("java.security.krb5.kdc", "fear.ifs.umich.edu");
             System.setProperty("useSubjectCredsOnly", "true");
             System.setProperty("sun.security.krb5.debug",
-                               (Boolean)
+                               ((Boolean)
                                CosignConfig.INSTANCE.getPropertyValue(CosignConfig.
-                    KERBEROS_KERB5_DEBUG) ? "true" : "false");
+                    KERBEROS_KERB5_DEBUG)).booleanValue() ? "true" : "false");
              log.info("Instantiating login module");
 
             Krb5LoginModule lc = new Krb5LoginModule();
@@ -392,7 +391,7 @@ public class CosignConnection {
 
             String st = new String(buff, 0, numRead - 2);
             if (st.startsWith("241") ){
-                while (!st.contains("Cookies registered")) {
+                while (st.indexOf("Cookies registered")==-1) {
                     arr.add(st);
                     ProxyCookie pc = new ProxyCookie(st,serviceName);
                     cosignPrinciple.addProxyCookie(pc);
