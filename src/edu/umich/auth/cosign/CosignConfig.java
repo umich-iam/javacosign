@@ -53,6 +53,7 @@ public class CosignConfig {
     public static final String CONFIG_FILE_MONITOR_INT_SECS =
             "ConfigFileMonitoringIntervalSecs";
     public static final String LOCATION_HANDLER_URL = "LocationHandlerRef";
+    public static final String VALIDATION_ERROR_REDIRECT = "ValidationErrorRedirect";
      public static final String REDIRECT_REGEX = "RedirectRegex";
     public static final String COSIGN_SERVER_HOST_IP_CHECK = "CosignServerHostIpCheck";
 
@@ -63,6 +64,8 @@ public class CosignConfig {
             KEY_STORE_PATH),
                                                  new StringProperty(
             LOCATION_HANDLER_URL),
+                                                 new StringProperty(
+            VALIDATION_ERROR_REDIRECT, null),
                                                  new StringProperty(
             REDIRECT_REGEX),
                                                  new StringProperty(
