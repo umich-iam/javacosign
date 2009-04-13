@@ -338,6 +338,7 @@ public class CosignAuthenticationFilterIII implements Filter {
 
                 // User authenticated; continue request processing.
                 filterChain.doFilter(request, response);
+                return;
             }
 
             if (serviceConfig == null) {
