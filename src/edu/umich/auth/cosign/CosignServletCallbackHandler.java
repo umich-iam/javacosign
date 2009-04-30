@@ -88,10 +88,25 @@ public class CosignServletCallbackHandler implements ServletCallbackHandler {
                 length());
         this.resource = this.currentPath.substring(this.currentPath.lastIndexOf(
                 '/') + 1);
+
+
+         boolean root = this.currentPath.lastIndexOf('/') ==  this.currentPath.indexOf('/');
+
+
+            if (this.currentPath.charAt(this.currentPath.length() - 1) != '/' && !root) {
+                this.currentPath = this.currentPath.substring(0,
+                        this.currentPath.lastIndexOf('/') + 1);
+            }
+
+
+        /**
         if (this.currentPath.charAt(this.currentPath.length() - 1) != '/') {
             this.currentPath = this.currentPath.substring(0,
                     this.currentPath.lastIndexOf('/') + 1);
         }
+         **/
+
+
         if ((((String) CosignConfig.INSTANCE.
                getPropertyValue(
                        CosignConfig.

@@ -269,7 +269,7 @@ public class CosignAuthenticationFilterIII implements Filter {
     }
 
     public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain filterChain) throws IOException {
+        FilterChain filterChain) throws IOException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         ServiceConfig serviceConfig;
@@ -285,8 +285,10 @@ public class CosignAuthenticationFilterIII implements Filter {
 
             String resource = currentPath.substring(currentPath.lastIndexOf('/') +
                     1);
-
-            if (currentPath.charAt(currentPath.length() - 1) != '/') {
+            boolean root = currentPath.lastIndexOf('/') ==  currentPath.indexOf('/');
+            
+            
+            if (currentPath.charAt(currentPath.length() - 1) != '/' && !root) {
                 currentPath = currentPath.substring(0,
                         currentPath.lastIndexOf('/') + 1);
             }
@@ -295,8 +297,13 @@ public class CosignAuthenticationFilterIII implements Filter {
                     CosignConfig.LOCATION_HANDLER_URL);
             log.debug("Location URL: " + locationUrl);
             log.debug("Request URL: " + currentReqUrl);
+            log.debug("Current path: " + currentPath);
+            
             if (currentReqUrl.equalsIgnoreCase(locationUrl)) {
                 log.debug("Location URL and current url match");
+                if(httpRequest.getQueryString()==null)
+                    throw new ServletException("Location handler has been entered but no querystring arguments where passed.");
+
                 StringTokenizer strtok = new StringTokenizer(httpRequest.getQueryString(), "&");
                 String cookie = strtok.nextToken();
                 String[] sp = cookie.split("=");
@@ -320,7 +327,9 @@ public class CosignAuthenticationFilterIII implements Filter {
                     } else {
 
                         if (CosignConfig.INSTANCE.getPropertyValue(CosignConfig.VALIDATION_ERROR_REDIRECT) != null) {
+                            log.debug("Location handler refused redirect URL, pattern did not match.");
                             httpResponse.sendRedirect((String) CosignConfig.INSTANCE.getPropertyValue(CosignConfig.VALIDATION_ERROR_REDIRECT));
+                            return;
                         } else {
                             throw new ServletException("Redirect URL does not match redirection configuration Regular Expression.");
                         }

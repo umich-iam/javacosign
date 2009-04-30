@@ -334,7 +334,8 @@ public class CosignConfig {
     private class MonitoringThread extends Thread {
 
         private final File configFile;
-
+        // Commons Logging log instance
+        private Log log = LogFactory.getLog(CosignConfig.class);
         /**
          * Constructor for MonitoringThread
          */
@@ -552,6 +553,11 @@ public class CosignConfig {
                 //check for exact match first
                 if (theService.getPath().equalsIgnoreCase(path))
                     matchedPath = true;
+                else if((theService.getPath().charAt(theService.getPath().length()-1) == '/')
+                        && theService.getPath().substring(0,theService.getPath().length()-1).equalsIgnoreCase(path)
+                        ){
+                    matchedPath = true;
+                }
                 else{
                     log.info("Service path end char: " + theService.getPath().charAt(theService.getPath().length()-1));
                     log.info("Service path substring: " + theService.getPath().substring(0,theService.getPath().length()-1));
@@ -561,7 +567,7 @@ public class CosignConfig {
                         String subPath = theService.getPath().substring(0,theService.getPath().length() - 1);
                         boolean isThere = path.startsWith(subPath);
                         if( isThere ){
-                            log.info("Path found, matched path = true. /n");
+                            log.info("Path found, matched path = true.");
                             matchedPath = true;
                           }
                     }
