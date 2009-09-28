@@ -94,7 +94,7 @@ public void init() throws Exception{
             String cookieName = service.getName();
             Cookie cookie = new Cookie(cookieName, cosignCookie.getCookie());
             cookie.setPath("/");
-
+            log.debug("Location Handler: user authenticated");
             // If Cosign is in HTTPS-only mode, we need to mark the cookie as secure
             boolean isHttpsOnly = ((Boolean) CosignConfig.INSTANCE.
                                    getPropertyValue(
@@ -107,6 +107,7 @@ public void init() throws Exception{
 
             return true;
         }
+        log.debug("Location Handler: user NOT authenticated");
         return false;
     }
 
