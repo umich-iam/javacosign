@@ -304,16 +304,20 @@ public class CosignAuthenticationFilterIII implements Filter {
                 if(httpRequest.getQueryString()==null)
                     throw new ServletException("Location handler has been entered but no querystring arguments where passed.");
 
-                StringTokenizer strtok = new StringTokenizer(httpRequest.getQueryString(), "&");
-                String cookie = strtok.nextToken();
+                String[] theSplits =httpRequest.getQueryString().split("&",2);
+               
+                //StringTokenizer strtok = new StringTokenizer(httpRequest.getQueryString(), "&");
+                //String cookie = strtok.nextToken();
+                String cookie = theSplits[0];
                 String[] sp = cookie.split("=");
-                String[] sq = sp[0].split("-");
+                //String[] sq = sp[0].split("-");
                 String cookieName = sp[0];
                 serviceConfig = CosignConfig.INSTANCE.matchServiceWithName(
                         cookieName);
                 log.debug("Cookie name is: " + cookieName);
                 if (serviceConfig != null) {
-                    String reDirect = strtok.nextToken();
+                    log.debug("Location handler: service config not null");
+                    String reDirect = theSplits[1];
                     String reDirRegEx = (String) CosignConfig.INSTANCE.getPropertyValue(CosignConfig.REDIRECT_REGEX);
                     Pattern pattern = Pattern.compile(reDirRegEx);
                     Matcher m = pattern.matcher(reDirect);
@@ -323,6 +327,9 @@ public class CosignAuthenticationFilterIII implements Filter {
                             log.debug("Location handler checked ok");
                             httpResponse.sendRedirect(reDirect);
                             return;
+                        }
+                        else{
+                            log.debug("Location handler Failed check.");
                         }
                     } else {
 
@@ -335,6 +342,8 @@ public class CosignAuthenticationFilterIII implements Filter {
                         }
                     }
 
+                }else{
+                    throw new ServletException("No service defined/found for service cookie retuned: " + cookieName);
                 }
             }
 
